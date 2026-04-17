@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>링코어 변압기 규격 관리</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #222536;
+  --surface3: #2a2e42;
+  --border: #2e3350;
+  --border2: #3d4268;
+  --accent: #4f9cf9;
+  --accent2: #38d9a9;
+  --accent3: #f9a825;
+  --danger: #ff6b6b;
+  --text: #e8eaf0;
+  --text2: #9ba3bf;
+  --text3: #6b7494;
+  --radius: 10px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* ── 헤더 ── */
+header {
+  background: linear-gradient(135deg, #1a1d27 0%, #161928 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+
+header .logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+header .logo .icon {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--accent), #2d7dd2);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+
+header h1 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+header h1 span { color: var(--accent); }
+
+.header-actions { display: flex; gap: 8px; }
+
+/* ── 버튼 ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  border: none; border-radius: 7px;
+  font-size: 13px; font-family: inherit; font-weight: 500;
+  cursor: pointer; transition: all 0.15s;
+  text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #3d8ae0; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79,156,249,0.3); }
+.btn-success { background: var(--accent2); color: #0f1117; }
+.btn-success:hover { background: #2bc498; transform: translateY(-1px); }
+.btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--surface3); color: var(--text); }
+.btn-danger { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid rgba(255,107,107,0.3); }
+.btn-danger:hover { background: rgba(255,107,107,0.25); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-icon { padding: 7px 10px; }
+
+/* ── 레이아웃 ── */
+.app { display: flex; height: calc(100vh - 60px); }
+
+/* ── 사이드바 (목록) ── */
+.sidebar {
+  width: 300px; min-width: 300px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-head {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.search-box {
+  display: flex; align-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0 10px;
+  gap: 6px;
+}
+.search-box input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-family: inherit; font-size: 13px;
+  padding: 8px 0;
+}
+.search-box input::placeholder { color: var(--text3); }
+
+.filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-chip {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px; font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.record-list {
+  flex: 1; overflow-y: auto;
+  padding: 8px;
+}
+.record-list::-webkit-scrollbar { width: 4px; }
+.record-list::-webkit-scrollbar-track { background: transparent; }
+.record-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.record-item {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+  margin-bottom: 4px;
+  position: relative;
+}
+.record-item:hover { background: var(--surface2); border-color: var(--border); }
+.record-item.active { background: rgba(79,156,249,0.1); border-color: rgba(79,156,249,0.4); }
+
+.record-item .ri-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.record-item .ri-cap {
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 10px;
+  background: rgba(79,156,249,0.15); color: var(--accent);
+}
+.record-item .ri-maker { font-size: 13px; font-weight: 600; }
+.record-item .ri-model { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+.record-item .ri-dims {
+  font-size: 11px; color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 2px;
+}
+.record-item .ri-img-badge {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 10px; color: var(--accent2);
+  background: rgba(56,217,169,0.1);
+  padding: 2px 6px; border-radius: 8px;
+}
+
+.empty-state {
+  text-align: center; padding: 40px 20px; color: var(--text3);
+}
+.empty-state .es-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state p { font-size: 13px; line-height: 1.6; }
+
+/* ── 메인 영역 ── */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── 웰컴 화면 ── */
+.welcome {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 16px; color: var(--text3); padding: 40px;
+  text-align: center;
+}
+.welcome .w-icon { font-size: 56px; opacity: 0.4; }
+.welcome h2 { font-size: 20px; color: var(--text2); font-weight: 500; }
+.welcome p { font-size: 13px; line-height: 1.8; max-width: 320px; }
+
+/* ── 상세/편집 패널 ── */
+.detail-panel { padding: 24px; flex: 1; }
+
+.panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.panel-header h2 { font-size: 18px; font-weight: 700; }
+.panel-header .ph-actions { display: flex; gap: 8px; }
+
+/* ── 폼 ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.span2 { grid-column: span 2; }
+.form-group label {
+  font-size: 11px; font-weight: 600;
+  color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px;
+}
+.form-group input, .form-group select, .form-group textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 12px;
+  color: var(--text);
+  font-family: inherit; font-size: 13px;
+  transition: border-color 0.15s;
+  outline: none;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,156,249,0.1);
+}
+.form-group input[readonly] {
+  background: rgba(56,217,169,0.05);
+  border-color: rgba(56,217,169,0.3);
+  color: var(--accent2);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+
+/* ── 단면적 표시 ── */
+.calc-display {
+  background: linear-gradient(135deg, rgba(56,217,169,0.08), rgba(56,217,169,0.03));
+  border: 1px solid rgba(56,217,169,0.2);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex; align-items: center; gap: 20px;
+}
+.calc-display .cd-label { font-size: 12px; color: var(--text3); margin-bottom: 4px; }
+.calc-display .cd-value {
+  font-size: 28px; font-weight: 700;
+  color: var(--accent2);
+  font-family: 'JetBrains Mono', monospace;
+}
+.calc-display .cd-unit { font-size: 14px; color: var(--text2); margin-left: 4px; }
+.calc-display .cd-formula { font-size: 11px; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+/* ── 구분선 ── */
+.section-title {
+  font-size: 12px; font-weight: 700;
+  color: var(--text3); text-transform: uppercase; letter-spacing: 1px;
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px;
+}
+.section-title::after {
+  content: ''; flex: 1;
+  height: 1px; background: var(--border);
+}
+
+/* ── 이미지 영역 ── */
+.img-section { margin-bottom: 24px; }
+
+.img-dropzone {
+  border: 2px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 28px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--surface2);
+  position: relative;
+}
+.img-dropzone:hover, .img-dropzone.drag-over {
+  border-color: var(--accent);
+  background: rgba(79,156,249,0.05);
+}
+.img-dropzone .dz-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
+.img-dropzone .dz-text { font-size: 13px; color: var(--text2); margin-bottom: 4px; }
+.img-dropzone .dz-sub { font-size: 11px; color: var(--text3); }
+.img-dropzone .dz-sub kbd {
+  background: var(--surface3); padding: 1px 5px; border-radius: 4px;
+  border: 1px solid var(--border2); font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+}
+.img-dropzone input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer;
+}
+
+.img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.img-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+  background: var(--surface2);
+}
+.img-thumb:hover { border-color: var(--accent); transform: scale(1.02); }
+.img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.img-thumb .it-del {
+  position: absolute; top: 4px; right: 4px;
+  width: 22px; height: 22px;
+  background: rgba(255,107,107,0.85);
+  border: none; border-radius: 50%;
+  color: #fff; font-size: 12px;
+  display: none; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s;
+}
+.img-thumb:hover .it-del { display: flex; }
+.img-thumb .it-num {
+  position: absolute; bottom: 4px; left: 4px;
+  font-size: 10px; background: rgba(0,0,0,0.6);
+  color: #fff; padding: 1px 5px; border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── 라이트박스 ── */
+.lightbox {
+  display: none;
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(0,0,0,0.9);
+  align-items: center; justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+.lightbox.open { display: flex; }
+.lightbox img {
+  max-width: 90vw; max-height: 80vh;
+  border-radius: 8px;
+  box-shadow: 0 8px 60px rgba(0,0,0,0.6);
+}
+.lightbox .lb-nav {
+  display: flex; align-items: center; gap: 16px;
+  color: #fff;
+}
+.lightbox .lb-close {
+  position: absolute; top: 20px; right: 24px;
+  background: rgba(255,255,255,0.1);
+  border: none; color: #fff;
+  width: 36px; height: 36px; border-radius: 50%;
+  font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.lightbox .lb-close:hover { background: rgba(255,255,255,0.2); }
+.lightbox .lb-arrow {
+  background: rgba(255,255,255,0.1);
+  border: none; color: #fff;
+  width: 40px; height: 40px; border-radius: 50%;
+  font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.lightbox .lb-arrow:hover { background: rgba(255,255,255,0.2); }
+.lightbox .lb-counter { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+/* ── 인쇄 버튼 영역 ── */
+.action-bar {
+  display: flex; gap: 10px; padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  justify-content: flex-end;
+}
+
+/* ── 테이블 뷰 ── */
+.table-view { padding: 24px; flex: 1; }
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px;
+}
+.data-table th {
+  background: var(--surface2);
+  padding: 10px 12px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text2);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  text-align: center;
+  vertical-align: middle;
+}
+.data-table tr:hover td { background: var(--surface2); }
+.data-table .td-mono { font-family: 'JetBrains Mono', monospace; }
+.data-table .td-calc { color: var(--accent2); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+.data-table .td-cap {
+  font-weight: 700; color: var(--accent);
+  font-size: 11px;
+}
+
+/* ── 탭 ── */
+.tabs {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  padding: 0 24px;
+}
+.tab {
+  padding: 12px 18px;
+  font-size: 13px; font-weight: 500;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.tab:hover { color: var(--text2); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── 인쇄 스타일 ── */
+@media print {
+  body { background: #fff !important; color: #000 !important; }
+  header, .sidebar, .tabs, .action-bar, .img-dropzone,
+  .it-del, .btn, .panel-header .ph-actions { display: none !important; }
+  .app { height: auto; display: block; }
+  .main { overflow: visible; }
+  .detail-panel { padding: 20px; }
+  .form-group input, .form-group select {
+    background: #fff !important; color: #000 !important;
+    border-color: #ccc !important;
+  }
+  .calc-display {
+    background: #f0fff8 !important;
+    border-color: #38d9a9 !important;
+  }
+  .calc-display .cd-value { color: #1a8c6e !important; }
+  .img-thumb { border: 1px solid #ccc !important; }
+  .img-grid { grid-template-columns: repeat(4, 1fr); }
+  @page { margin: 15mm; }
+}
+
+/* ── 토스트 ── */
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  box-shadow: var(--shadow);
+  animation: slideIn 0.2s ease;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.success { border-color: rgba(56,217,169,0.4); }
+.toast.error { border-color: rgba(255,107,107,0.4); }
+@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ── 반응형 ── */
+@media (max-width: 700px) {
+  .sidebar { width: 100%; min-width: 0; }
+  .app { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="icon">🔄</div>
+    <h1>링코어 <span>변압기</span> 규격 관리</h1>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-primary" onclick="openNewForm()">➕ 새 제품 등록</button>
+  </div>
+</header>
+
+<div class="app">
+  <!-- 사이드바 -->
+  <div class="sidebar">
+    <div class="sidebar-head">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="제조사, 모델명 검색..." oninput="renderList()">
+      </div>
+      <div class="filter-row" id="filterRow">
+        <div class="filter-chip active" data-cap="all" onclick="setFilter(this)">전체</div>
+        <div class="filter-chip" data-cap="1kva" onclick="setFilter(this)">1kVA</div>
+        <div class="filter-chip" data-cap="1.5kva" onclick="setFilter(this)">1.5kVA</div>
+        <div class="filter-chip" data-cap="2kva" onclick="setFilter(this)">2kVA</div>
+        <div class="filter-chip" data-cap="3kva" onclick="setFilter(this)">3kVA</div>
+        <div class="filter-chip" data-cap="5kva" onclick="setFilter(this)">5kVA</div>
+        <div class="filter-chip" data-cap="기타" onclick="setFilter(this)">기타</div>
+      </div>
+    </div>
+    <div class="record-list" id="recordList"></div>
+  </div>
+
+  <!-- 메인 -->
+  <div class="main" id="mainPanel">
+    <div class="welcome" id="welcomeScreen">
+      <div class="w-icon">⚙️</div>
+      <h2>링코어 변압기 규격 관리</h2>
+      <p>좌측에서 제품을 선택하거나<br><strong>새 제품 등록</strong> 버튼을 눌러<br>규격을 입력해 주세요.</p>
+      <p style="margin-top:8px; font-size:11px; color: var(--text3);">이미지는 드래그&드롭 또는<br><kbd style="background:var(--surface2);padding:2px 6px;border-radius:4px;border:1px solid var(--border2);font-family:monospace">Ctrl+V</kbd> 붙여넣기로 추가 가능합니다.</p>
+    </div>
+
+    <div id="formPanel" style="display:none; flex-direction:column; flex:1;">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('detail')" id="tabDetail">📋 규격 입력</div>
+        <div class="tab" onclick="switchTab('table')" id="tabTable">📊 전체 목록</div>
+      </div>
+
+      <!-- 규격 입력 탭 -->
+      <div id="tabContentDetail">
+        <div class="detail-panel">
+          <div class="panel-header">
+            <h2 id="panelTitle">새 제품 등록</h2>
+            <div class="ph-actions">
+              <button class="btn btn-danger btn-sm" id="deleteBtn" onclick="deleteRecord()" style="display:none">🗑 삭제</button>
+              <button class="btn btn-ghost btn-sm" onclick="cancelEdit()">취소</button>
+              <button class="btn btn-success btn-sm" onclick="saveRecord()">💾 저장</button>
+            </div>
+          </div>
+
+          <!-- 기본 정보 -->
+          <div class="section-title">기본 정보</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>용량</label>
+              <select id="f_cap">
+                <option value="">선택...</option>
+                <option>1kva</option><option>1.5kva</option>
+                <option>2kva</option><option>3kva</option>
+                <option>5kva</option><option>기타</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>제조사</label>
+              <input type="text" id="f_maker" placeholder="예) 한서전기">
+            </div>
+            <div class="form-group">
+              <label>모델명</label>
+              <input type="text" id="f_model" placeholder="예) HY-1000U">
+            </div>
+            <div class="form-group">
+              <label>비고</label>
+              <input type="text" id="f_note" placeholder="예) 수지형, 승압">
+            </div>
+          </div>
+
+          <!-- 치수 -->
+          <div class="section-title">코어 치수</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>외경 OD (mm)</label>
+              <input type="number" id="f_od" placeholder="예) 130" oninput="calcArea()">
+            </div>
+            <div class="form-group">
+              <label>내경 ID (mm)</label>
+              <input type="number" id="f_id" placeholder="예) 50" oninput="calcArea()">
+            </div>
+            <div class="form-group">
+              <label>높이 H (mm)</label>
+              <input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()">
+            </div>
+            <div class="form-group">
+              <label>심선 (mm)</label>
+              <input type="text" id="f_wire" placeholder="예) 1.85">
+            </div>
+          </div>
+
+          <!-- 단면적 자동 계산 -->
+          <div class="calc-display" id="calcDisplay">
+            <div>
+              <div class="cd-label">단면적 (자동 계산)</div>
+              <div>
+                <span class="cd-value" id="calcValue">—</span>
+                <span class="cd-unit">cm²</span>
+              </div>
+              <div class="cd-formula" id="calcFormula">(외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
+            </div>
+          </div>
+
+          <!-- 전기 특성 -->
+          <div class="section-title">전기 특성</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>링코어 무게 (kg)</label>
+              <input type="number" id="f_weight" placeholder="예) 5.0" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>효율 (%)</label>
+              <input type="text" id="f_eff" placeholder="예) 97.1 또는 미표기">
+            </div>
+            <div class="form-group">
+              <label>턴당 전압 (V)</label>
+              <input type="number" id="f_vppt" placeholder="예) 0.72" step="0.01">
+            </div>
+          </div>
+
+          <!-- 이미지 -->
+          <div class="img-section">
+            <div class="section-title">제품 사진</div>
+            <div class="img-dropzone" id="dropzone"
+              ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)"
+              onclick="document.getElementById('fileInput').click()">
+              <input type="file" id="fileInput" accept="image/*" multiple onchange="onFileSelect(event)">
+              <div class="dz-icon">📷</div>
+              <div class="dz-text">클릭 또는 드래그&드롭으로 사진 추가</div>
+              <div class="dz-sub"><kbd>Ctrl+V</kbd> 로 클립보드 이미지 붙여넣기도 가능합니다</div>
+            </div>
+            <div class="img-grid" id="imgGrid"></div>
+          </div>
+
+        </div><!-- /detail-panel -->
+        <div class="action-bar">
+          <button class="btn btn-ghost" onclick="printRecord()">🖨 인쇄</button>
+          <button class="btn btn-ghost" onclick="exportSingleJSON()">⬇ JSON 내보내기</button>
+          <button class="btn btn-success" onclick="saveRecord()">💾 저장</button>
+        </div>
+      </div><!-- /tabContentDetail -->
+
+      <!-- 전체 목록 탭 -->
+      <div id="tabContentTable" style="display:none;">
+        <div class="table-view">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div style="font-size:13px; color:var(--text2);">총 <strong id="totalCount" style="color:var(--accent)">0</strong>개 항목</div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-ghost btn-sm" onclick="exportAllJSON()">⬇ 전체 내보내기</button>
+              <button class="btn btn-ghost btn-sm" onclick="printTable()">🖨 목록 인쇄</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table" id="dataTable">
+              <thead>
+                <tr>
+                  <th>#</th><th>용량</th><th>제조사</th><th>모델명</th>
+                  <th>외경</th><th>내경</th><th>높이</th><th>심선</th>
+                  <th>단면적(cm²)</th>
+                  <th>무게(kg)</th><th>효율(%)</th><th>턴당전압(V)</th><th>비고</th><th>사진</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /formPanel -->
+  </div><!-- /main -->
+</div>
+
+<!-- 라이트박스 -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-nav">
+    <button class="lb-arrow" onclick="lbPrev(event)">‹</button>
+    <span class="lb-counter" id="lbCounter"></span>
+    <button class="lb-arrow" onclick="lbNext(event)">›</button>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ── 상태 ──
+let records = [];
+let currentId = null;
+let currentImages = []; // {dataUrl, name}
+let lbImages = [];
+let lbIdx = 0;
+let filterCap = 'all';
+
+const DB_KEY = 'ringcore_records';
+
+// ── 초기화 ──
+function init() {
+  loadData();
+  renderList();
+  // Ctrl+V 전역 감지
+  document.addEventListener('paste', onPaste);
+}
+
+// ── 로컬스토리지 ──
+function loadData() {
+  try {
+    const raw = localStorage.getItem(DB_KEY);
+    records = raw ? JSON.parse(raw) : [];
+  } catch(e) { records = []; }
+}
+function saveData() {
+  localStorage.setItem(DB_KEY, JSON.stringify(records));
+}
+
+// ── 고유 ID ──
+function genId() { return Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+// ── 필터 ──
+function setFilter(el) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterCap = el.dataset.cap;
+  renderList();
+}
+
+// ── 목록 렌더링 ──
+function renderList() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const list = document.getElementById('recordList');
+  let filtered = records.filter(r => {
+    const capMatch = filterCap === 'all' || r.cap === filterCap;
+    const textMatch = !q || (r.maker||'').toLowerCase().includes(q) || (r.model||'').toLowerCase().includes(q);
+    return capMatch && textMatch;
+  });
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty-state"><div class="es-icon">📭</div><p>등록된 제품이 없습니다.<br>새 제품을 등록해 주세요.</p></div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(r => {
+    const area = calcAreaVal(r.od, r.id, r.h);
+    const areaStr = area !== null ? area.toFixed(2) + ' cm²' : '';
+    const imgBadge = r.images && r.images.length ? `<div class="ri-img-badge">📷 ${r.images.length}</div>` : '';
+    return `<div class="record-item ${currentId===r.id?'active':''}" onclick="selectRecord('${r.id}')">
+      ${imgBadge}
+      <div class="ri-top">
+        <span class="ri-cap">${r.cap||'?'}</span>
+        <span class="ri-maker">${r.maker||'(미입력)'}</span>
+      </div>
+      <div class="ri-model">${r.model||'—'}</div>
+      <div class="ri-dims">${r.od||'?'}×${r.id||'?'}×${r.h||'?'} mm${areaStr?' · '+areaStr:''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── 단면적 계산 ──
+function calcAreaVal(od, id, h) {
+  od = parseFloat(od); id = parseFloat(id); h = parseFloat(h);
+  if (isNaN(od)||isNaN(id)||isNaN(h)) return null;
+  return (od - id) / 2 * h / 100;
+}
+
+function calcArea() {
+  const od = document.getElementById('f_od').value;
+  const id = document.getElementById('f_id').value;
+  const h  = document.getElementById('f_h').value;
+  const val = calcAreaVal(od, id, h);
+  const el = document.getElementById('calcValue');
+  const fl = document.getElementById('calcFormula');
+  if (val !== null) {
+    el.textContent = val.toFixed(2);
+    fl.textContent = `(${od} - ${id}) ÷ 2 × ${h} ÷ 100 = ${val.toFixed(2)} cm²`;
+  } else {
+    el.textContent = '—';
+    fl.textContent = '외경, 내경, 높이를 입력하면 자동 계산됩니다';
+  }
+}
+
+// ── 새 폼 열기 ──
+function openNewForm() {
+  currentId = null;
+  currentImages = [];
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('formPanel').style.display = 'flex';
+  document.getElementById('panelTitle').textContent = '새 제품 등록';
+  document.getElementById('deleteBtn').style.display = 'none';
+  clearForm();
+  renderImages();
+  switchTab('detail');
+  updateTable();
+}
+
+function clearForm() {
+  ['f_cap','f_maker','f_model','f_note','f_od','f_id','f_h','f_wire','f_weight','f_eff','f_vppt']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById('calcValue').textContent = '—';
+  document.getElementById('calcFormula').textContent = '외경, 내경, 높이를 입력하면 자동 계산됩니다';
+}
+
+// ── 제품 선택 ──
+function selectRecord(id) {
+  currentId = id;
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  currentImages = (r.images || []).map(i => ({...i}));
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('formPanel').style.display = 'flex';
+  document.getElementById('panelTitle').textContent = `${r.maker||''} ${r.model||''}`.trim() || '제품 상세';
+  document.getElementById('deleteBtn').style.display = 'inline-flex';
+  // 폼 채우기
+  document.getElementById('f_cap').value = r.cap || '';
+  document.getElementById('f_maker').value = r.maker || '';
+  document.getElementById('f_model').value = r.model || '';
+  document.getElementById('f_note').value = r.note || '';
+  document.getElementById('f_od').value = r.od || '';
+  document.getElementById('f_id').value = r.id_ || '';
+  document.getElementById('f_h').value = r.h || '';
+  document.getElementById('f_wire').value = r.wire || '';
+  document.getElementById('f_weight').value = r.weight || '';
+  document.getElementById('f_eff').value = r.eff || '';
+  document.getElementById('f_vppt').value = r.vppt || '';
+  calcArea();
+  renderImages();
+  renderList();
+  switchTab('detail');
+  updateTable();
+}
+
+function cancelEdit() {
+  currentId = null;
+  document.getElementById('formPanel').style.display = 'none';
+  document.getElementById('welcomeScreen').style.display = 'flex';
+  renderList();
+}
+
+// ── 저장 ──
+function saveRecord() {
+  const data = {
+    id: currentId || genId(),
+    cap:    document.getElementById('f_cap').value,
+    maker:  document.getElementById('f_maker').value.trim(),
+    model:  document.getElementById('f_model').value.trim(),
+    note:   document.getElementById('f_note').value.trim(),
+    od:     document.getElementById('f_od').value,
+    id_:    document.getElementById('f_id').value,
+    h:      document.getElementById('f_h').value,
+    wire:   document.getElementById('f_wire').value,
+    weight: document.getElementById('f_weight').value,
+    eff:    document.getElementById('f_eff').value,
+    vppt:   document.getElementById('f_vppt').value,
+    images: currentImages,
+    updatedAt: new Date().toISOString()
+  };
+  const idx = records.findIndex(r => r.id === data.id);
+  if (idx >= 0) records[idx] = data;
+  else records.push(data);
+  currentId = data.id;
+  saveData();
+  renderList();
+  updateTable();
+  document.getElementById('deleteBtn').style.display = 'inline-flex';
+  document.getElementById('panelTitle').textContent = `${data.maker||''} ${data.model||''}`.trim() || '제품 상세';
+  toast('저장되었습니다 ✓', 'success');
+}
+
+// ── 삭제 ──
+function deleteRecord() {
+  if (!currentId) return;
+  if (!confirm('이 제품을 삭제하시겠습니까?')) return;
+  records = records.filter(r => r.id !== currentId);
+  saveData();
+  currentId = null;
+  currentImages = [];
+  renderList();
+  cancelEdit();
+  toast('삭제되었습니다', '');
+}
+
+// ── 이미지 처리 ──
+function addImages(files) {
+  const promises = Array.from(files).map(f => new Promise((res) => {
+    if (!f.type.startsWith('image/')) return res();
+    const reader = new FileReader();
+    reader.onload = e => {
+      currentImages.push({ dataUrl: e.target.result, name: f.name });
+      res();
+    };
+    reader.readAsDataURL(f);
+  }));
+  Promise.all(promises).then(() => renderImages());
+}
+
+function onFileSelect(e) { addImages(e.target.files); e.target.value = ''; }
+function onDragOver(e) { e.preventDefault(); document.getElementById('dropzone').classList.add('drag-over'); }
+function onDragLeave(e) { document.getElementById('dropzone').classList.remove('drag-over'); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropzone').classList.remove('drag-over');
+  addImages(e.dataTransfer.files);
+}
+
+function onPaste(e) {
+  // 폼이 열려있을 때만
+  if (document.getElementById('formPanel').style.display === 'none') return;
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  let found = false;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      found = true;
+      const blob = item.getAsFile();
+      const reader = new FileReader();
+      reader.onload = ev => {
+        currentImages.push({ dataUrl: ev.target.result, name: 'clipboard_' + Date.now() + '.png' });
+        renderImages();
+      };
+      reader.readAsDataURL(blob);
+    }
+  }
+  if (found) toast('클립보드 이미지가 추가되었습니다 📷', 'success');
+}
+
+function renderImages() {
+  const grid = document.getElementById('imgGrid');
+  if (!currentImages.length) { grid.innerHTML = ''; return; }
+  grid.innerHTML = currentImages.map((img, i) => `
+    <div class="img-thumb" onclick="openLightbox(${i})">
+      <img src="${img.dataUrl}" alt="${img.name}">
+      <button class="it-del" onclick="delImg(event,${i})">✕</button>
+      <div class="it-num">${i+1}</div>
+    </div>
+  `).join('');
+}
+
+function delImg(e, idx) {
+  e.stopPropagation();
+  currentImages.splice(idx, 1);
+  renderImages();
+}
+
+// ── 라이트박스 ──
+function openLightbox(idx) {
+  lbImages = currentImages;
+  lbIdx = idx;
+  showLb();
+}
+
+function showLb() {
+  const lb = document.getElementById('lightbox');
+  lb.classList.add('open');
+  document.getElementById('lbImg').src = lbImages[lbIdx].dataUrl;
+  document.getElementById('lbCounter').textContent = `${lbIdx+1} / ${lbImages.length}`;
+}
+
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightbox') && !e.target.classList.contains('lb-close')) return;
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+function lbPrev(e) { e.stopPropagation(); lbIdx = (lbIdx - 1 + lbImages.length) % lbImages.length; showLb(); }
+function lbNext(e) { e.stopPropagation(); lbIdx = (lbIdx + 1) % lbImages.length; showLb(); }
+
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape') lb.classList.remove('open');
+  if (e.key === 'ArrowLeft') { lbIdx = (lbIdx-1+lbImages.length)%lbImages.length; showLb(); }
+  if (e.key === 'ArrowRight') { lbIdx = (lbIdx+1)%lbImages.length; showLb(); }
+});
+
+// ── 탭 전환 ──
+function switchTab(tab) {
+  document.getElementById('tabDetail').classList.toggle('active', tab==='detail');
+  document.getElementById('tabTable').classList.toggle('active', tab==='table');
+  document.getElementById('tabContentDetail').style.display = tab==='detail' ? 'block' : 'none';
+  document.getElementById('tabContentTable').style.display = tab==='table' ? 'block' : 'none';
+  if (tab==='table') updateTable();
+}
+
+// ── 전체 테이블 업데이트 ──
+function updateTable() {
+  document.getElementById('totalCount').textContent = records.length;
+  const tbody = document.getElementById('tableBody');
+  if (!records.length) {
+    tbody.innerHTML = '<tr><td colspan="14" style="color:var(--text3);padding:24px">등록된 데이터가 없습니다</td></tr>';
+    return;
+  }
+  tbody.innerHTML = records.map((r, i) => {
+    const area = calcAreaVal(r.od, r.id_, r.h);
+    return `<tr onclick="selectRecord('${r.id}')" style="cursor:pointer">
+      <td class="td-mono">${i+1}</td>
+      <td class="td-cap">${r.cap||'—'}</td>
+      <td style="text-align:left">${r.maker||'—'}</td>
+      <td class="td-mono">${r.model||'—'}</td>
+      <td class="td-mono">${r.od||'—'}</td>
+      <td class="td-mono">${r.id_||'—'}</td>
+      <td class="td-mono">${r.h||'—'}</td>
+      <td class="td-mono">${r.wire||'—'}</td>
+      <td class="td-calc">${area!==null ? area.toFixed(2) : '—'}</td>
+      <td class="td-mono">${r.weight||'—'}</td>
+      <td>${r.eff||'—'}</td>
+      <td class="td-mono">${r.vppt||'—'}</td>
+      <td style="text-align:left;font-size:11px">${r.note||'—'}</td>
+      <td>${r.images&&r.images.length ? `<span style="color:var(--accent2)">📷 ${r.images.length}</span>` : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── 인쇄 ──
+function printRecord() { saveRecord(); setTimeout(() => window.print(), 200); }
+function printTable() { switchTab('table'); setTimeout(() => window.print(), 200); }
+
+// ── JSON 내보내기 ──
+function exportSingleJSON() {
+  if (!currentId) return;
+  const r = records.find(x => x.id === currentId);
+  if (!r) return;
+  download(JSON.stringify(r, null, 2), `${r.maker||'unknown'}_${r.model||'unknown'}.json`, 'application/json');
+}
+function exportAllJSON() {
+  download(JSON.stringify(records, null, 2), 'ringcore_all.json', 'application/json');
+}
+function download(content, filename, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], {type}));
+  a.download = filename; a.click();
+}
+
+// ── 토스트 ──
+function toast(msg, type) {
+  const c = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
+// ── 실행 ──
+init();
+</script>
+</body>
+</html>
