@@ -6,255 +6,264 @@
 <title>링코어 변압기 규격 관리</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0f1117; --surface: #1a1d27; --surface2: #222536; --surface3: #2a2e42;
-  --border: #2e3350; --border2: #3d4268;
-  --accent: #4f9cf9; --accent2: #38d9a9; --accent3: #f9a825; --danger: #ff6b6b;
-  --text: #e8eaf0; --text2: #9ba3bf; --text3: #6b7494;
-  --radius: 10px; --shadow: 0 4px 24px rgba(0,0,0,0.4);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#222536;--surface3:#2a2e42;--border:#2e3350;--border2:#3d4268;--accent:#4f9cf9;--accent2:#38d9a9;--accent3:#f9a825;--danger:#ff6b6b;--text:#e8eaf0;--text2:#9ba3bf;--text3:#6b7494;--radius:10px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
 
-/* 로그인 화면 */
-.login-screen {
-  min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(ellipse at 50% 40%, #1a2240 0%, #0f1117 70%);
-}
-.login-box {
-  background: var(--surface); border: 1px solid var(--border2);
-  border-radius: 16px; padding: 40px 36px; width: 340px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  text-align: center;
-}
-.login-box .lb-icon { font-size: 48px; margin-bottom: 16px; }
-.login-box h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.login-box p { font-size: 12px; color: var(--text3); margin-bottom: 28px; }
-.login-box input {
-  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
-  border-radius: 8px; padding: 11px 14px; color: var(--text);
-  font-family: inherit; font-size: 14px; outline: none; margin-bottom: 12px;
-  text-align: center; letter-spacing: 4px; font-size: 20px;
-  transition: border-color 0.15s;
-}
-.login-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,156,249,0.1); }
-.login-box .err { color: var(--danger); font-size: 12px; margin-bottom: 10px; min-height: 18px; }
-.login-box button {
-  width: 100%; background: var(--accent); color: #fff;
-  border: none; border-radius: 8px; padding: 12px;
-  font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
-  transition: all 0.15s;
-}
-.login-box button:hover { background: #3d8ae0; transform: translateY(-1px); }
+/* 로그인 */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#1a2240,#0f1117 70%)}
+.login-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:40px 36px;width:340px;box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
+.login-box .lb-icon{font-size:48px;margin-bottom:16px}
+.login-box h2{font-size:20px;font-weight:700;margin-bottom:4px}
+.login-box p{font-size:12px;color:var(--text3);margin-bottom:28px}
+.login-box input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:12px;text-align:center;letter-spacing:4px;font-size:20px;transition:border-color .15s}
+.login-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,156,249,.1)}
+.login-box .err{color:var(--danger);font-size:12px;margin-bottom:10px;min-height:18px}
+.login-box .login-btns{display:flex;flex-direction:column;gap:8px}
+.login-box .btn-login{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.login-box .btn-login:hover{background:#3d8ae0;transform:translateY(-1px)}
+.login-box .btn-admin{width:100%;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:8px;padding:9px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.login-box .btn-admin:hover{color:var(--text2);border-color:var(--border2)}
+
+/* 관리자 모달 */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.75);align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:32px;width:480px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal-box h3{font-size:18px;font-weight:700;margin-bottom:6px}
+.modal-box p{font-size:12px;color:var(--text3);margin-bottom:20px}
+.admin-actions{display:flex;flex-direction:column;gap:10px}
+.admin-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s}
+.admin-card:hover{border-color:var(--accent);background:rgba(79,156,249,.05)}
+.admin-card .ac-icon{font-size:28px;width:44px;text-align:center;flex-shrink:0}
+.admin-card .ac-info h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.admin-card .ac-info p{font-size:11px;color:var(--text3);margin:0}
+.modal-close{float:right;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1;margin-top:-4px}
 
 /* 헤더 */
-header {
-  background: linear-gradient(135deg, #1a1d27, #161928);
-  border-bottom: 1px solid var(--border); padding: 0 24px; height: 60px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.5);
-}
-header .logo { display: flex; align-items: center; gap: 12px; }
-header .logo .icon {
-  width: 34px; height: 34px;
-  background: linear-gradient(135deg, var(--accent), #2d7dd2);
-  border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;
-}
-header h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
-header h1 span { color: var(--accent); }
-.header-actions { display: flex; gap: 8px; align-items: center; }
-.sync-status { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
-.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent2); }
-.sync-dot.syncing { background: var(--accent3); animation: pulse 1s infinite; }
-.sync-dot.error { background: var(--danger); }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+header{background:linear-gradient(135deg,#1a1d27,#161928);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.5)}
+header .logo{display:flex;align-items:center;gap:12px}
+header .logo .icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#2d7dd2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+header h1{font-size:16px;font-weight:700;letter-spacing:-.3px}
+header h1 span{color:var(--accent)}
+.header-actions{display:flex;gap:8px;align-items:center}
+.sync-status{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--accent2)}
+.sync-dot.syncing{background:var(--accent3);animation:pulse 1s infinite}
+.sync-dot.error{background:var(--danger)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* 버튼 */
-.btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 7px 14px; border: none; border-radius: 7px;
-  font-size: 13px; font-family: inherit; font-weight: 500;
-  cursor: pointer; transition: all 0.15s;
-}
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: #3d8ae0; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79,156,249,0.3); }
-.btn-success { background: var(--accent2); color: #0f1117; }
-.btn-success:hover { background: #2bc498; transform: translateY(-1px); }
-.btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
-.btn-ghost:hover { background: var(--surface3); color: var(--text); }
-.btn-danger { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid rgba(255,107,107,0.3); }
-.btn-danger:hover { background: rgba(255,107,107,0.25); }
-.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:none;border-radius:7px;font-size:13px;font-family:inherit;font-weight:500;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#3d8ae0;transform:translateY(-1px);box-shadow:0 4px 12px rgba(79,156,249,.3)}
+.btn-success{background:var(--accent2);color:#0f1117}
+.btn-success:hover{background:#2bc498;transform:translateY(-1px)}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface3);color:var(--text)}
+.btn-danger{background:rgba(255,107,107,.15);color:var(--danger);border:1px solid rgba(255,107,107,.3)}
+.btn-danger:hover{background:rgba(255,107,107,.25)}
+.btn-sm{padding:5px 10px;font-size:12px}
 
 /* 레이아웃 */
-.app { display: flex; height: calc(100vh - 60px); }
+.app{display:flex;height:calc(100vh - 60px)}
 
 /* 사이드바 */
-.sidebar {
-  width: 300px; min-width: 300px;
-  background: var(--surface); border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; overflow: hidden;
-}
-.sidebar-head { padding: 16px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
-.search-box {
-  display: flex; align-items: center;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 7px; padding: 0 10px; gap: 6px;
-}
-.search-box input {
-  flex: 1; background: none; border: none; outline: none;
-  color: var(--text); font-family: inherit; font-size: 13px; padding: 8px 0;
-}
-.search-box input::placeholder { color: var(--text3); }
-.filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
-.filter-chip {
-  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
-  cursor: pointer; border: 1px solid var(--border2); background: var(--surface2);
-  color: var(--text2); transition: all 0.15s;
-}
-.filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-.record-list { flex: 1; overflow-y: auto; padding: 8px; }
-.record-list::-webkit-scrollbar { width: 4px; }
-.record-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-.record-item {
-  padding: 12px 14px; border-radius: var(--radius); cursor: pointer;
-  transition: all 0.15s; border: 1px solid transparent; margin-bottom: 4px; position: relative;
-}
-.record-item:hover { background: var(--surface2); border-color: var(--border); }
-.record-item.active { background: rgba(79,156,249,0.1); border-color: rgba(79,156,249,0.4); }
-.record-item .ri-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-.record-item .ri-cap { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: rgba(79,156,249,0.15); color: var(--accent); }
-.record-item .ri-maker { font-size: 13px; font-weight: 600; }
-.record-item .ri-model { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
-.record-item .ri-dims { font-size: 11px; color: var(--text2); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
-.record-item .ri-img-badge { position: absolute; top: 10px; right: 10px; font-size: 10px; color: var(--accent2); background: rgba(56,217,169,0.1); padding: 2px 6px; border-radius: 8px; }
-.empty-state { text-align: center; padding: 40px 20px; color: var(--text3); }
-.empty-state .es-icon { font-size: 40px; margin-bottom: 12px; }
+.sidebar{width:270px;min-width:270px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-head{padding:14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.search-box{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:0 10px;gap:6px}
+.search-box input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:13px;padding:8px 0}
+.search-box input::placeholder{color:var(--text3)}
+.search-clear{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0 2px;flex-shrink:0}
+.filter-row{display:flex;gap:4px;flex-wrap:wrap}
+.filter-chip{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);transition:all .15s}
+.filter-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.record-list{flex:1;overflow-y:auto;padding:6px}
+.record-list::-webkit-scrollbar{width:4px}
+.record-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.record-item{padding:10px 12px;border-radius:var(--radius);cursor:pointer;transition:all .15s;border:1px solid transparent;margin-bottom:3px;position:relative}
+.record-item:hover{background:var(--surface2);border-color:var(--border)}
+.record-item.active{background:rgba(79,156,249,.1);border-color:rgba(79,156,249,.4)}
+.ri-top{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.ri-cap{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:rgba(79,156,249,.15);color:var(--accent)}
+.ri-maker{font-size:12px;font-weight:600}
+.ri-model{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.ri-dims{font-size:10px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:1px}
+.ri-img-badge{position:absolute;top:8px;right:8px;font-size:10px;color:var(--accent2);background:rgba(56,217,169,.1);padding:1px 5px;border-radius:8px}
+.empty-state{text-align:center;padding:30px 16px;color:var(--text3)}
+.empty-state .es-icon{font-size:32px;margin-bottom:8px}
+.sidebar-footer{padding:10px 12px;border-top:1px solid var(--border)}
 
 /* 메인 */
-.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-.main::-webkit-scrollbar { width: 6px; }
-.main::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-.welcome {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 16px; color: var(--text3); padding: 40px; text-align: center;
-}
-.welcome .w-icon { font-size: 56px; opacity: 0.4; }
-.welcome h2 { font-size: 20px; color: var(--text2); font-weight: 500; }
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.main::-webkit-scrollbar{width:6px}
+.main::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
 /* 탭 */
-.tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); padding: 0 24px; }
-.tab { padding: 12px 18px; font-size: 13px; font-weight: 500; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
-.tab:hover { color: var(--text2); }
-.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);padding:0 20px;flex-shrink:0}
+.tab{padding:11px 16px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 
-/* 폼 */
-.detail-panel { padding: 24px; flex: 1; }
-.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-.panel-header h2 { font-size: 18px; font-weight: 700; }
-.ph-actions { display: flex; gap: 8px; }
-.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
-.form-group input, .form-group select {
-  background: var(--surface2); border: 1px solid var(--border); border-radius: 7px;
-  padding: 9px 12px; color: var(--text); font-family: inherit; font-size: 13px;
-  transition: border-color 0.15s; outline: none;
-}
-.form-group input:focus, .form-group select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,156,249,0.1); }
-.calc-display {
-  background: linear-gradient(135deg, rgba(56,217,169,0.08), rgba(56,217,169,0.03));
-  border: 1px solid rgba(56,217,169,0.2); border-radius: var(--radius);
-  padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 20px;
-}
-.calc-display .cd-label { font-size: 12px; color: var(--text3); margin-bottom: 4px; }
-.calc-display .cd-value { font-size: 28px; font-weight: 700; color: var(--accent2); font-family: 'JetBrains Mono', monospace; }
-.calc-display .cd-unit { font-size: 14px; color: var(--text2); margin-left: 4px; }
-.calc-display .cd-formula { font-size: 11px; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
-.section-title { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
-.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* 전체목록 */
+.table-view{padding:20px;flex:1}
+.table-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:var(--surface2);padding:9px 10px;text-align:center;font-weight:600;color:var(--text2);border:1px solid var(--border);font-size:11px;white-space:nowrap}
+.data-table td{padding:8px 10px;border:1px solid var(--border);text-align:center;vertical-align:middle}
+.data-table tr:hover td{background:var(--surface2);cursor:pointer}
+.data-table tr.row-active td{background:rgba(79,156,249,.08)}
+.td-mono{font-family:'JetBrains Mono',monospace}
+.td-calc{color:var(--accent2);font-weight:600;font-family:'JetBrains Mono',monospace}
+.td-cap{font-weight:700;color:var(--accent);font-size:11px}
+mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;padding:0 1px}
+
+/* 규격입력 */
+.detail-panel{padding:20px;flex:1}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.panel-header h2{font-size:17px;font-weight:700}
+.ph-actions{display:flex;gap:8px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:18px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.form-group .hint{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.4}
+.form-group input,.form-group select{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:inherit;font-size:13px;transition:border-color .15s;outline:none}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,156,249,.1)}
+.form-group input.auto-calc{background:rgba(56,217,169,.05);border-color:rgba(56,217,169,.25);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-weight:600}
+.section-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.calc-display{background:linear-gradient(135deg,rgba(56,217,169,.08),rgba(56,217,169,.03));border:1px solid rgba(56,217,169,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:20px}
+.cd-label{font-size:11px;color:var(--text3);margin-bottom:3px}
+.cd-value{font-size:26px;font-weight:700;color:var(--accent2);font-family:'JetBrains Mono',monospace}
+.cd-unit{font-size:13px;color:var(--text2);margin-left:3px}
+.cd-formula{font-size:10px;color:var(--text3);margin-top:3px;font-family:'JetBrains Mono',monospace}
+
+/* 2차권선 섹션 */
+.sec2-box{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;margin-bottom:18px}
+.sec2-sub{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.meas-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.meas-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px}
+.meas-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-bottom:8px}
+.tag-d{background:rgba(79,156,249,.15);color:var(--accent)}
+.tag-t{background:rgba(249,168,37,.15);color:var(--accent3)}
+.result-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.rc .rc-lbl{font-size:10px;color:var(--text3);margin-bottom:3px}
+.rc .rc-val{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.rc .rc-val.info{color:var(--accent)}
+.rc .rc-val.warn{color:var(--accent3)}
+.rc .rc-diff{font-size:10px;color:var(--text3);margin-top:2px}
+.diff-rows{margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+.diff-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border)}
+.diff-row:last-child{border-bottom:none}
+.diff-lbl{color:var(--text2)}
+.c-good{color:var(--accent2)}
+.c-warn{color:var(--accent3)}
 
 /* 이미지 */
-.img-dropzone {
-  border: 2px dashed var(--border2); border-radius: var(--radius); padding: 28px;
-  text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface2); position: relative;
-}
-.img-dropzone:hover, .img-dropzone.drag-over { border-color: var(--accent); background: rgba(79,156,249,0.05); }
-.img-dropzone .dz-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
-.img-dropzone .dz-text { font-size: 13px; color: var(--text2); margin-bottom: 4px; }
-.img-dropzone .dz-sub { font-size: 11px; color: var(--text3); }
-.img-dropzone .dz-sub kbd { background: var(--surface3); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--border2); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-.img-dropzone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 12px; }
-.img-thumb { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; background: var(--surface2); }
-.img-thumb:hover { border-color: var(--accent); transform: scale(1.02); }
-.img-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.img-thumb .it-del { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; background: rgba(255,107,107,0.85); border: none; border-radius: 50%; color: #fff; font-size: 12px; display: none; align-items: center; justify-content: center; cursor: pointer; }
-.img-thumb:hover .it-del { display: flex; }
-.img-thumb .it-num { position: absolute; bottom: 4px; left: 4px; font-size: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+.img-dropzone{border:2px dashed var(--border2);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);position:relative}
+.img-dropzone:hover,.img-dropzone.drag-over{border-color:var(--accent);background:rgba(79,156,249,.05)}
+.img-dropzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.img-dropzone .dz-icon{font-size:24px;margin-bottom:6px;opacity:.5}
+.img-dropzone .dz-text{font-size:12px;color:var(--text2)}
+.img-dropzone .dz-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.img-dropzone kbd{background:var(--surface3);padding:1px 4px;border-radius:3px;border:1px solid var(--border2);font-family:'JetBrains Mono',monospace;font-size:10px}
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:10px}
+.img-thumb{position:relative;aspect-ratio:1;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:all .15s;background:var(--surface2)}
+.img-thumb:hover{border-color:var(--accent);transform:scale(1.02)}
+.img-thumb img{width:100%;height:100%;object-fit:cover}
+.it-del{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(255,107,107,.85);border:none;border-radius:50%;color:#fff;font-size:11px;display:none;align-items:center;justify-content:center;cursor:pointer}
+.img-thumb:hover .it-del{display:flex}
+.it-num{position:absolute;bottom:3px;left:3px;font-size:9px;background:rgba(0,0,0,.6);color:#fff;padding:1px 4px;border-radius:3px;font-family:'JetBrains Mono',monospace}
 
 /* 라이트박스 */
-.lightbox { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
-.lightbox.open { display: flex; }
-.lightbox img { max-width: 90vw; max-height: 80vh; border-radius: 8px; box-shadow: 0 8px 60px rgba(0,0,0,0.6); }
-.lightbox .lb-nav { display: flex; align-items: center; gap: 16px; color: #fff; }
-.lightbox .lb-close { position: absolute; top: 20px; right: 24px; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.lightbox .lb-close:hover { background: rgba(255,255,255,0.2); }
-.lightbox .lb-arrow { background: rgba(255,255,255,0.1); border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.lightbox .lb-arrow:hover { background: rgba(255,255,255,0.2); }
-.lightbox .lb-counter { font-size: 13px; color: rgba(255,255,255,0.6); }
-
-/* 테이블 */
-.table-view { padding: 24px; flex: 1; }
-.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.data-table th { background: var(--surface2); padding: 10px 12px; text-align: center; font-weight: 600; color: var(--text2); border: 1px solid var(--border); font-size: 11px; white-space: nowrap; }
-.data-table td { padding: 9px 12px; border: 1px solid var(--border); text-align: center; vertical-align: middle; }
-.data-table tr:hover td { background: var(--surface2); }
-.data-table .td-mono { font-family: 'JetBrains Mono', monospace; }
-.data-table .td-calc { color: var(--accent2); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
-.data-table .td-cap { font-weight: 700; color: var(--accent); font-size: 11px; }
+.lightbox{display:none;position:fixed;inset:0;z-index:998;background:rgba(0,0,0,.9);align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:80vh;border-radius:8px;box-shadow:0 8px 60px rgba(0,0,0,.6)}
+.lb-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lb-close:hover{background:rgba(255,255,255,.2)}
+.lb-nav{display:flex;align-items:center;gap:14px}
+.lb-arrow{background:rgba(255,255,255,.1);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lb-arrow:hover{background:rgba(255,255,255,.2)}
+.lb-counter{font-size:12px;color:rgba(255,255,255,.6)}
 
 /* 액션바 */
-.action-bar { display: flex; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--border); background: var(--surface); justify-content: flex-end; }
+.action-bar{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--border);background:var(--surface);justify-content:flex-end;flex-shrink:0}
 
 /* 토스트 */
-.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-.toast { background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 12px 16px; font-size: 13px; box-shadow: var(--shadow); animation: slideIn 0.2s ease; display: flex; align-items: center; gap: 8px; }
-.toast.success { border-color: rgba(56,217,169,0.4); }
-.toast.error { border-color: rgba(255,107,107,0.4); }
-@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:6px}
+.toast{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-size:13px;box-shadow:var(--shadow);animation:slideIn .2s ease;display:flex;align-items:center;gap:8px}
+.toast.success{border-color:rgba(56,217,169,.4)}
+.toast.error{border-color:rgba(255,107,107,.4)}
+@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
 
-/* 인쇄 */
-@media print {
-  body { background: #fff !important; color: #000 !important; }
-  header, .sidebar, .tabs, .action-bar, .img-dropzone, .it-del, .btn, .ph-actions, .login-screen { display: none !important; }
-  .app { height: auto; display: block; }
-  .main { overflow: visible; }
-  .detail-panel { padding: 20px; }
-  .form-group input, .form-group select { background: #fff !important; color: #000 !important; border-color: #ccc !important; }
-  .calc-display { background: #f0fff8 !important; border-color: #38d9a9 !important; }
-  .calc-display .cd-value { color: #1a8c6e !important; }
-  .img-grid { grid-template-columns: repeat(4, 1fr); }
-  @page { margin: 15mm; }
+@media print{
+  body{background:#fff!important;color:#000!important}
+  header,.sidebar,.tabs,.action-bar,.img-dropzone,.it-del,.btn,.ph-actions,.login-screen,.modal-overlay{display:none!important}
+  .app{height:auto;display:block}
+  .main{overflow:visible}
+  .detail-panel{padding:16px}
+  .form-group input,.form-group select{background:#fff!important;color:#000!important;border-color:#ccc!important}
+  .calc-display{background:#f0fff8!important;border-color:#38d9a9!important}
+  .sec2-box{background:#f8f8f8!important;border-color:#ccc!important}
+  .img-grid{grid-template-columns:repeat(4,1fr)}
+  @page{margin:12mm}
 }
 </style>
 </head>
 <body>
 
-<!-- 로그인 화면 -->
+<!-- 로그인 -->
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
-    <div class="lb-icon">🔐</div>
+    <div class="lb-icon">🔄</div>
     <h2>링코어 변압기 관리</h2>
     <p>접속 비밀번호를 입력해 주세요</p>
-    <input type="password" id="pwInput" placeholder="••••" maxlength="20"
-      onkeydown="if(event.key==='Enter')doLogin()">
+    <input type="password" id="pwInput" placeholder="••••" maxlength="30">
     <div class="err" id="pwErr"></div>
-    <button onclick="doLogin()">접속</button>
+    <div class="login-btns">
+      <button class="btn-login" onclick="doLogin()">접속</button>
+      <button class="btn-admin" onclick="openAdminModal()">⚙ 관리자 모드</button>
+    </div>
   </div>
 </div>
 
-<!-- 메인 앱 (로그인 후 표시) -->
+<!-- 관리자 모달 -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAdminModal()">✕</button>
+    <h3>⚙ 관리자 모드</h3>
+    <p>데이터 백업 및 복구를 관리합니다</p>
+    <div style="margin-bottom:16px">
+      <input type="password" id="adminPwInput" placeholder="관리자 비밀번호" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;outline:none;margin-bottom:6px">
+      <div class="err" id="adminPwErr"></div>
+    </div>
+    <div class="admin-actions" id="adminActions" style="display:none">
+      <div class="admin-card" onclick="doBackup()">
+        <div class="ac-icon">💾</div>
+        <div class="ac-info">
+          <h4>전체 데이터 백업</h4>
+          <p>모든 제품 규격 + 첨부 사진 포함하여 JSON 파일로 저장</p>
+        </div>
+      </div>
+      <div class="admin-card" onclick="document.getElementById('restoreInput').click()">
+        <div class="ac-icon">📂</div>
+        <div class="ac-info">
+          <h4>데이터 복구</h4>
+          <p>백업 JSON 파일을 불러와 데이터를 복구합니다 (기존 데이터 덮어쓰기)</p>
+        </div>
+        <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="doRestore(event)">
+      </div>
+      <div id="adminStatus" style="font-size:12px;color:var(--text3);text-align:center;padding:4px 0;display:none"></div>
+    </div>
+    <button style="width:100%;margin-top:14px;background:none;border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text3);cursor:pointer;font-family:inherit;font-size:13px" id="adminVerifyBtn" onclick="verifyAdmin()">확인</button>
+  </div>
+</div>
+
+<!-- 앱 -->
 <div id="appRoot" style="display:none">
   <header>
     <div class="logo">
@@ -263,17 +272,18 @@ header h1 span { color: var(--accent); }
     </div>
     <div class="header-actions">
       <div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncText">연결 중...</span></div>
-      <button class="btn btn-primary" onclick="openNewForm()">➕ 새 제품 등록</button>
       <button class="btn btn-ghost btn-sm" onclick="doLogout()">🔒 잠금</button>
     </div>
   </header>
 
   <div class="app">
+    <!-- 사이드바 -->
     <div class="sidebar">
       <div class="sidebar-head">
         <div class="search-box">
-          <span>🔍</span>
-          <input type="text" id="searchInput" placeholder="제조사, 모델명 검색..." oninput="renderList()">
+          <span style="font-size:14px;color:var(--text3)">🔍</span>
+          <input type="text" id="searchInput" placeholder="제조사, 모델명 검색..." oninput="onSearch(this.value)">
+          <button class="search-clear" id="searchClear" onclick="clearSearch()" title="검색 초기화">✕</button>
         </div>
         <div class="filter-row">
           <div class="filter-chip active" data-cap="all" onclick="setFilter(this)">전체</div>
@@ -286,112 +296,167 @@ header h1 span { color: var(--accent); }
         </div>
       </div>
       <div class="record-list" id="recordList">
-        <div class="empty-state"><div class="es-icon">⏳</div><p>데이터 불러오는 중...</p></div>
+        <div class="empty-state"><div class="es-icon">⏳</div><p>불러오는 중...</p></div>
+      </div>
+      <div class="sidebar-footer">
+        <button class="btn btn-primary btn-sm" onclick="openNewForm()" style="width:100%;justify-content:center">➕ 새 제품 등록</button>
       </div>
     </div>
 
+    <!-- 메인 -->
     <div class="main" id="mainPanel">
-      <div class="welcome" id="welcomeScreen">
-        <div class="w-icon">⚙️</div>
-        <h2>링코어 변압기 규격 관리</h2>
-        <p style="font-size:13px;line-height:1.8">좌측에서 제품을 선택하거나<br><strong>새 제품 등록</strong> 버튼을 눌러주세요.</p>
-        <p style="font-size:11px;color:var(--text3);margin-top:8px">이미지는 드래그&드롭 또는 <kbd style="background:var(--surface2);padding:2px 6px;border-radius:4px;border:1px solid var(--border2);font-family:monospace">Ctrl+V</kbd> 로 추가</p>
+      <div class="tabs">
+        <div class="tab active" id="tabList" onclick="switchTab('list')">📊 전체목록</div>
+        <div class="tab" id="tabDetail" onclick="switchTab('detail')">📋 규격 입력</div>
       </div>
 
-      <div id="formPanel" style="display:none;flex-direction:column;flex:1">
-        <div class="tabs">
-          <div class="tab active" id="tabDetail" onclick="switchTab('detail')">📋 규격 입력</div>
-          <div class="tab" id="tabTable" onclick="switchTab('table')">📊 전체 목록</div>
-        </div>
-
-        <!-- 규격 입력 탭 -->
-        <div id="tabContentDetail">
-          <div class="detail-panel">
-            <div class="panel-header">
-              <h2 id="panelTitle">새 제품 등록</h2>
-              <div class="ph-actions">
-                <button class="btn btn-danger btn-sm" id="deleteBtn" onclick="deleteRecord()" style="display:none">🗑 삭제</button>
-                <button class="btn btn-ghost btn-sm" onclick="cancelEdit()">취소</button>
-                <button class="btn btn-success btn-sm" onclick="saveRecord()">💾 저장</button>
-              </div>
+      <!-- 전체목록 탭 -->
+      <div id="tabContentList" style="display:flex;flex-direction:column;flex:1">
+        <div class="table-view">
+          <div class="table-toolbar">
+            <div style="font-size:13px;color:var(--text2)">
+              <span id="listLabel" style="color:var(--text3)">전체</span>&nbsp;<strong id="totalCount" style="color:var(--accent)">0</strong>개
             </div>
-
-            <div class="section-title">기본 정보</div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label>용량</label>
-                <select id="f_cap">
-                  <option value="">선택...</option>
-                  <option>1kva</option><option>1.5kva</option>
-                  <option>2kva</option><option>3kva</option>
-                  <option>5kva</option><option>기타</option>
-                </select>
-              </div>
-              <div class="form-group"><label>제조사</label><input type="text" id="f_maker" placeholder="예) 한서전기"></div>
-              <div class="form-group"><label>모델명</label><input type="text" id="f_model" placeholder="예) HY-1000U"></div>
-              <div class="form-group"><label>비고</label><input type="text" id="f_note" placeholder="예) 수지형, 승압"></div>
-            </div>
-
-            <div class="section-title">코어 치수</div>
-            <div class="form-grid">
-              <div class="form-group"><label>외경 OD (mm)</label><input type="number" id="f_od" placeholder="예) 130" oninput="calcArea()"></div>
-              <div class="form-group"><label>내경 ID (mm)</label><input type="number" id="f_id" placeholder="예) 50" oninput="calcArea()"></div>
-              <div class="form-group"><label>높이 H (mm)</label><input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()"></div>
-              <div class="form-group"><label>심선 (mm)</label><input type="text" id="f_wire" placeholder="예) 1.85"></div>
-            </div>
-
-            <div class="calc-display">
-              <div>
-                <div class="cd-label">단면적 (자동 계산)</div>
-                <div><span class="cd-value" id="calcValue">—</span><span class="cd-unit">cm²</span></div>
-                <div class="cd-formula" id="calcFormula">(외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
-              </div>
-            </div>
-
-            <div class="section-title">전기 특성</div>
-            <div class="form-grid">
-              <div class="form-group"><label>링코어 무게 (kg)</label><input type="number" id="f_weight" placeholder="예) 5.0" step="0.01"></div>
-              <div class="form-group"><label>효율 (%)</label><input type="text" id="f_eff" placeholder="예) 97.1 또는 미표기"></div>
-              <div class="form-group"><label>턴당 전압 (V)</label><input type="number" id="f_vppt" placeholder="예) 0.72" step="0.01"></div>
-            </div>
-
-            <div class="img-section">
-              <div class="section-title">제품 사진</div>
-              <div class="img-dropzone" id="dropzone"
-                ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)"
-                onclick="document.getElementById('fileInput').click()">
-                <input type="file" id="fileInput" accept="image/*" multiple onchange="onFileSelect(event)">
-                <div class="dz-icon">📷</div>
-                <div class="dz-text">클릭 또는 드래그&드롭으로 사진 추가</div>
-                <div class="dz-sub"><kbd>Ctrl+V</kbd> 로 클립보드 이미지 붙여넣기도 가능</div>
-              </div>
-              <div class="img-grid" id="imgGrid"></div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-ghost btn-sm" onclick="printTable()">🖨 인쇄</button>
             </div>
           </div>
-          <div class="action-bar">
-            <button class="btn btn-ghost" onclick="printRecord()">🖨 인쇄</button>
-            <button class="btn btn-success" onclick="saveRecord()">💾 저장</button>
+          <div style="overflow-x:auto">
+            <table class="data-table">
+              <thead><tr>
+                <th>#</th><th>용량</th><th>제조사</th><th>모델명</th>
+                <th>외경</th><th>내경</th><th>높이</th><th>심선</th>
+                <th>단면적(cm²)</th><th>무게(kg)</th><th>효율(%)</th><th>턴당전압(V)</th><th>비고</th><th>사진</th>
+              </tr></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
           </div>
         </div>
+      </div>
 
-        <!-- 전체 목록 탭 -->
-        <div id="tabContentTable" style="display:none">
-          <div class="table-view">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-              <div style="font-size:13px;color:var(--text2)">총 <strong id="totalCount" style="color:var(--accent)">0</strong>개 항목</div>
-              <button class="btn btn-ghost btn-sm" onclick="printTable()">🖨 목록 인쇄</button>
-            </div>
-            <div style="overflow-x:auto">
-              <table class="data-table">
-                <thead><tr>
-                  <th>#</th><th>용량</th><th>제조사</th><th>모델명</th>
-                  <th>외경</th><th>내경</th><th>높이</th><th>심선</th>
-                  <th>단면적(cm²)</th><th>무게(kg)</th><th>효율(%)</th><th>턴당전압(V)</th><th>비고</th><th>사진</th>
-                </tr></thead>
-                <tbody id="tableBody"></tbody>
-              </table>
+      <!-- 규격입력 탭 -->
+      <div id="tabContentDetail" style="display:none;flex-direction:column;flex:1">
+        <div class="detail-panel">
+          <div class="panel-header">
+            <h2 id="panelTitle">새 제품 등록</h2>
+            <div class="ph-actions">
+              <button class="btn btn-danger btn-sm" id="deleteBtn" onclick="deleteRecord()" style="display:none">🗑 삭제</button>
+              <button class="btn btn-ghost btn-sm" onclick="cancelEdit()">취소</button>
+              <button class="btn btn-success btn-sm" onclick="saveRecord()">💾 저장</button>
             </div>
           </div>
+
+          <div class="section-title">기본 정보</div>
+          <div class="form-grid">
+            <div class="form-group"><label>용량</label>
+              <select id="f_cap"><option value="">선택...</option><option>1kva</option><option>1.5kva</option><option>2kva</option><option>3kva</option><option>5kva</option><option>기타</option></select>
+            </div>
+            <div class="form-group"><label>제조사</label><input type="text" id="f_maker" placeholder="예) 한서전기"></div>
+            <div class="form-group"><label>모델명</label><input type="text" id="f_model" placeholder="예) HY-1000U"></div>
+            <div class="form-group"><label>비고</label><input type="text" id="f_note" placeholder="예) 수지형, 승압"></div>
+          </div>
+
+          <div class="section-title">코어 치수</div>
+          <div class="form-grid">
+            <div class="form-group"><label>외경 OD (mm)</label><input type="number" id="f_od" placeholder="예) 130" oninput="calcArea();calcSecondary()"></div>
+            <div class="form-group"><label>내경 ID (mm)</label><input type="number" id="f_id" placeholder="예) 50" oninput="calcArea();calcSecondary()"></div>
+            <div class="form-group"><label>높이 H (mm)</label><input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()"></div>
+            <div class="form-group"><label>심선 (mm)</label><input type="text" id="f_wire" placeholder="예) 1.85"></div>
+          </div>
+
+          <div class="calc-display">
+            <div>
+              <div class="cd-label">단면적 (자동 계산)</div>
+              <div><span class="cd-value" id="calcValue">—</span><span class="cd-unit">cm²</span></div>
+              <div class="cd-formula" id="calcFormula">(외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
+            </div>
+          </div>
+
+          <div class="section-title">전기 특성</div>
+          <div class="form-grid">
+            <div class="form-group"><label>링코어 무게 (kg)</label><input type="number" id="f_weight" placeholder="예) 5.0" step="0.01"></div>
+            <div class="form-group"><label>효율 (%)</label><input type="text" id="f_eff" placeholder="예) 97.1 또는 미표기"></div>
+            <div class="form-group"><label>턴당 전압 (V)</label><input type="number" id="f_vppt" placeholder="예) 0.72" step="0.01"></div>
+          </div>
+
+          <!-- 2차권선 계산 -->
+          <div class="section-title">2차 권선 계산</div>
+          <div class="sec2-box">
+            <div class="sec2-sub">2차 권선 정보</div>
+            <div class="g5">
+              <div class="form-group"><label>권선 단면적 (mm²)</label><input type="number" id="s_area" placeholder="예) 50" oninput="calcSecondary()"><span class="hint">2차 케이블 굵기</span></div>
+              <div class="form-group"><label>턴수 (턴)</label><input type="number" id="s_turns" placeholder="예) 10" oninput="calcSecondary()"><span class="hint">2차 감은 횟수</span></div>
+              <div class="form-group"><label>2차 전압 (V)</label><input type="number" id="s_v2" placeholder="예) 6.5" oninput="calcSecondary()"><span class="hint">무부하 출력전압</span></div>
+              <div class="form-group"><label>턴당 전압 (V/턴)</label><input type="number" class="auto-calc" id="s_vpt" placeholder="자동계산" readonly><span class="hint" id="s_vpt_hint">예시: 6.5÷10 = 0.65V/턴</span></div>
+              <div class="form-group"><label>여유율 (%)</label><input type="number" id="s_margin" placeholder="예) 20" value="20" oninput="calcSecondary()"><span class="hint">인출·연결 여유</span></div>
+            </div>
+            <div class="g3" style="margin-top:10px">
+              <div class="form-group"><label>2차권선 총길이 (m)</label><input type="number" class="auto-calc" id="s_wlen" placeholder="자동계산 (직접 입력 가능)" oninput="calcSecondary()"><span class="hint" id="s_wlen_hint">예시: π×(130+50)/2/1000×10×(1+20%) = 약 3.40m</span></div>
+              <div class="form-group"><label>권선 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_wire_r" placeholder="자동계산" readonly><span class="hint" id="s_wire_r_hint">예시: 3.40÷(56×50) = 약 1.21mΩ</span></div>
+              <div></div>
+            </div>
+
+            <div class="sec2-sub" style="margin-top:14px">스폿봉까지 케이블 정보</div>
+            <div class="g3">
+              <div class="form-group"><label>케이블 단면적 (mm²)</label><input type="number" id="s_cab_area" placeholder="예) 50" oninput="calcSecondary()"><span class="hint">스폿봉까지 케이블</span></div>
+              <div class="form-group"><label>링코어→스폿봉 거리 (m)</label><input type="number" id="s_cab_len" placeholder="예) 0.8" oninput="calcSecondary()"><span class="hint">직결/단자 공통 적용</span></div>
+              <div class="form-group"><label>케이블 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_cab_r" placeholder="자동계산" readonly><span class="hint" id="s_cab_r_hint">예시: 0.8÷(56×50) = 약 0.29mΩ</span></div>
+            </div>
+
+            <div class="sec2-sub" style="margin-top:14px">대전류단자 (미사용시 0 입력)</div>
+            <div class="g3">
+              <div class="form-group"><label>단자 접촉저항 (mΩ/개)</label><input type="number" id="s_term_r" placeholder="예) 0.04" oninput="calcSecondary()"><span class="hint">구리단자 ~0.03~0.05 / 크레토스 ~0.08~0.10</span></div>
+              <div class="form-group"><label>단자 개수</label><input type="number" id="s_term_n" placeholder="2" value="2" oninput="calcSecondary()"><span class="hint">양극 각 1개 = 2개</span></div>
+              <div class="form-group"><label>단자 총저항 (mΩ)</label><input type="number" class="auto-calc" id="s_term_total" placeholder="자동계산" readonly><span class="hint" id="s_term_hint">예시: 0.04×2 = 0.08mΩ</span></div>
+            </div>
+
+            <div class="sec2-sub" style="margin-top:14px">실측값 입력</div>
+            <div class="meas-wrap">
+              <div class="meas-box">
+                <div class="meas-tag tag-d">직결</div>
+                <div class="g2">
+                  <div class="form-group"><label>실측 피크 (kA)</label><input type="number" id="s_md_peak" placeholder="예) 3.05" oninput="calcSecondary()"></div>
+                  <div class="form-group"><label>실측 실효 (kA)</label><input type="number" id="s_md_rms" placeholder="예) 2.23" oninput="calcSecondary()"></div>
+                </div>
+              </div>
+              <div class="meas-box">
+                <div class="meas-tag tag-t">대전류단자</div>
+                <div class="g2">
+                  <div class="form-group"><label>실측 피크 (kA)</label><input type="number" id="s_mt_peak" placeholder="예) 2.95" oninput="calcSecondary()"></div>
+                  <div class="form-group"><label>실측 실효 (kA)</label><input type="number" id="s_mt_rms" placeholder="예) 2.14" oninput="calcSecondary()"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 결과 -->
+            <div class="result-cards">
+              <div class="rc"><div class="rc-lbl">직결 이론 피크</div><div class="rc-val info" id="r_d_peak">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span></div><div class="rc-diff" id="r_d_peak_d">실측 대비 —</div></div>
+              <div class="rc"><div class="rc-lbl">직결 이론 실효</div><div class="rc-val info" id="r_d_rms">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span></div><div class="rc-diff" id="r_d_rms_d">실측 대비 —</div></div>
+              <div class="rc"><div class="rc-lbl">저항합계 (직결)</div><div class="rc-val info" id="r_d_ohm">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">mΩ</span></div><div class="rc-diff">권선+케이블</div></div>
+              <div class="rc"><div class="rc-lbl">단자 이론 피크</div><div class="rc-val warn" id="r_t_peak">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span></div><div class="rc-diff" id="r_t_peak_d">실측 대비 —</div></div>
+              <div class="rc"><div class="rc-lbl">단자 이론 실효</div><div class="rc-val warn" id="r_t_rms">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span></div><div class="rc-diff" id="r_t_rms_d">실측 대비 —</div></div>
+              <div class="rc"><div class="rc-lbl">저항합계 (단자)</div><div class="rc-val warn" id="r_t_ohm">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">mΩ</span></div><div class="rc-diff">+단자저항</div></div>
+            </div>
+            <div class="diff-rows">
+              <div class="diff-row"><span class="diff-lbl">직결 전류손실 (이론→실측)</span><span class="c-good" id="loss_d">—</span></div>
+              <div class="diff-row"><span class="diff-lbl">단자에 의한 이론 전류손실</span><span class="c-warn" id="loss_t">—</span></div>
+              <div class="diff-row"><span class="diff-lbl">실측 직결 대비 단자 전류감소</span><span class="c-warn" id="loss_vs">—</span></div>
+            </div>
+          </div>
+
+          <!-- 이미지 -->
+          <div class="section-title">제품 사진</div>
+          <div class="img-dropzone" id="dropzone" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)" onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" accept="image/*" multiple onchange="onFileSelect(event)">
+            <div class="dz-icon">📷</div>
+            <div class="dz-text">클릭 또는 드래그&드롭으로 사진 추가</div>
+            <div class="dz-sub"><kbd>Ctrl+V</kbd> 붙여넣기도 가능</div>
+          </div>
+          <div class="img-grid" id="imgGrid"></div>
+        </div>
+        <div class="action-bar">
+          <button class="btn btn-ghost" onclick="printRecord()">🖨 인쇄</button>
+          <button class="btn btn-success" onclick="saveRecord()">💾 저장</button>
         </div>
       </div>
     </div>
@@ -399,8 +464,8 @@ header h1 span { color: var(--accent); }
 </div>
 
 <!-- 라이트박스 -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-  <button class="lb-close" onclick="document.getElementById('lightbox').classList.remove('open')">✕</button>
+<div class="lightbox" id="lightbox" onclick="closeLightboxBg(event)">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
   <img id="lbImg" src="" alt="">
   <div class="lb-nav">
     <button class="lb-arrow" onclick="lbPrev(event)">‹</button>
@@ -408,13 +473,11 @@ header h1 span { color: var(--accent); }
     <button class="lb-arrow" onclick="lbNext(event)">›</button>
   </div>
 </div>
-
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCXWQ-q1hhCvdcl1x4FQw8V81-T3k5xkZ8",
@@ -429,10 +492,9 @@ const fireApp = initializeApp(firebaseConfig);
 const db = getFirestore(fireApp);
 const COL = "records";
 
-// ── 비밀번호 ──
-const PASSWORD = "1234"; // ← 원하시는 비밀번호로 변경하세요
+const PASSWORD = "1234";
+const ADMIN_PASSWORD = "poceidon2000";
 
-// ── 기본 데이터 66개 ──
 const DEFAULT_DATA = [
   {id:"d001",cap:"1kva",maker:"광표전기공업",model:"",od:120,id_:50,h:65,wire:"1.50",weight:3.7,eff:"95",vppt:0.61,note:"",images:[]},
   {id:"d002",cap:"1kva",maker:"미확인",model:"",od:120,id_:50,h:70,wire:"1.50",weight:3.8,eff:"미확인",vppt:0.59,note:"수지형",images:[]},
@@ -503,304 +565,230 @@ const DEFAULT_DATA = [
 ];
 
 // ── 상태 ──
-let records = [];
-let currentId = null;
-let currentImages = [];
-let lbImages = []; let lbIdx = 0;
-let filterCap = 'all';
-let unsubscribe = null;
+let records=[], currentId=null, currentImages=[], lbImages=[], lbIdx=0;
+let filterCap='all', searchQ='', unsubscribe=null;
 
 // ── 로그인 ──
-window.doLogin = function() {
-  const pw = document.getElementById('pwInput').value;
-  if (pw === PASSWORD) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('appRoot').style.display = 'block';
+window.doLogin=function(){
+  const pw=document.getElementById('pwInput').value;
+  if(pw===PASSWORD){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appRoot').style.display='block';
     startFirestore();
   } else {
-    document.getElementById('pwErr').textContent = '비밀번호가 틀렸습니다.';
-    document.getElementById('pwInput').value = '';
+    document.getElementById('pwErr').textContent='비밀번호가 틀렸습니다.';
+    document.getElementById('pwInput').value='';
     document.getElementById('pwInput').focus();
   }
 };
-window.doLogout = function() {
-  if (unsubscribe) unsubscribe();
-  document.getElementById('appRoot').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('pwInput').value = '';
+window.doLogout=function(){
+  if(unsubscribe)unsubscribe();
+  document.getElementById('appRoot').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('pwInput').value='';
+  records=[];currentId=null;currentImages=[];
+};
+document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
+
+// ── 관리자 모달 ──
+window.openAdminModal=function(){
+  document.getElementById('adminModal').classList.add('open');
+  document.getElementById('adminActions').style.display='none';
+  document.getElementById('adminVerifyBtn').style.display='block';
+  document.getElementById('adminPwInput').value='';
+  document.getElementById('adminPwErr').textContent='';
+  document.getElementById('adminPwInput').focus();
+};
+window.closeAdminModal=function(){document.getElementById('adminModal').classList.remove('open');};
+window.verifyAdmin=function(){
+  const pw=document.getElementById('adminPwInput').value;
+  if(pw===ADMIN_PASSWORD){
+    document.getElementById('adminActions').style.display='flex';
+    document.getElementById('adminVerifyBtn').style.display='none';
+    document.getElementById('adminPwErr').textContent='';
+  } else {
+    document.getElementById('adminPwErr').textContent='관리자 비밀번호가 틀렸습니다.';
+  }
+};
+document.getElementById('adminPwInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.verifyAdmin();});
+document.getElementById('adminModal').addEventListener('click',e=>{if(e.target===document.getElementById('adminModal'))window.closeAdminModal();});
+
+// ── 백업 ──
+window.doBackup=async function(){
+  const st=document.getElementById('adminStatus');
+  st.style.display='block';st.textContent='백업 준비 중...';
+  try{
+    const snap=await getDocs(collection(db,COL));
+    const data=snap.docs.map(d=>d.data());
+    const json=JSON.stringify({version:1,backupAt:new Date().toISOString(),count:data.length,records:data},null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='ringcore_backup_'+new Date().toISOString().slice(0,10)+'.json';
+    a.click();
+    st.textContent='✓ 백업 완료 ('+data.length+'개 항목, 사진 포함)';
+    toast('백업 파일이 저장되었습니다 ✓','success');
+  }catch(e){st.textContent='오류: '+e.message;toast('백업 실패: '+e.message,'error');}
 };
 
-// ── Firestore 연결 ──
-async function startFirestore() {
-  setSyncStatus('syncing', '연결 중...');
-  try {
-    // 기존 데이터 확인
-    const snap = await getDocs(collection(db, COL));
-    if (snap.empty) {
-      // 최초 실행: 기본 데이터 업로드
-      setSyncStatus('syncing', '기본 데이터 입력 중...');
-      for (const r of DEFAULT_DATA) {
-        await setDoc(doc(db, COL, r.id), r);
-      }
-      toast('기본 데이터 66개가 등록되었습니다 ✓', 'success');
+// ── 복구 ──
+window.doRestore=async function(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const st=document.getElementById('adminStatus');
+  st.style.display='block';st.textContent='파일 읽는 중...';
+  try{
+    const text=await file.text();
+    const parsed=JSON.parse(text);
+    const data=parsed.records||parsed;
+    if(!Array.isArray(data))throw new Error('올바른 백업 파일이 아닙니다');
+    if(!confirm(data.length+'개 항목을 복구합니다.\n기존 데이터는 모두 삭제됩니다. 계속하시겠습니까?'))return;
+    st.textContent='기존 데이터 삭제 중...';
+    const existing=await getDocs(collection(db,COL));
+    const batch1=writeBatch(db);
+    existing.docs.forEach(d=>batch1.delete(d.ref));
+    await batch1.commit();
+    st.textContent='데이터 복구 중 (0/'+data.length+')...';
+    const BATCH_SIZE=400;
+    for(let i=0;i<data.length;i+=BATCH_SIZE){
+      const chunk=data.slice(i,i+BATCH_SIZE);
+      const batch2=writeBatch(db);
+      chunk.forEach(r=>batch2.set(doc(db,COL,r.id),r));
+      await batch2.commit();
+      st.textContent='데이터 복구 중 ('+(Math.min(i+BATCH_SIZE,data.length))+'/'+data.length+')...';
     }
-    // 실시간 동기화 시작
-    unsubscribe = onSnapshot(collection(db, COL), (snapshot) => {
-      records = snapshot.docs.map(d => d.data());
-      records.sort((a,b) => {
-        const order = ['1kva','1.5kva','2kva','3kva','5kva','기타'];
-        const ai = order.indexOf(a.cap); const bi = order.indexOf(b.cap);
-        if (ai !== bi) return ai - bi;
+    st.textContent='✓ 복구 완료 ('+data.length+'개 항목)';
+    toast('데이터 복구 완료 ✓','success');
+    e.target.value='';
+  }catch(e2){st.textContent='오류: '+e2.message;toast('복구 실패: '+e2.message,'error');}
+};
+
+// ── Firestore ──
+async function startFirestore(){
+  setSyncStatus('syncing','연결 중...');
+  try{
+    const snap=await getDocs(collection(db,COL));
+    if(snap.empty){
+      setSyncStatus('syncing','기본 데이터 입력 중...');
+      const BATCH_SIZE=400;
+      for(let i=0;i<DEFAULT_DATA.length;i+=BATCH_SIZE){
+        const b=writeBatch(db);
+        DEFAULT_DATA.slice(i,i+BATCH_SIZE).forEach(r=>b.set(doc(db,COL,r.id),r));
+        await b.commit();
+      }
+      toast('기본 데이터 66개가 등록되었습니다 ✓','success');
+    }
+    unsubscribe=onSnapshot(collection(db,COL),snapshot=>{
+      records=snapshot.docs.map(d=>d.data());
+      records.sort((a,b)=>{
+        const o=['1kva','1.5kva','2kva','3kva','5kva','기타'];
+        const ai=o.indexOf(a.cap),bi=o.indexOf(b.cap);
+        if(ai!==bi)return ai-bi;
         return (a.id||'').localeCompare(b.id||'');
       });
-      renderList();
-      updateTable();
-      setSyncStatus('ok', '동기화됨');
-    }, (err) => {
-      setSyncStatus('error', '연결 오류');
-      toast('Firebase 연결 오류: ' + err.message, 'error');
-    });
-  } catch(e) {
-    setSyncStatus('error', '오류');
-    toast('오류: ' + e.message, 'error');
-  }
+      renderAll();
+      setSyncStatus('ok','동기화됨');
+    },err=>{setSyncStatus('error','연결 오류');toast('연결 오류: '+err.message,'error');});
+    // 로그인 후 전체목록 바로 표시
+    switchTab('list');
+  }catch(e){setSyncStatus('error','오류');toast('오류: '+e.message,'error');}
+}
+function setSyncStatus(state,text){
+  const dot=document.getElementById('syncDot');
+  dot.className='sync-dot'+(state==='syncing'?' syncing':state==='error'?' error':'');
+  document.getElementById('syncText').textContent=text;
 }
 
-function setSyncStatus(state, text) {
-  const dot = document.getElementById('syncDot');
-  const txt = document.getElementById('syncText');
-  dot.className = 'sync-dot' + (state === 'syncing' ? ' syncing' : state === 'error' ? ' error' : '');
-  txt.textContent = text;
-}
-
-// ── 필터 ──
-window.setFilter = function(el) {
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  filterCap = el.dataset.cap;
-  renderList();
+// ── 검색 (실시간, 즉시 반영) ──
+window.onSearch=function(val){
+  searchQ=val.trim();
+  document.getElementById('searchClear').style.display=searchQ?'block':'none';
+  renderAll();
+  // 검색어 있으면 전체목록 탭으로 이동
+  if(searchQ) switchTab('list');
+};
+window.clearSearch=function(){
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchClear').style.display='none';
+  searchQ='';
+  renderAll();
 };
 
-// ── 목록 렌더링 ──
-function renderList() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const list = document.getElementById('recordList');
-  let filtered = records.filter(r => {
-    const capMatch = filterCap === 'all' || r.cap === filterCap;
-    const textMatch = !q || (r.maker||'').toLowerCase().includes(q) || (r.model||'').toLowerCase().includes(q);
-    return capMatch && textMatch;
+// ── 필터 ──
+window.setFilter=function(el){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  filterCap=el.dataset.cap;
+  renderAll();
+};
+
+// ── 필터링 ──
+function getFiltered(){
+  return records.filter(r=>{
+    const capOk=filterCap==='all'||r.cap===filterCap;
+    const q=searchQ.toLowerCase();
+    const textOk=!q||(r.maker||'').toLowerCase().includes(q)||(r.model||'').toLowerCase().includes(q)||(r.note||'').toLowerCase().includes(q);
+    return capOk&&textOk;
   });
-  if (!filtered.length) {
-    list.innerHTML = `<div class="empty-state"><div class="es-icon">📭</div><p>검색 결과가 없습니다.</p></div>`;
+}
+
+// ── 렌더 전체 ──
+function renderAll(){
+  renderList();
+  updateTable();
+}
+
+// ── 사이드바 목록 ──
+function renderList(){
+  const filtered=getFiltered();
+  const list=document.getElementById('recordList');
+  if(!filtered.length){
+    list.innerHTML=`<div class="empty-state"><div class="es-icon">📭</div><p>${searchQ?'검색 결과 없음':'등록된 제품 없음'}</p></div>`;
     return;
   }
-  list.innerHTML = filtered.map(r => {
-    const area = calcAreaVal(r.od, r.id_, r.h);
-    const areaStr = area !== null ? area.toFixed(2) + ' cm²' : '';
-    const imgBadge = r.images && r.images.length ? `<div class="ri-img-badge">📷 ${r.images.length}</div>` : '';
+  list.innerHTML=filtered.map(r=>{
+    const area=calcAreaVal(r.od,r.id_,r.h);
+    const areaStr=area!==null?area.toFixed(2)+' cm²':'';
+    const imgBadge=r.images&&r.images.length?`<div class="ri-img-badge">📷 ${r.images.length}</div>`:'';
+    const maker=hlText(r.maker||'(미입력)',searchQ);
+    const model=hlText(r.model||'—',searchQ);
     return `<div class="record-item ${currentId===r.id?'active':''}" onclick="selectRecord('${r.id}')">
       ${imgBadge}
-      <div class="ri-top"><span class="ri-cap">${r.cap||'?'}</span><span class="ri-maker">${r.maker||'(미입력)'}</span></div>
-      <div class="ri-model">${r.model||'—'}</div>
+      <div class="ri-top"><span class="ri-cap">${r.cap||'?'}</span><span class="ri-maker">${maker}</span></div>
+      <div class="ri-model">${model}</div>
       <div class="ri-dims">${r.od||'?'}×${r.id_||'?'}×${r.h||'?'} mm${areaStr?' · '+areaStr:''}</div>
     </div>`;
   }).join('');
 }
 
-// ── 단면적 ──
-function calcAreaVal(od, id_, h) {
-  od = parseFloat(od); id_ = parseFloat(id_); h = parseFloat(h);
-  if (isNaN(od)||isNaN(id_)||isNaN(h)) return null;
-  return (od - id_) / 2 * h / 100;
+// ── 검색어 하이라이트 ──
+function hlText(text,q){
+  if(!q)return text;
+  const idx=text.toLowerCase().indexOf(q.toLowerCase());
+  if(idx<0)return text;
+  return text.slice(0,idx)+'<mark>'+text.slice(idx,idx+q.length)+'</mark>'+text.slice(idx+q.length);
 }
-window.calcArea = function() {
-  const od = document.getElementById('f_od').value;
-  const id_ = document.getElementById('f_id').value;
-  const h  = document.getElementById('f_h').value;
-  const val = calcAreaVal(od, id_, h);
-  const el = document.getElementById('calcValue');
-  const fl = document.getElementById('calcFormula');
-  if (val !== null) {
-    el.textContent = val.toFixed(2);
-    fl.textContent = `(${od} - ${id_}) ÷ 2 × ${h} ÷ 100 = ${val.toFixed(2)} cm²`;
-  } else {
-    el.textContent = '—';
-    fl.textContent = '외경, 내경, 높이를 입력하면 자동 계산됩니다';
+
+// ── 전체목록 테이블 ──
+function updateTable(){
+  const filtered=getFiltered();
+  const lbl=searchQ?`"${searchQ}" 검색결과`:(filterCap==='all'?'전체':`${filterCap.toUpperCase()}`);
+  document.getElementById('listLabel').textContent=lbl;
+  document.getElementById('totalCount').textContent=filtered.length;
+  const tbody=document.getElementById('tableBody');
+  if(!filtered.length){
+    tbody.innerHTML=`<tr><td colspan="14" style="color:var(--text3);padding:20px;text-align:center">${searchQ?'"'+searchQ+'" 검색결과 없음':'데이터 없음'}</td></tr>`;
+    return;
   }
-};
-
-// ── 새 폼 ──
-window.openNewForm = function() {
-  currentId = null; currentImages = [];
-  document.getElementById('welcomeScreen').style.display = 'none';
-  document.getElementById('formPanel').style.display = 'flex';
-  document.getElementById('panelTitle').textContent = '새 제품 등록';
-  document.getElementById('deleteBtn').style.display = 'none';
-  clearForm(); renderImages(); switchTab('detail');
-};
-function clearForm() {
-  ['f_cap','f_maker','f_model','f_note','f_od','f_id','f_h','f_wire','f_weight','f_eff','f_vppt']
-    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('calcValue').textContent = '—';
-  document.getElementById('calcFormula').textContent = '외경, 내경, 높이를 입력하면 자동 계산됩니다';
-}
-
-// ── 선택 ──
-window.selectRecord = function(id) {
-  currentId = id;
-  const r = records.find(x => x.id === id);
-  if (!r) return;
-  currentImages = (r.images||[]).map(i=>({...i}));
-  document.getElementById('welcomeScreen').style.display = 'none';
-  document.getElementById('formPanel').style.display = 'flex';
-  document.getElementById('panelTitle').textContent = `${r.maker||''} ${r.model||''}`.trim()||'제품 상세';
-  document.getElementById('deleteBtn').style.display = 'inline-flex';
-  document.getElementById('f_cap').value = r.cap||'';
-  document.getElementById('f_maker').value = r.maker||'';
-  document.getElementById('f_model').value = r.model||'';
-  document.getElementById('f_note').value = r.note||'';
-  document.getElementById('f_od').value = r.od||'';
-  document.getElementById('f_id').value = r.id_||'';
-  document.getElementById('f_h').value = r.h||'';
-  document.getElementById('f_wire').value = r.wire||'';
-  document.getElementById('f_weight').value = r.weight||'';
-  document.getElementById('f_eff').value = r.eff||'';
-  document.getElementById('f_vppt').value = r.vppt||'';
-  window.calcArea(); renderImages(); renderList(); switchTab('detail'); updateTable();
-};
-window.cancelEdit = function() {
-  currentId = null;
-  document.getElementById('formPanel').style.display = 'none';
-  document.getElementById('welcomeScreen').style.display = 'flex';
-  renderList();
-};
-
-// ── 저장 (Firestore) ──
-window.saveRecord = async function() {
-  setSyncStatus('syncing', '저장 중...');
-  const data = {
-    id: currentId || ('r_' + Date.now()),
-    cap:    document.getElementById('f_cap').value,
-    maker:  document.getElementById('f_maker').value.trim(),
-    model:  document.getElementById('f_model').value.trim(),
-    note:   document.getElementById('f_note').value.trim(),
-    od:     parseFloat(document.getElementById('f_od').value)||0,
-    id_:    parseFloat(document.getElementById('f_id').value)||0,
-    h:      parseFloat(document.getElementById('f_h').value)||0,
-    wire:   document.getElementById('f_wire').value,
-    weight: parseFloat(document.getElementById('f_weight').value)||0,
-    eff:    document.getElementById('f_eff').value,
-    vppt:   parseFloat(document.getElementById('f_vppt').value)||0,
-    images: currentImages,
-    updatedAt: new Date().toISOString()
-  };
-  try {
-    await setDoc(doc(db, COL, data.id), data);
-    currentId = data.id;
-    document.getElementById('deleteBtn').style.display = 'inline-flex';
-    document.getElementById('panelTitle').textContent = `${data.maker||''} ${data.model||''}`.trim()||'제품 상세';
-    toast('저장되었습니다 ✓', 'success');
-  } catch(e) {
-    toast('저장 실패: ' + e.message, 'error');
-    setSyncStatus('error', '저장 실패');
-  }
-};
-
-// ── 삭제 ──
-window.deleteRecord = async function() {
-  if (!currentId) return;
-  if (!confirm('이 제품을 삭제하시겠습니까?')) return;
-  try {
-    await deleteDoc(doc(db, COL, currentId));
-    currentId = null; currentImages = [];
-    window.cancelEdit();
-    toast('삭제되었습니다', '');
-  } catch(e) { toast('삭제 실패: ' + e.message, 'error'); }
-};
-
-// ── 이미지 ──
-function addImages(files) {
-  const promises = Array.from(files).map(f => new Promise(res => {
-    if (!f.type.startsWith('image/')) return res();
-    const reader = new FileReader();
-    reader.onload = e => { currentImages.push({dataUrl: e.target.result, name: f.name}); res(); };
-    reader.readAsDataURL(f);
-  }));
-  Promise.all(promises).then(() => renderImages());
-}
-window.onFileSelect = e => { addImages(e.target.files); e.target.value=''; };
-window.onDragOver  = e => { e.preventDefault(); document.getElementById('dropzone').classList.add('drag-over'); };
-window.onDragLeave = e => { document.getElementById('dropzone').classList.remove('drag-over'); };
-window.onDrop = e => { e.preventDefault(); document.getElementById('dropzone').classList.remove('drag-over'); addImages(e.dataTransfer.files); };
-document.addEventListener('paste', e => {
-  if (document.getElementById('formPanel').style.display==='none') return;
-  const items = e.clipboardData && e.clipboardData.items;
-  if (!items) return;
-  let found = false;
-  for (const item of items) {
-    if (item.type.startsWith('image/')) {
-      found = true;
-      const reader = new FileReader();
-      reader.onload = ev => { currentImages.push({dataUrl: ev.target.result, name:'clipboard_'+Date.now()+'.png'}); renderImages(); };
-      reader.readAsDataURL(item.getAsFile());
-    }
-  }
-  if (found) toast('클립보드 이미지 추가됨 📷', 'success');
-});
-function renderImages() {
-  const grid = document.getElementById('imgGrid');
-  if (!currentImages.length) { grid.innerHTML=''; return; }
-  grid.innerHTML = currentImages.map((img,i) => `
-    <div class="img-thumb" onclick="openLightbox(${i})">
-      <img src="${img.dataUrl}" alt="${img.name}">
-      <button class="it-del" onclick="delImg(event,${i})">✕</button>
-      <div class="it-num">${i+1}</div>
-    </div>`).join('');
-}
-window.delImg = (e,idx) => { e.stopPropagation(); currentImages.splice(idx,1); renderImages(); };
-
-// ── 라이트박스 ──
-window.openLightbox = idx => { lbImages = currentImages; lbIdx = idx; showLb(); };
-function showLb() {
-  document.getElementById('lightbox').classList.add('open');
-  document.getElementById('lbImg').src = lbImages[lbIdx].dataUrl;
-  document.getElementById('lbCounter').textContent = `${lbIdx+1} / ${lbImages.length}`;
-}
-window.closeLightbox = e => {
-  if (e && e.target !== document.getElementById('lightbox')) return;
-  document.getElementById('lightbox').classList.remove('open');
-};
-window.lbPrev = e => { e.stopPropagation(); lbIdx=(lbIdx-1+lbImages.length)%lbImages.length; showLb(); };
-window.lbNext = e => { e.stopPropagation(); lbIdx=(lbIdx+1)%lbImages.length; showLb(); };
-document.addEventListener('keydown', e => {
-  const lb = document.getElementById('lightbox');
-  if (!lb.classList.contains('open')) return;
-  if (e.key==='Escape') lb.classList.remove('open');
-  if (e.key==='ArrowLeft') { lbIdx=(lbIdx-1+lbImages.length)%lbImages.length; showLb(); }
-  if (e.key==='ArrowRight') { lbIdx=(lbIdx+1)%lbImages.length; showLb(); }
-});
-
-// ── 탭 ──
-window.switchTab = function(tab) {
-  document.getElementById('tabDetail').classList.toggle('active', tab==='detail');
-  document.getElementById('tabTable').classList.toggle('active', tab==='table');
-  document.getElementById('tabContentDetail').style.display = tab==='detail'?'block':'none';
-  document.getElementById('tabContentTable').style.display = tab==='table'?'block':'none';
-  if (tab==='table') updateTable();
-};
-
-// ── 전체 테이블 ──
-function updateTable() {
-  document.getElementById('totalCount').textContent = records.length;
-  const tbody = document.getElementById('tableBody');
-  if (!records.length) { tbody.innerHTML='<tr><td colspan="14" style="color:var(--text3);padding:24px">데이터 없음</td></tr>'; return; }
-  tbody.innerHTML = records.map((r,i) => {
-    const area = calcAreaVal(r.od, r.id_, r.h);
-    return `<tr onclick="selectRecord('${r.id}')" style="cursor:pointer">
+  tbody.innerHTML=filtered.map((r,i)=>{
+    const area=calcAreaVal(r.od,r.id_,r.h);
+    const maker=hlText(r.maker||'—',searchQ);
+    const model=hlText(r.model||'—',searchQ);
+    return `<tr onclick="selectRecord('${r.id}')" class="${currentId===r.id?'row-active':''}">
       <td class="td-mono">${i+1}</td>
       <td class="td-cap">${r.cap||'—'}</td>
-      <td style="text-align:left">${r.maker||'—'}</td>
-      <td class="td-mono">${r.model||'—'}</td>
+      <td style="text-align:left">${maker}</td>
+      <td class="td-mono">${model}</td>
       <td class="td-mono">${r.od||'—'}</td>
       <td class="td-mono">${r.id_||'—'}</td>
       <td class="td-mono">${r.h||'—'}</td>
@@ -815,20 +803,305 @@ function updateTable() {
   }).join('');
 }
 
-// ── 인쇄 ──
-window.printRecord = () => { window.saveRecord().then(()=>setTimeout(()=>window.print(),300)); };
-window.printTable  = () => { switchTab('table'); setTimeout(()=>window.print(),200); };
+// ── 탭 ──
+window.switchTab=function(tab){
+  document.getElementById('tabList').classList.toggle('active',tab==='list');
+  document.getElementById('tabDetail').classList.toggle('active',tab==='detail');
+  document.getElementById('tabContentList').style.display=tab==='list'?'flex':'none';
+  document.getElementById('tabContentDetail').style.display=tab==='detail'?'flex':'none';
+};
 
-// ── 토스트 ──
-function toast(msg, type) {
-  const c = document.getElementById('toastContainer');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`; el.textContent = msg;
-  c.appendChild(el); setTimeout(()=>el.remove(), 3000);
+// ── 단면적 ──
+function calcAreaVal(od,id_,h){
+  od=parseFloat(od);id_=parseFloat(id_);h=parseFloat(h);
+  if(isNaN(od)||isNaN(id_)||isNaN(h))return null;
+  return(od-id_)/2*h/100;
+}
+window.calcArea=function(){
+  const od=document.getElementById('f_od').value;
+  const id_=document.getElementById('f_id').value;
+  const h=document.getElementById('f_h').value;
+  const val=calcAreaVal(od,id_,h);
+  if(val!==null){
+    document.getElementById('calcValue').textContent=val.toFixed(2);
+    document.getElementById('calcFormula').textContent=`(${od} - ${id_}) ÷ 2 × ${h} ÷ 100 = ${val.toFixed(2)} cm²`;
+  } else {
+    document.getElementById('calcValue').textContent='—';
+    document.getElementById('calcFormula').textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
+  }
+};
+
+// ── 2차권선 계산 ──
+window.calcSecondary=function(){
+  const area=parseFloat(document.getElementById('s_area').value)||0;
+  const turns=parseFloat(document.getElementById('s_turns').value)||0;
+  const v2=parseFloat(document.getElementById('s_v2').value)||0;
+  const margin=parseFloat(document.getElementById('s_margin').value)||20;
+  const od=parseFloat(document.getElementById('f_od').value)||0;
+  const id_=parseFloat(document.getElementById('f_id').value)||0;
+  const cab_area=parseFloat(document.getElementById('s_cab_area').value)||0;
+  const cab_len=parseFloat(document.getElementById('s_cab_len').value)||0;
+  const term_r=parseFloat(document.getElementById('s_term_r').value)||0;
+  const term_n=parseFloat(document.getElementById('s_term_n').value)||2;
+
+  // 턴당전압
+  if(turns>0&&v2>0){
+    const vpt=(v2/turns).toFixed(3);
+    document.getElementById('s_vpt').value=vpt;
+    document.getElementById('s_vpt_hint').textContent=`${v2} ÷ ${turns} = ${vpt} V/턴`;
+  } else { document.getElementById('s_vpt').value=''; }
+
+  // 총길이
+  let wlen=parseFloat(document.getElementById('s_wlen').value)||0;
+  let wlenAuto=0;
+  if(od>0&&id_>0&&turns>0){
+    const base=Math.PI*(od+id_)/2/1000*turns;
+    wlenAuto=base*(1+margin/100);
+    document.getElementById('s_wlen_hint').textContent=
+      `π×(${od}+${id_})/2/1000×${turns}턴 = ${base.toFixed(2)}m × (1+${margin}%) = 약 ${wlenAuto.toFixed(2)}m`;
+    if(!document.getElementById('s_wlen').matches(':focus')&&wlen===0){
+      document.getElementById('s_wlen').value=wlenAuto.toFixed(2);
+      wlen=wlenAuto;
+    }
+  }
+
+  // 권선 DC저항
+  let wire_r=0;
+  const wlenFinal=wlen||wlenAuto;
+  if(wlenFinal>0&&area>0){
+    wire_r=wlenFinal/(56*area)*1000;
+    document.getElementById('s_wire_r').value=wire_r.toFixed(3);
+    document.getElementById('s_wire_r_hint').textContent=`${wlenFinal.toFixed(2)}÷(56×${area}) = 약 ${wire_r.toFixed(3)}mΩ`;
+  } else { document.getElementById('s_wire_r').value=''; }
+
+  // 케이블 DC저항
+  let cab_r=0;
+  if(cab_len>0&&cab_area>0){
+    cab_r=cab_len/(56*cab_area)*1000;
+    document.getElementById('s_cab_r').value=cab_r.toFixed(3);
+    document.getElementById('s_cab_r_hint').textContent=`${cab_len}÷(56×${cab_area}) = 약 ${cab_r.toFixed(3)}mΩ`;
+  } else { document.getElementById('s_cab_r').value=''; }
+
+  // 단자 총저항
+  let term_total=0;
+  if(term_r>0){
+    term_total=term_r*term_n;
+    document.getElementById('s_term_total').value=term_total.toFixed(3);
+    document.getElementById('s_term_hint').textContent=`${term_r}×${term_n} = ${term_total.toFixed(3)}mΩ`;
+  } else { document.getElementById('s_term_total').value=''; }
+
+  // 이론 전류
+  const r_d=(wire_r+cab_r)/1000;
+  const r_t=(wire_r+cab_r+term_total)/1000;
+  function setRC(id,val){document.getElementById(id).innerHTML=val!==null?val+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">'+(/ohm/i.test(id)?'mΩ':'kA')+'</span>':'—';}
+
+  if(v2>0&&r_d>0){
+    const i_d_rms=v2/r_d/1000;
+    const i_d_peak=i_d_rms*Math.SQRT2;
+    const i_t_rms=r_t>0?v2/r_t/1000:0;
+    const i_t_peak=i_t_rms*Math.SQRT2;
+
+    document.getElementById('r_d_peak').innerHTML=i_d_peak.toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span>';
+    document.getElementById('r_d_rms').innerHTML=i_d_rms.toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span>';
+    document.getElementById('r_d_ohm').innerHTML=(r_d*1000).toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">mΩ</span>';
+    document.getElementById('r_t_peak').innerHTML=i_t_peak.toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span>';
+    document.getElementById('r_t_rms').innerHTML=i_t_rms.toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span>';
+    document.getElementById('r_t_ohm').innerHTML=(r_t*1000).toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">mΩ</span>';
+
+    const md_peak=parseFloat(document.getElementById('s_md_peak').value)||0;
+    const md_rms=parseFloat(document.getElementById('s_md_rms').value)||0;
+    const mt_peak=parseFloat(document.getElementById('s_mt_peak').value)||0;
+    const mt_rms=parseFloat(document.getElementById('s_mt_rms').value)||0;
+
+    document.getElementById('r_d_peak_d').textContent=md_peak>0?'실측 대비 '+((i_d_peak-md_peak)/md_peak*100).toFixed(1)+'%':'실측값 입력시 표시';
+    document.getElementById('r_d_rms_d').textContent=md_rms>0?'실측 대비 '+((i_d_rms-md_rms)/md_rms*100).toFixed(1)+'%':'실측값 입력시 표시';
+    document.getElementById('r_t_peak_d').textContent=mt_peak>0?'실측 대비 '+((i_t_peak-mt_peak)/mt_peak*100).toFixed(1)+'%':'실측값 입력시 표시';
+    document.getElementById('r_t_rms_d').textContent=mt_rms>0?'실측 대비 '+((i_t_rms-mt_rms)/mt_rms*100).toFixed(1)+'%':'실측값 입력시 표시';
+    document.getElementById('loss_d').textContent=md_rms>0?((i_d_rms-md_rms)/i_d_rms*100).toFixed(1)+'%':'—';
+    document.getElementById('loss_t').textContent=term_total>0?((i_d_rms-i_t_rms)/i_d_rms*100).toFixed(1)+'%':'—';
+    document.getElementById('loss_vs').textContent=(md_rms>0&&mt_rms>0)?((md_rms-mt_rms)/md_rms*100).toFixed(1)+'%':'—';
+  } else {
+    ['r_d_peak','r_d_rms','r_d_ohm','r_t_peak','r_t_rms','r_t_ohm'].forEach(id=>{
+      document.getElementById(id).innerHTML='—';
+    });
+    ['r_d_peak_d','r_d_rms_d','r_t_peak_d','r_t_rms_d'].forEach(id=>{
+      document.getElementById(id).textContent='실측값 입력시 표시';
+    });
+    ['loss_d','loss_t','loss_vs'].forEach(id=>document.getElementById(id).textContent='—');
+  }
+};
+
+// ── 새 폼 ──
+window.openNewForm=function(){
+  currentId=null;currentImages=[];
+  document.getElementById('panelTitle').textContent='새 제품 등록';
+  document.getElementById('deleteBtn').style.display='none';
+  clearForm();renderImages();
+  switchTab('detail');
+};
+function clearForm(){
+  ['f_cap','f_maker','f_model','f_note','f_od','f_id','f_h','f_wire','f_weight','f_eff','f_vppt',
+   's_area','s_turns','s_v2','s_margin','s_wlen','s_wire_r','s_cab_area','s_cab_len','s_cab_r',
+   's_term_r','s_term_n','s_term_total','s_md_peak','s_md_rms','s_mt_peak','s_mt_rms']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='s_margin'?'20':id==='s_term_n'?'2':''});
+  document.getElementById('calcValue').textContent='—';
+  document.getElementById('calcFormula').textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
 }
 
-// 엔터키 로그인
-document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') window.doLogin(); });
+// ── 제품 선택 ──
+window.selectRecord=function(id){
+  currentId=id;
+  const r=records.find(x=>x.id===id);
+  if(!r)return;
+  currentImages=(r.images||[]).map(i=>({...i}));
+  document.getElementById('panelTitle').textContent=`${r.maker||''} ${r.model||''}`.trim()||'제품 상세';
+  document.getElementById('deleteBtn').style.display='inline-flex';
+  const fields={f_cap:'cap',f_maker:'maker',f_model:'model',f_note:'note',f_od:'od',f_id:'id_',f_h:'h',f_wire:'wire',f_weight:'weight',f_eff:'eff',f_vppt:'vppt'};
+  Object.entries(fields).forEach(([elId,key])=>{document.getElementById(elId).value=r[key]||'';});
+  // 2차권선 데이터
+  const s2={s_area:'s_area',s_turns:'s_turns',s_v2:'s_v2',s_margin:'s_margin',s_wlen:'s_wlen',
+            s_cab_area:'s_cab_area',s_cab_len:'s_cab_len',s_term_r:'s_term_r',s_term_n:'s_term_n',
+            s_md_peak:'s_md_peak',s_md_rms:'s_md_rms',s_mt_peak:'s_mt_peak',s_mt_rms:'s_mt_rms'};
+  const sd=r.secondary||{};
+  Object.keys(s2).forEach(k=>{document.getElementById(k).value=sd[k]||'';});
+  if(!sd.s_margin)document.getElementById('s_margin').value='20';
+  if(!sd.s_term_n)document.getElementById('s_term_n').value='2';
+  window.calcArea();window.calcSecondary();
+  renderImages();renderAll();
+  switchTab('detail');
+};
+window.cancelEdit=function(){
+  currentId=null;
+  switchTab('list');
+  renderAll();
+};
+
+// ── 저장 ──
+window.saveRecord=async function(){
+  setSyncStatus('syncing','저장 중...');
+  const secondary={
+    s_area:document.getElementById('s_area').value,
+    s_turns:document.getElementById('s_turns').value,
+    s_v2:document.getElementById('s_v2').value,
+    s_margin:document.getElementById('s_margin').value,
+    s_wlen:document.getElementById('s_wlen').value,
+    s_cab_area:document.getElementById('s_cab_area').value,
+    s_cab_len:document.getElementById('s_cab_len').value,
+    s_term_r:document.getElementById('s_term_r').value,
+    s_term_n:document.getElementById('s_term_n').value,
+    s_md_peak:document.getElementById('s_md_peak').value,
+    s_md_rms:document.getElementById('s_md_rms').value,
+    s_mt_peak:document.getElementById('s_mt_peak').value,
+    s_mt_rms:document.getElementById('s_mt_rms').value
+  };
+  const data={
+    id:currentId||('r_'+Date.now()),
+    cap:document.getElementById('f_cap').value,
+    maker:document.getElementById('f_maker').value.trim(),
+    model:document.getElementById('f_model').value.trim(),
+    note:document.getElementById('f_note').value.trim(),
+    od:parseFloat(document.getElementById('f_od').value)||0,
+    id_:parseFloat(document.getElementById('f_id').value)||0,
+    h:parseFloat(document.getElementById('f_h').value)||0,
+    wire:document.getElementById('f_wire').value,
+    weight:parseFloat(document.getElementById('f_weight').value)||0,
+    eff:document.getElementById('f_eff').value,
+    vppt:parseFloat(document.getElementById('f_vppt').value)||0,
+    secondary,images:currentImages,
+    updatedAt:new Date().toISOString()
+  };
+  try{
+    await setDoc(doc(db,COL,data.id),data);
+    currentId=data.id;
+    document.getElementById('deleteBtn').style.display='inline-flex';
+    document.getElementById('panelTitle').textContent=`${data.maker||''} ${data.model||''}`.trim()||'제품 상세';
+    toast('저장되었습니다 ✓','success');
+  }catch(e){toast('저장 실패: '+e.message,'error');setSyncStatus('error','저장 실패');}
+};
+
+// ── 삭제 ──
+window.deleteRecord=async function(){
+  if(!currentId)return;
+  if(!confirm('이 제품을 삭제하시겠습니까?'))return;
+  try{
+    await deleteDoc(doc(db,COL,currentId));
+    currentId=null;currentImages=[];
+    window.cancelEdit();
+    toast('삭제되었습니다','');
+  }catch(e){toast('삭제 실패: '+e.message,'error');}
+};
+
+// ── 이미지 ──
+function addImages(files){
+  const promises=Array.from(files).map(f=>new Promise(res=>{
+    if(!f.type.startsWith('image/'))return res();
+    const reader=new FileReader();
+    reader.onload=e=>{currentImages.push({dataUrl:e.target.result,name:f.name});res();};
+    reader.readAsDataURL(f);
+  }));
+  Promise.all(promises).then(()=>renderImages());
+}
+window.onFileSelect=e=>{addImages(e.target.files);e.target.value='';};
+window.onDragOver=e=>{e.preventDefault();document.getElementById('dropzone').classList.add('drag-over');};
+window.onDragLeave=e=>{document.getElementById('dropzone').classList.remove('drag-over');};
+window.onDrop=e=>{e.preventDefault();document.getElementById('dropzone').classList.remove('drag-over');addImages(e.dataTransfer.files);};
+document.addEventListener('paste',e=>{
+  if(document.getElementById('tabContentDetail').style.display==='none')return;
+  const items=e.clipboardData&&e.clipboardData.items;
+  if(!items)return;
+  let found=false;
+  for(const item of items){
+    if(item.type.startsWith('image/')){
+      found=true;
+      const reader=new FileReader();
+      reader.onload=ev=>{currentImages.push({dataUrl:ev.target.result,name:'clipboard_'+Date.now()+'.png'});renderImages();};
+      reader.readAsDataURL(item.getAsFile());
+    }
+  }
+  if(found)toast('클립보드 이미지 추가됨 📷','success');
+});
+function renderImages(){
+  const grid=document.getElementById('imgGrid');
+  if(!currentImages.length){grid.innerHTML='';return;}
+  grid.innerHTML=currentImages.map((img,i)=>`
+    <div class="img-thumb" onclick="openLightbox(${i})">
+      <img src="${img.dataUrl}" alt="${img.name}">
+      <button class="it-del" onclick="delImg(event,${i})">✕</button>
+      <div class="it-num">${i+1}</div>
+    </div>`).join('');
+}
+window.delImg=(e,idx)=>{e.stopPropagation();currentImages.splice(idx,1);renderImages();};
+
+// ── 라이트박스 ──
+window.openLightbox=idx=>{lbImages=currentImages;lbIdx=idx;showLb();};
+function showLb(){
+  document.getElementById('lightbox').classList.add('open');
+  document.getElementById('lbImg').src=lbImages[lbIdx].dataUrl;
+  document.getElementById('lbCounter').textContent=`${lbIdx+1} / ${lbImages.length}`;
+}
+window.closeLightbox=()=>document.getElementById('lightbox').classList.remove('open');
+window.closeLightboxBg=e=>{if(e.target===document.getElementById('lightbox'))window.closeLightbox();};
+window.lbPrev=e=>{e.stopPropagation();lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;showLb();};
+window.lbNext=e=>{e.stopPropagation();lbIdx=(lbIdx+1)%lbImages.length;showLb();};
+document.addEventListener('keydown',e=>{
+  const lb=document.getElementById('lightbox');
+  if(!lb.classList.contains('open'))return;
+  if(e.key==='Escape')window.closeLightbox();
+  if(e.key==='ArrowLeft'){lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;showLb();}
+  if(e.key==='ArrowRight'){lbIdx=(lbIdx+1)%lbImages.length;showLb();}
+});
+
+// ── 인쇄 ──
+window.printRecord=()=>{window.saveRecord().then(()=>setTimeout(()=>window.print(),300));};
+window.printTable=()=>{switchTab('list');setTimeout(()=>window.print(),200);};
+
+// ── 토스트 ──
+function toast(msg,type){
+  const c=document.getElementById('toastContainer');
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;el.textContent=msg;
+  c.appendChild(el);setTimeout(()=>el.remove(),3000);
+}
 </script>
 </body>
 </html>
