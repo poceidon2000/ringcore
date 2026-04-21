@@ -129,8 +129,20 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .form-group input,.form-group select{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:inherit;font-size:13px;transition:border-color .15s;outline:none}
 .form-group input:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,156,249,.1)}
 .form-group input.auto-calc{background:rgba(56,217,169,.05);border-color:rgba(56,217,169,.25);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-weight:600}
-.section-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.section-title{font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+/* URL 링크 */
+.url-group{display:flex;flex-direction:column;gap:4px}
+.url-group label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.url-input-row{display:flex;gap:6px;align-items:center}
+.url-input-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:inherit;font-size:12px;outline:none;transition:border-color .15s;min-width:0}
+.url-input-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,156,249,.1)}
+.url-btn{flex-shrink:0;height:34px;padding:0 10px;border:none;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.url-btn-open{background:var(--accent);color:#fff}
+.url-btn-open:hover{background:#3d8ae0}
+.url-btn-copy{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.url-btn-copy:hover{background:var(--surface3);color:var(--text)}
+.url-hint{font-size:10px;color:var(--text3);margin-top:2px}
 .calc-display{background:linear-gradient(135deg,rgba(56,217,169,.08),rgba(56,217,169,.03));border:1px solid rgba(56,217,169,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:20px}
 .cd-label{font-size:11px;color:var(--text3);margin-bottom:3px}
 .cd-value{font-size:26px;font-weight:700;color:var(--accent2);font-family:'JetBrains Mono',monospace}
@@ -355,6 +367,26 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
             <div class="form-group"><label>모델명</label><input type="text" id="f_model" placeholder="예) HY-1000U"></div>
             <div class="form-group"><label>비고</label><input type="text" id="f_note" placeholder="예) 수지형, 승압"></div>
           </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+            <div class="url-group">
+              <label>정보 링크 1</label>
+              <div class="url-input-row">
+                <input type="url" id="f_url1" placeholder="https://...">
+                <button class="url-btn url-btn-open" onclick="openUrl('f_url1')" title="열기">↗</button>
+                <button class="url-btn url-btn-copy" onclick="copyUrl('f_url1')" title="복사">📋</button>
+              </div>
+              <div class="url-hint">URL을 붙여넣고 ↗ 버튼으로 열기, 📋 버튼으로 복사</div>
+            </div>
+            <div class="url-group">
+              <label>정보 링크 2</label>
+              <div class="url-input-row">
+                <input type="url" id="f_url2" placeholder="https://...">
+                <button class="url-btn url-btn-open" onclick="openUrl('f_url2')" title="열기">↗</button>
+                <button class="url-btn url-btn-copy" onclick="copyUrl('f_url2')" title="복사">📋</button>
+              </div>
+              <div class="url-hint">URL을 붙여넣고 ↗ 버튼으로 열기, 📋 버튼으로 복사</div>
+            </div>
+          </div>
 
           <div class="section-title">코어 치수</div>
           <div class="form-grid">
@@ -374,9 +406,12 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 
           <div class="section-title">전기 특성</div>
           <div class="form-grid">
+            <div class="form-group"><label>완제품 무게 (kg)</label><input type="number" id="f_weight_total" placeholder="예) 8.5" step="0.01"></div>
             <div class="form-group"><label>링코어 무게 (kg)</label><input type="number" id="f_weight" placeholder="예) 5.0" step="0.01"></div>
+            <div class="form-group"><label>차단기 용량 (A)</label><input type="text" id="f_breaker" placeholder="예) 30A 또는 미표기"></div>
             <div class="form-group"><label>효율 (%)</label><input type="text" id="f_eff" placeholder="예) 97.1 또는 미표기"></div>
-            <div class="form-group"><label>턴당 전압 (V)</label><input type="number" id="f_vppt" placeholder="예) 0.72" step="0.01"></div>
+            <div class="form-group"><label>턴당 전압 (V) — 기준</label><input type="number" id="f_vppt" placeholder="예) 0.72" step="0.01"></div>
+            <div class="form-group"><label>턴당 전압 (V) — 1차권선후</label><input type="number" id="f_vppt2" placeholder="예) 0.70" step="0.01"></div>
           </div>
 
           <!-- 2차권선 계산 -->
@@ -391,16 +426,21 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
               <div class="form-group"><label>여유율 (%)</label><input type="number" id="s_margin" placeholder="예) 20" value="20" oninput="calcSecondary()"><span class="hint">인출·연결 여유</span></div>
             </div>
             <div class="g3" style="margin-top:10px">
-              <div class="form-group"><label>2차권선 총길이 (m)</label><input type="number" class="auto-calc" id="s_wlen" placeholder="자동계산 (직접 입력 가능)" oninput="calcSecondary()"><span class="hint" id="s_wlen_hint">예시: π×(130+50)/2/1000×10×(1+20%) = 약 3.40m</span></div>
+              <div class="form-group"><label>2차권선 길이 (m)</label><input type="number" class="auto-calc" id="s_wlen" placeholder="자동계산 (직접 입력 가능)" oninput="calcSecondary()"><span class="hint" id="s_wlen_hint">예시: π×(130+50)/2/1000×10×(1+20%) = 약 3.40m</span></div>
               <div class="form-group"><label>권선 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_wire_r" placeholder="자동계산" readonly><span class="hint" id="s_wire_r_hint">예시: 3.40÷(56×50) = 약 1.21mΩ</span></div>
               <div></div>
             </div>
 
-            <div class="sec2-sub" style="margin-top:14px">스폿봉까지 케이블 정보</div>
+            <div class="sec2-sub" style="margin-top:14px">링코어에서 스폿봉까지 케이블 정보</div>
             <div class="g3">
               <div class="form-group"><label>케이블 단면적 (mm²)</label><input type="number" id="s_cab_area" placeholder="예) 50" oninput="calcSecondary()"><span class="hint">스폿봉까지 케이블</span></div>
-              <div class="form-group"><label>링코어→스폿봉 거리 (m)</label><input type="number" id="s_cab_len" placeholder="예) 0.8" oninput="calcSecondary()"><span class="hint">직결/단자 공통 적용</span></div>
-              <div class="form-group"><label>케이블 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_cab_r" placeholder="자동계산" readonly><span class="hint" id="s_cab_r_hint">예시: 0.8÷(56×50) = 약 0.29mΩ</span></div>
+              <div class="form-group"><label>링코어→스폿봉 거리 (m)</label><input type="number" id="s_cab_len" placeholder="예) 0.8" oninput="calcSecondary()"><span class="hint">편도 거리 (×2 자동 계산)</span></div>
+              <div class="form-group"><label>케이블 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_cab_r" placeholder="자동계산" readonly><span class="hint" id="s_cab_r_hint">예시: (0.8×2)÷(56×50) = 약 0.57mΩ</span></div>
+            </div>
+            <div class="g3" style="margin-top:10px">
+              <div class="form-group"><label>케이블 총길이 (m) — 양쪽</label><input type="number" class="auto-calc" id="s_cab_total_len" placeholder="자동계산: 거리×2" readonly><span class="hint" id="s_cab_total_hint">예시: 0.8×2 = 1.6m</span></div>
+              <div class="form-group"><label>2차권선~스폿봉 전체 길이 (m)</label><input type="number" class="auto-calc" id="s_total_len" placeholder="자동계산: 권선+케이블" readonly><span class="hint" id="s_total_hint">예시: 3.40 + 1.6 = 5.0m</span></div>
+              <div></div>
             </div>
 
             <div class="sec2-sub" style="margin-top:14px">대전류단자 (미사용시 0 입력)</div>
@@ -874,13 +914,29 @@ window.calcSecondary=function(){
     document.getElementById('s_wire_r_hint').textContent=`${wlenFinal.toFixed(2)}÷(56×${area}) = 약 ${wire_r.toFixed(3)}mΩ`;
   } else { document.getElementById('s_wire_r').value=''; }
 
-  // 케이블 DC저항
+  // 케이블 DC저항 (양쪽 ×2)
   let cab_r=0;
+  const cab_total_len=cab_len*2;
   if(cab_len>0&&cab_area>0){
-    cab_r=cab_len/(56*cab_area)*1000;
+    cab_r=cab_total_len/(56*cab_area)*1000;
     document.getElementById('s_cab_r').value=cab_r.toFixed(3);
-    document.getElementById('s_cab_r_hint').textContent=`${cab_len}÷(56×${cab_area}) = 약 ${cab_r.toFixed(3)}mΩ`;
-  } else { document.getElementById('s_cab_r').value=''; }
+    document.getElementById('s_cab_r_hint').textContent=`(${cab_len}×2)÷(56×${cab_area}) = 약 ${cab_r.toFixed(3)}mΩ`;
+    document.getElementById('s_cab_total_len').value=cab_total_len.toFixed(2);
+    document.getElementById('s_cab_total_hint').textContent=`${cab_len} × 2 = ${cab_total_len.toFixed(2)}m (양쪽)`;
+  } else {
+    document.getElementById('s_cab_r').value='';
+    document.getElementById('s_cab_total_len').value='';
+    document.getElementById('s_cab_total_hint').textContent='예시: 0.8×2 = 1.6m';
+  }
+  // 전체 길이 (권선 + 케이블 양쪽)
+  const wlenVal=parseFloat(document.getElementById('s_wlen').value)||0;
+  if(wlenVal>0||cab_total_len>0){
+    const total=wlenVal+cab_total_len;
+    document.getElementById('s_total_len').value=total.toFixed(2);
+    document.getElementById('s_total_hint').textContent=`${wlenVal.toFixed(2)} + ${cab_total_len.toFixed(2)} = ${total.toFixed(2)}m`;
+  } else {
+    document.getElementById('s_total_len').value='';
+  }
 
   // 단자 총저항
   let term_total=0;
@@ -940,9 +996,10 @@ window.openNewForm=function(){
   switchTab('detail');
 };
 function clearForm(){
-  ['f_cap','f_maker','f_model','f_note','f_od','f_id','f_h','f_wire','f_weight','f_eff','f_vppt',
+  ['f_cap','f_maker','f_model','f_note','f_url1','f_url2',
+   'f_od','f_id','f_h','f_wire','f_weight_total','f_weight','f_breaker','f_eff','f_vppt','f_vppt2',
    's_area','s_turns','s_v2','s_margin','s_wlen','s_wire_r','s_cab_area','s_cab_len','s_cab_r',
-   's_term_r','s_term_n','s_term_total','s_md_peak','s_md_rms','s_mt_peak','s_mt_rms']
+   's_cab_total_len','s_total_len','s_term_r','s_term_n','s_term_total','s_md_peak','s_md_rms','s_mt_peak','s_mt_rms']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='s_margin'?'20':id==='s_term_n'?'2':''});
   document.getElementById('calcValue').textContent='—';
   document.getElementById('calcFormula').textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
@@ -956,7 +1013,11 @@ window.selectRecord=function(id){
   currentImages=(r.images||[]).map(i=>({...i}));
   document.getElementById('panelTitle').textContent=`${r.maker||''} ${r.model||''}`.trim()||'제품 상세';
   document.getElementById('deleteBtn').style.display='inline-flex';
-  const fields={f_cap:'cap',f_maker:'maker',f_model:'model',f_note:'note',f_od:'od',f_id:'id_',f_h:'h',f_wire:'wire',f_weight:'weight',f_eff:'eff',f_vppt:'vppt'};
+  const fields={f_cap:'cap',f_maker:'maker',f_model:'model',f_note:'note',
+    f_url1:'url1',f_url2:'url2',
+    f_od:'od',f_id:'id_',f_h:'h',f_wire:'wire',
+    f_weight_total:'weight_total',f_weight:'weight',f_breaker:'breaker',
+    f_eff:'eff',f_vppt:'vppt',f_vppt2:'vppt2'};
   Object.entries(fields).forEach(([elId,key])=>{document.getElementById(elId).value=r[key]||'';});
   // 2차권선 데이터
   const s2={s_area:'s_area',s_turns:'s_turns',s_v2:'s_v2',s_margin:'s_margin',s_wlen:'s_wlen',
@@ -976,9 +1037,36 @@ window.cancelEdit=function(){
   renderAll();
 };
 
+// ── 이미지 압축 ──
+function compressImage(dataUrl, maxW=800, maxH=800, quality=0.7){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload=()=>{
+      let w=img.width, h=img.height;
+      if(w>maxW||h>maxH){
+        const r=Math.min(maxW/w, maxH/h);
+        w=Math.round(w*r); h=Math.round(h*r);
+      }
+      const c=document.createElement('canvas');
+      c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      res({dataUrl:c.toDataURL('image/jpeg',quality), name:''});
+    };
+    img.src=dataUrl;
+  });
+}
+
 // ── 저장 ──
 window.saveRecord=async function(){
   setSyncStatus('syncing','저장 중...');
+  // 이미지 압축
+  const compImages=[];
+  for(const img of currentImages){
+    try{
+      const c=await compressImage(img.dataUrl);
+      compImages.push({dataUrl:c.dataUrl, name:img.name});
+    }catch(e){ compImages.push(img); }
+  }
   const secondary={
     s_area:document.getElementById('s_area').value,
     s_turns:document.getElementById('s_turns').value,
@@ -1000,22 +1088,36 @@ window.saveRecord=async function(){
     maker:document.getElementById('f_maker').value.trim(),
     model:document.getElementById('f_model').value.trim(),
     note:document.getElementById('f_note').value.trim(),
+    url1:document.getElementById('f_url1').value.trim(),
+    url2:document.getElementById('f_url2').value.trim(),
     od:parseFloat(document.getElementById('f_od').value)||0,
     id_:parseFloat(document.getElementById('f_id').value)||0,
     h:parseFloat(document.getElementById('f_h').value)||0,
     wire:document.getElementById('f_wire').value,
+    weight_total:parseFloat(document.getElementById('f_weight_total').value)||0,
     weight:parseFloat(document.getElementById('f_weight').value)||0,
+    breaker:document.getElementById('f_breaker').value,
     eff:document.getElementById('f_eff').value,
     vppt:parseFloat(document.getElementById('f_vppt').value)||0,
-    secondary,images:currentImages,
+    vppt2:parseFloat(document.getElementById('f_vppt2').value)||0,
+    secondary, images:compImages,
     updatedAt:new Date().toISOString()
   };
+  // 용량 체크
+  const jsonStr=JSON.stringify(data);
+  const bytes=new Blob([jsonStr]).size;
+  if(bytes>900000){
+    toast('사진 용량 초과! 사진을 줄여주세요 (현재 '+Math.round(bytes/1024)+'KB)','error');
+    setSyncStatus('ok','동기화됨');
+    return;
+  }
   try{
     await setDoc(doc(db,COL,data.id),data);
     currentId=data.id;
+    currentImages=compImages;
     document.getElementById('deleteBtn').style.display='inline-flex';
     document.getElementById('panelTitle').textContent=`${data.maker||''} ${data.model||''}`.trim()||'제품 상세';
-    toast('저장되었습니다 ✓','success');
+    toast('저장되었습니다 ✓ ('+Math.round(bytes/1024)+'KB)','success');
   }catch(e){toast('저장 실패: '+e.message,'error');setSyncStatus('error','저장 실패');}
 };
 
@@ -1090,6 +1192,22 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'){lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;showLb();}
   if(e.key==='ArrowRight'){lbIdx=(lbIdx+1)%lbImages.length;showLb();}
 });
+
+// ── URL 링크 ──
+window.openUrl=function(id){
+  const url=document.getElementById(id).value.trim();
+  if(!url){toast('URL을 먼저 입력해 주세요','error');return;}
+  window.open(url,'_blank');
+};
+window.copyUrl=function(id){
+  const url=document.getElementById(id).value.trim();
+  if(!url){toast('URL을 먼저 입력해 주세요','error');return;}
+  navigator.clipboard.writeText(url).then(()=>toast('URL이 복사되었습니다 📋','success')).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    toast('URL이 복사되었습니다 📋','success');
+  });
+};
 
 // ── 인쇄 ──
 window.printRecord=()=>{window.saveRecord().then(()=>setTimeout(()=>window.print(),300));};
