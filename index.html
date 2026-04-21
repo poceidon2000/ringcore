@@ -516,21 +516,49 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 <div class="toast-container" id="toastContainer"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCXWQ-q1hhCvdcl1x4FQw8V81-T3k5xkZ8",
-  authDomain: "ringcore-6812f.firebaseapp.com",
-  projectId: "ringcore-6812f",
-  storageBucket: "ringcore-6812f.firebasestorage.app",
-  messagingSenderId: "764902837240",
-  appId: "1:764902837240:web:c7eea0c2fbadc8a3a4640d"
-};
+const SUPA_URL = "https://uhfcqiuzajiqgcbrstal.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVoZmNxaXV6YWppcWdjYnJzdGFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDQ3NjcsImV4cCI6MjA5MjMyMDc2N30.UWDBcWK4eUbPRarmYIQ2fZnPU2TtWTJOQVjJQ4SCxQI";
+const BUCKET = "images";
+const TABLE  = "records";
 
-const fireApp = initializeApp(firebaseConfig);
-const db = getFirestore(fireApp);
-const COL = "records";
+const sb = createClient(SUPA_URL, SUPA_KEY);
+
+// ── Supabase DB 헬퍼 ──
+async function sbGetAll(){
+  const {data,error}=await sb.from(TABLE).select('*').order('sort_key',{ascending:true,nullsFirst:true});
+  if(error)throw error;
+  return data||[];
+}
+async function sbUpsert(row){
+  const {error}=await sb.from(TABLE).upsert(row,{onConflict:'id'});
+  if(error)throw error;
+}
+async function sbDelete(id){
+  const {error}=await sb.from(TABLE).delete().eq('id',id);
+  if(error)throw error;
+}
+async function sbGetAll2(){
+  // 백업용: 전체 row 가져오기
+  const {data,error}=await sb.from(TABLE).select('*');
+  if(error)throw error;
+  return data||[];
+}
+
+// ── Storage 헬퍼 ──
+async function uploadImage(recordId, fileObj, idx){
+  const path=`${recordId}/${idx}_${Date.now()}.jpg`;
+  const blob=await (await fetch(fileObj.dataUrl)).blob();
+  const {error}=await sb.storage.from(BUCKET).upload(path, blob, {contentType:'image/jpeg',upsert:true});
+  if(error)throw error;
+  const {data}=sb.storage.from(BUCKET).getPublicUrl(path);
+  return {url:data.publicUrl, path, name:fileObj.name};
+}
+async function deleteStorageImages(paths){
+  if(!paths||!paths.length)return;
+  await sb.storage.from(BUCKET).remove(paths);
+}
 
 const PASSWORD = "1234";
 const ADMIN_PASSWORD = "poceidon2000";
@@ -614,7 +642,7 @@ window.doLogin=function(){
   if(pw===PASSWORD){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('appRoot').style.display='block';
-    startFirestore();
+    startSupabase();
   } else {
     document.getElementById('pwErr').textContent='비밀번호가 틀렸습니다.';
     document.getElementById('pwInput').value='';
@@ -622,7 +650,6 @@ window.doLogin=function(){
   }
 };
 window.doLogout=function(){
-  if(unsubscribe)unsubscribe();
   document.getElementById('appRoot').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('pwInput').value='';
@@ -658,15 +685,14 @@ window.doBackup=async function(){
   const st=document.getElementById('adminStatus');
   st.style.display='block';st.textContent='백업 준비 중...';
   try{
-    const snap=await getDocs(collection(db,COL));
-    const data=snap.docs.map(d=>d.data());
-    const json=JSON.stringify({version:1,backupAt:new Date().toISOString(),count:data.length,records:data},null,2);
+    const data=await sbGetAll2();
+    const json=JSON.stringify({version:2,backupAt:new Date().toISOString(),count:data.length,records:data},null,2);
     const blob=new Blob([json],{type:'application/json'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
     a.download='ringcore_backup_'+new Date().toISOString().slice(0,10)+'.json';
     a.click();
-    st.textContent='✓ 백업 완료 ('+data.length+'개 항목, 사진 포함)';
+    st.textContent='✓ 백업 완료 ('+data.length+'개 항목)';
     toast('백업 파일이 저장되었습니다 ✓','success');
   }catch(e){st.textContent='오류: '+e.message;toast('백업 실패: '+e.message,'error');}
 };
@@ -684,54 +710,82 @@ window.doRestore=async function(e){
     if(!Array.isArray(data))throw new Error('올바른 백업 파일이 아닙니다');
     if(!confirm(data.length+'개 항목을 복구합니다.\n기존 데이터는 모두 삭제됩니다. 계속하시겠습니까?'))return;
     st.textContent='기존 데이터 삭제 중...';
-    const existing=await getDocs(collection(db,COL));
-    const batch1=writeBatch(db);
-    existing.docs.forEach(d=>batch1.delete(d.ref));
-    await batch1.commit();
-    st.textContent='데이터 복구 중 (0/'+data.length+')...';
-    const BATCH_SIZE=400;
-    for(let i=0;i<data.length;i+=BATCH_SIZE){
-      const chunk=data.slice(i,i+BATCH_SIZE);
-      const batch2=writeBatch(db);
-      chunk.forEach(r=>batch2.set(doc(db,COL,r.id),r));
-      await batch2.commit();
-      st.textContent='데이터 복구 중 ('+(Math.min(i+BATCH_SIZE,data.length))+'/'+data.length+')...';
+    await sb.from(TABLE).delete().neq('id','__none__');
+    st.textContent='데이터 복구 중...';
+    const CHUNK=50;
+    for(let i=0;i<data.length;i+=CHUNK){
+      await sb.from(TABLE).upsert(data.slice(i,i+CHUNK),{onConflict:'id'});
+      st.textContent='데이터 복구 중 ('+(Math.min(i+CHUNK,data.length))+'/'+data.length+')...';
     }
     st.textContent='✓ 복구 완료 ('+data.length+'개 항목)';
     toast('데이터 복구 완료 ✓','success');
+    // 새로 로드
+    const newData=await sbGetAll();
+    records=sortRecords(newData.map(parseRow));
+    renderAll();
     e.target.value='';
   }catch(e2){st.textContent='오류: '+e2.message;toast('복구 실패: '+e2.message,'error');}
 };
 
-// ── Firestore ──
-async function startFirestore(){
+// ── Supabase 시작 ──
+function sortRecords(arr){
+  const o=['1kva','1.5kva','2kva','3kva','5kva','기타'];
+  arr.sort((a,b)=>{
+    const ai=o.indexOf(a.cap),bi=o.indexOf(b.cap);
+    if(ai!==bi)return(ai<0?99:ai)-(bi<0?99:bi);
+    return(a.id||'').localeCompare(b.id||'');
+  });
+  return arr;
+}
+
+async function startSupabase(){
   setSyncStatus('syncing','연결 중...');
   try{
-    const snap=await getDocs(collection(db,COL));
-    if(snap.empty){
+    let data=await sbGetAll();
+    if(!data.length){
       setSyncStatus('syncing','기본 데이터 입력 중...');
-      const BATCH_SIZE=400;
-      for(let i=0;i<DEFAULT_DATA.length;i+=BATCH_SIZE){
-        const b=writeBatch(db);
-        DEFAULT_DATA.slice(i,i+BATCH_SIZE).forEach(r=>b.set(doc(db,COL,r.id),r));
-        await b.commit();
+      const capOrder=['1kva','1.5kva','2kva','3kva','5kva','기타'];
+      const rows=DEFAULT_DATA.map(r=>({
+        ...r,
+        images_meta:JSON.stringify([]),
+        secondary:JSON.stringify({}),
+        sort_key: (capOrder.indexOf(r.cap)+'').padStart(2,'0')+'_'+r.id
+      }));
+      for(let i=0;i<rows.length;i+=50){
+        await sb.from(TABLE).upsert(rows.slice(i,i+50),{onConflict:'id'});
       }
+      data=await sbGetAll();
       toast('기본 데이터 66개가 등록되었습니다 ✓','success');
     }
-    unsubscribe=onSnapshot(collection(db,COL),snapshot=>{
-      records=snapshot.docs.map(d=>d.data());
-      records.sort((a,b)=>{
-        const o=['1kva','1.5kva','2kva','3kva','5kva','기타'];
-        const ai=o.indexOf(a.cap),bi=o.indexOf(b.cap);
-        if(ai!==bi)return ai-bi;
-        return (a.id||'').localeCompare(b.id||'');
-      });
-      renderAll();
-      setSyncStatus('ok','동기화됨');
-    },err=>{setSyncStatus('error','연결 오류');toast('연결 오류: '+err.message,'error');});
-    // 로그인 후 전체목록 바로 표시
+    records=sortRecords(data.map(parseRow));
+    renderAll();
+    setSyncStatus('ok','연결됨');
     switchTab('list');
+    // 30초마다 폴링 (Supabase 무료 플랜은 Realtime 제한 있음)
+    setInterval(async()=>{
+      try{
+        const d=await sbGetAll();
+        records=sortRecords(d.map(parseRow));
+        renderAll();
+        setSyncStatus('ok','동기화됨');
+      }catch(e){setSyncStatus('error','연결 오류');}
+    },30000);
   }catch(e){setSyncStatus('error','오류');toast('오류: '+e.message,'error');}
+}
+
+function parseRow(r){
+  // images_meta는 [{url,path,name}], images는 하위호환용
+  let imgs=[];
+  if(r.images_meta){
+    try{imgs=typeof r.images_meta==='string'?JSON.parse(r.images_meta):r.images_meta;}catch(e){}
+  } else if(r.images){
+    imgs=r.images;
+  }
+  let sec={};
+  if(r.secondary){
+    try{sec=typeof r.secondary==='string'?JSON.parse(r.secondary):r.secondary;}catch(e){}
+  }
+  return {...r, images_meta:imgs, secondary:sec};
 }
 function setSyncStatus(state,text){
   const dot=document.getElementById('syncDot');
@@ -1010,7 +1064,9 @@ window.selectRecord=function(id){
   currentId=id;
   const r=records.find(x=>x.id===id);
   if(!r)return;
-  currentImages=(r.images||[]).map(i=>({...i}));
+  // images_meta(url기반) 또는 images(dataUrl기반, 하위호환) 사용
+  const imgMeta = r.images_meta||r.images||[];
+  currentImages = imgMeta.map(i=>({...i}));
   document.getElementById('panelTitle').textContent=`${r.maker||''} ${r.model||''}`.trim()||'제품 상세';
   document.getElementById('deleteBtn').style.display='inline-flex';
   const fields={f_cap:'cap',f_maker:'maker',f_model:'model',f_note:'note',
@@ -1038,19 +1094,16 @@ window.cancelEdit=function(){
 };
 
 // ── 이미지 압축 ──
-function compressImage(dataUrl, maxW=800, maxH=800, quality=0.7){
+function compressImage(dataUrl, maxW=1200, maxH=1200, quality=0.82){
   return new Promise(res=>{
     const img=new Image();
     img.onload=()=>{
       let w=img.width, h=img.height;
-      if(w>maxW||h>maxH){
-        const r=Math.min(maxW/w, maxH/h);
-        w=Math.round(w*r); h=Math.round(h*r);
-      }
+      if(w>maxW||h>maxH){const r=Math.min(maxW/w,maxH/h);w=Math.round(w*r);h=Math.round(h*r);}
       const c=document.createElement('canvas');
-      c.width=w; c.height=h;
+      c.width=w;c.height=h;
       c.getContext('2d').drawImage(img,0,0,w,h);
-      res({dataUrl:c.toDataURL('image/jpeg',quality), name:''});
+      res(c.toDataURL('image/jpeg',quality));
     };
     img.src=dataUrl;
   });
@@ -1059,14 +1112,7 @@ function compressImage(dataUrl, maxW=800, maxH=800, quality=0.7){
 // ── 저장 ──
 window.saveRecord=async function(){
   setSyncStatus('syncing','저장 중...');
-  // 이미지 압축
-  const compImages=[];
-  for(const img of currentImages){
-    try{
-      const c=await compressImage(img.dataUrl);
-      compImages.push({dataUrl:c.dataUrl, name:img.name});
-    }catch(e){ compImages.push(img); }
-  }
+  const recId=currentId||('r_'+Date.now());
   const secondary={
     s_area:document.getElementById('s_area').value,
     s_turns:document.getElementById('s_turns').value,
@@ -1082,9 +1128,12 @@ window.saveRecord=async function(){
     s_mt_peak:document.getElementById('s_mt_peak').value,
     s_mt_rms:document.getElementById('s_mt_rms').value
   };
+  const capOrder=['1kva','1.5kva','2kva','3kva','5kva','기타'];
+  const cap=document.getElementById('f_cap').value;
   const data={
-    id:currentId||('r_'+Date.now()),
-    cap:document.getElementById('f_cap').value,
+    id:recId,
+    sort_key:(capOrder.indexOf(cap)+'').padStart(2,'0')+'_'+recId,
+    cap,
     maker:document.getElementById('f_maker').value.trim(),
     model:document.getElementById('f_model').value.trim(),
     note:document.getElementById('f_note').value.trim(),
@@ -1100,24 +1149,37 @@ window.saveRecord=async function(){
     eff:document.getElementById('f_eff').value,
     vppt:parseFloat(document.getElementById('f_vppt').value)||0,
     vppt2:parseFloat(document.getElementById('f_vppt2').value)||0,
-    secondary, images:compImages,
-    updatedAt:new Date().toISOString()
+    secondary:JSON.stringify(secondary),
+    updated_at:new Date().toISOString()
   };
-  // 용량 체크
-  const jsonStr=JSON.stringify(data);
-  const bytes=new Blob([jsonStr]).size;
-  if(bytes>900000){
-    toast('사진 용량 초과! 사진을 줄여주세요 (현재 '+Math.round(bytes/1024)+'KB)','error');
-    setSyncStatus('ok','동기화됨');
-    return;
-  }
   try{
-    await setDoc(doc(db,COL,data.id),data);
-    currentId=data.id;
-    currentImages=compImages;
+    // 새 이미지 (dataUrl 있는 것) Storage에 업로드
+    const existingMeta = currentImages.filter(i=>i.url&&!i.dataUrl);
+    const newImages    = currentImages.filter(i=>i.dataUrl);
+    const uploadedMeta = [];
+    for(let i=0;i<newImages.length;i++){
+      setSyncStatus('syncing',`이미지 업로드 중 (${i+1}/${newImages.length})...`);
+      const compressed=await compressImage(newImages[i].dataUrl);
+      const meta=await uploadImage(recId,{dataUrl:compressed,name:newImages[i].name},existingMeta.length+i);
+      uploadedMeta.push(meta);
+    }
+    const allMeta=[...existingMeta,...uploadedMeta];
+    data.images_meta=JSON.stringify(allMeta);
+    await sbUpsert(data);
+    currentId=recId;
+    // currentImages를 url 기반으로 업데이트
+    currentImages=allMeta.map(m=>({url:m.url,path:m.path,name:m.name}));
+    renderImages();
     document.getElementById('deleteBtn').style.display='inline-flex';
     document.getElementById('panelTitle').textContent=`${data.maker||''} ${data.model||''}`.trim()||'제품 상세';
-    toast('저장되었습니다 ✓ ('+Math.round(bytes/1024)+'KB)','success');
+    // records 갱신
+    const idx=records.findIndex(r=>r.id===recId);
+    const parsed=parseRow({...data,images_meta:allMeta});
+    if(idx>=0)records[idx]=parsed; else records.push(parsed);
+    records=sortRecords(records);
+    renderAll();
+    setSyncStatus('ok','저장됨');
+    toast('저장되었습니다 ✓','success');
   }catch(e){toast('저장 실패: '+e.message,'error');setSyncStatus('error','저장 실패');}
 };
 
@@ -1126,9 +1188,14 @@ window.deleteRecord=async function(){
   if(!currentId)return;
   if(!confirm('이 제품을 삭제하시겠습니까?'))return;
   try{
-    await deleteDoc(doc(db,COL,currentId));
+    // Storage 이미지 삭제
+    const paths=currentImages.filter(i=>i.path).map(i=>i.path);
+    await deleteStorageImages(paths);
+    await sbDelete(currentId);
+    records=records.filter(r=>r.id!==currentId);
     currentId=null;currentImages=[];
     window.cancelEdit();
+    renderAll();
     toast('삭제되었습니다','');
   }catch(e){toast('삭제 실패: '+e.message,'error');}
 };
@@ -1165,12 +1232,14 @@ document.addEventListener('paste',e=>{
 function renderImages(){
   const grid=document.getElementById('imgGrid');
   if(!currentImages.length){grid.innerHTML='';return;}
-  grid.innerHTML=currentImages.map((img,i)=>`
-    <div class="img-thumb" onclick="openLightbox(${i})">
-      <img src="${img.dataUrl}" alt="${img.name}">
+  grid.innerHTML=currentImages.map((img,i)=>{
+    const src=img.dataUrl||img.url||'';
+    return `<div class="img-thumb" onclick="openLightbox(${i})">
+      <img src="${src}" alt="${img.name||''}">
       <button class="it-del" onclick="delImg(event,${i})">✕</button>
       <div class="it-num">${i+1}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 window.delImg=(e,idx)=>{e.stopPropagation();currentImages.splice(idx,1);renderImages();};
 
@@ -1178,7 +1247,7 @@ window.delImg=(e,idx)=>{e.stopPropagation();currentImages.splice(idx,1);renderIm
 window.openLightbox=idx=>{lbImages=currentImages;lbIdx=idx;showLb();};
 function showLb(){
   document.getElementById('lightbox').classList.add('open');
-  document.getElementById('lbImg').src=lbImages[lbIdx].dataUrl;
+  document.getElementById('lbImg').src=lbImages[lbIdx].dataUrl||lbImages[lbIdx].url||'';
   document.getElementById('lbCounter').textContent=`${lbIdx+1} / ${lbImages.length}`;
 }
 window.closeLightbox=()=>document.getElementById('lightbox').classList.remove('open');
