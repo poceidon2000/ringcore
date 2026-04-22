@@ -216,7 +216,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .toast.success{border-color:rgba(56,217,169,.4)}
 .toast.error{border-color:rgba(255,107,107,.4)}
 @keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
-.tab-hidden{display:none!important}
+.tab-hidden{display:none!important;visibility:hidden!important}
 
 @media print{
   body{background:#fff!important;color:#000!important}
@@ -353,7 +353,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
       </div>
 
       <!-- 규격입력 탭 -->
-      <div id="tabContentDetail" class="tab-hidden" style="flex-direction:column;flex:1">
+      <div id="tabContentDetail" class="tab-hidden" style="display:flex;flex-direction:column;flex:1">
         <div class="detail-panel">
           <div class="panel-header">
             <h2 id="panelTitle">새 제품 등록</h2>
@@ -863,15 +863,11 @@ window.switchTab=function(tab){
   const listEl=document.getElementById('tabContentList');
   const detailEl=document.getElementById('tabContentDetail');
   if(tab==='list'){
-    listEl.classList.remove('tab-hidden');
-    listEl.style.display='flex';
-    listEl.style.flexDirection='column';
-    detailEl.classList.add('tab-hidden');
+    listEl.style.cssText='flex:1;overflow-y:auto;display:flex;flex-direction:column';
+    detailEl.style.cssText='display:none;flex-direction:column;flex:1';
   } else {
-    listEl.classList.add('tab-hidden');
-    detailEl.classList.remove('tab-hidden');
-    detailEl.style.display='flex';
-    detailEl.style.flexDirection='column';
+    listEl.style.cssText='display:none';
+    detailEl.style.cssText='flex:1;overflow-y:auto;display:flex;flex-direction:column';
   }
 };
 
@@ -882,16 +878,19 @@ function calcAreaVal(od,id_,h){
   return(od-id_)/2*h/100;
 }
 window.calcArea=function(){
+  const cvEl=document.getElementById('calcValue');
+  const cfEl=document.getElementById('calcFormula');
+  if(!cvEl||!cfEl)return;
   const od=document.getElementById('f_od').value;
   const id_=document.getElementById('f_id').value;
   const h=document.getElementById('f_h').value;
   const val=calcAreaVal(od,id_,h);
   if(val!==null){
-    document.getElementById('calcValue').textContent=val.toFixed(2);
-    document.getElementById('calcFormula').textContent=`(${od} - ${id_}) ÷ 2 × ${h} ÷ 100 = ${val.toFixed(2)} cm²`;
+    cvEl.textContent=val.toFixed(2);
+    cfEl.textContent=`(${od} - ${id_}) ÷ 2 × ${h} ÷ 100 = ${val.toFixed(2)} cm²`;
   } else {
-    document.getElementById('calcValue').textContent='—';
-    document.getElementById('calcFormula').textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
+    cvEl.textContent='—';
+    cfEl.textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
   }
 };
 
@@ -1056,9 +1055,10 @@ window.selectRecord=function(id){
   Object.keys(s2).forEach(k=>{document.getElementById(k).value=sd[k]||'';});
   if(!sd.s_margin)document.getElementById('s_margin').value='20';
   if(!sd.s_term_n)document.getElementById('s_term_n').value='2';
-  window.calcArea();window.calcSecondary();
-  renderImages();renderAll();
   switchTab('detail');
+  window.calcArea();window.calcSecondary();
+  renderImages();
+  renderList();
 };
 window.cancelEdit=function(){
   currentId=null;
