@@ -122,7 +122,12 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .panel-header h2{font-size:17px;font-weight:700}
 .ph-actions{display:flex;gap:8px}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:18px}
+.form-grid{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px}
+.form-group.w-sm{width:90px;min-width:90px}
+.form-group.w-md{width:120px;min-width:120px}
+.form-group.w-lg{width:160px;min-width:160px}
+.form-group.w-xl{width:200px;min-width:200px}
+.form-group.w-full{flex:1;min-width:160px}
 .form-group{display:flex;flex-direction:column;gap:4px}
 .form-group label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
 .form-group .hint{font-size:12px;color:var(--text3);margin-top:2px;line-height:1.4}
@@ -152,10 +157,10 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 /* 2차권선 섹션 */
 .sec2-box{border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:18px}
 .sec2-sub{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.3px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g5{display:flex;flex-wrap:wrap;gap:10px}
+.g4{display:flex;flex-wrap:wrap;gap:10px}
+.g3{display:flex;flex-wrap:wrap;gap:10px}
+.g2{display:flex;flex-wrap:wrap;gap:10px}
 .meas-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .meas-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px}
 .meas-tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px;margin-bottom:8px}
@@ -360,21 +365,21 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 
           <div class="section-title">기본 정보</div>
           <div class="form-grid">
-            <div class="form-group"><label>종류</label>
-              <select id="f_type">
+            <div class="form-group w-md"><label>종류</label>
+              <select id="f_type" style="width:100%">
                 <option value="링코어" selected>링코어</option>
                 <option value="EI">EI</option>
                 <option value="AVR">AVR</option>
                 <option value="슬라이닥스">슬라이닥스</option>
               </select>
             </div>
-            <div class="form-group"><label>용량</label>
-              <select id="f_cap"><option value="">선택...</option><option>1kva</option><option>1.5kva</option><option>2kva</option><option>3kva</option><option>5kva</option><option>기타</option></select>
+            <div class="form-group w-md"><label>용량</label>
+              <select id="f_cap" style="width:100%"><option value="">선택...</option><option>1kva</option><option>1.5kva</option><option>2kva</option><option>3kva</option><option>5kva</option><option>기타</option></select>
             </div>
-            <div class="form-group"><label>제조사</label><input type="text" id="f_maker" placeholder="예) 한서전기"></div>
-            <div class="form-group"><label>모델명</label><input type="text" id="f_model" placeholder="예) HY-1000U"></div>
-            <div class="form-group"><label>비고</label>
-              <select id="f_note" onchange="toggleNoteCustom()">
+            <div class="form-group w-xl"><label>제조사</label><input type="text" id="f_maker" placeholder="예) 한서전기" style="width:100%"></div>
+            <div class="form-group w-lg"><label>모델명</label><input type="text" id="f_model" placeholder="예) HY-1000U" style="width:100%"></div>
+            <div class="form-group w-lg"><label>비고</label>
+              <select id="f_note" onchange="toggleNoteCustom()" style="width:100%">
                 <option value="다운" selected>다운</option>
                 <option value="승압">승압</option>
                 <option value="수지형">수지형</option>
@@ -383,9 +388,9 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
                 <option value="">기타/직접입력</option>
               </select>
             </div>
-            <div class="form-group" id="note_custom_wrap" style="display:none">
+            <div class="form-group w-lg" id="note_custom_wrap" style="display:none">
               <label>비고 직접입력</label>
-              <input type="text" id="f_note_custom" placeholder="직접 입력">
+              <input type="text" id="f_note_custom" placeholder="직접 입력" style="width:100%">
             </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
@@ -427,25 +432,25 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
               <label>심선 (mm)</label>
               <input type="text" id="f_wire" placeholder="예) 1.85" style="width:100%">
             </div>
-            <div class="calc-display" style="margin-bottom:0;flex:1;min-width:220px">
+            <div class="calc-display" style="margin-bottom:0;flex:1;min-width:230px">
               <div>
-                <div class="cd-label" style="font-size:12px;font-weight:600;margin-bottom:4px">단면적 (자동계산)</div>
-                <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:4px">
+                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:2px">단면적 (자동계산)</div>
+                <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-family:'JetBrains Mono',monospace">= (외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
+                <div style="display:flex;align-items:baseline;gap:4px">
                   <span class="cd-value" id="calcValue">—</span><span class="cd-unit">cm²</span>
                 </div>
-                <div class="cd-formula" id="calcFormula" style="font-size:11px">= (외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
               </div>
             </div>
           </div>
 
           <div class="section-title">전기 특성</div>
           <div class="form-grid">
-            <div class="form-group"><label>완제품 무게 (kg)</label><input type="number" id="f_weight_total" placeholder="예) 8.5" step="0.01"></div>
-            <div class="form-group"><label>링코어 무게 (kg)</label><input type="number" id="f_weight" placeholder="예) 5.0" step="0.01"></div>
-            <div class="form-group"><label>차단기 용량 (A)</label><input type="text" id="f_breaker" placeholder="예) 30A 또는 미표기"></div>
-            <div class="form-group"><label>효율 (%)</label><input type="text" id="f_eff" placeholder="예) 97.1 또는 미표기"></div>
-            <div class="form-group"><label>턴당 전압 (V) — 기준</label><input type="number" id="f_vppt" placeholder="예) 0.72" step="0.01"></div>
-            <div class="form-group"><label>턴당 전압 (V) — 1차권선후</label><input type="number" id="f_vppt2" placeholder="예) 0.70" step="0.01"></div>
+            <div class="form-group w-lg"><label>완제품 무게 (kg)</label><input type="number" id="f_weight_total" placeholder="예) 8.5" step="0.01" style="width:100%"></div>
+            <div class="form-group w-lg"><label>링코어 무게 (kg)</label><input type="number" id="f_weight" placeholder="예) 5.0" step="0.01" style="width:100%"></div>
+            <div class="form-group w-lg"><label>차단기 용량 (A)</label><input type="text" id="f_breaker" placeholder="예) 30A" style="width:100%"></div>
+            <div class="form-group w-md"><label>효율 (%)</label><input type="text" id="f_eff" placeholder="예) 97.1" style="width:100%"></div>
+            <div class="form-group w-xl"><label>턴당전압 (V) — 기준</label><input type="number" id="f_vppt" placeholder="예) 0.72" step="0.01" style="width:100%"></div>
+            <div class="form-group w-xl"><label>턴당전압 (V) — 1차권선후</label><input type="number" id="f_vppt2" placeholder="예) 0.70" step="0.01" style="width:100%"></div>
           </div>
 
           <!-- 2차권선 계산 -->
@@ -453,35 +458,33 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
           <div class="sec2-box">
             <div class="sec2-sub">2차 권선 정보</div>
             <div class="g5">
-              <div class="form-group"><label>권선 단면적 (mm²)</label><input type="number" id="s_area" placeholder="예) 50" oninput="calcSecondary()"><span class="hint">2차 케이블 굵기</span></div>
-              <div class="form-group"><label>턴수 (턴)</label><input type="number" id="s_turns" placeholder="예) 10" oninput="calcSecondary()"><span class="hint">2차 감은 횟수</span></div>
-              <div class="form-group"><label>2차 전압 (V)</label><input type="number" id="s_v2" placeholder="예) 6.5" oninput="calcSecondary()"><span class="hint">무부하 출력전압</span></div>
-              <div class="form-group"><label>턴당 전압 (V/턴)</label><input type="number" class="auto-calc" id="s_vpt" placeholder="자동계산" readonly><span class="hint" id="s_vpt_hint">예시: 6.5÷10 = 0.65V/턴</span></div>
-              <div class="form-group"><label>여유율 (%)</label><input type="number" id="s_margin" placeholder="예) 20" value="20" oninput="calcSecondary()"><span class="hint">인출·연결 여유</span></div>
+              <div class="form-group w-lg"><label>권선 단면적 (mm²)</label><input type="number" id="s_area" placeholder="예) 50" oninput="calcSecondary()" style="width:100%"><span class="hint">케이블 굵기</span></div>
+              <div class="form-group w-md"><label>턴수 (턴)</label><input type="number" id="s_turns" placeholder="예) 10" oninput="calcSecondary()" style="width:100%"><span class="hint">감은 횟수</span></div>
+              <div class="form-group w-md"><label>2차 전압 (V)</label><input type="number" id="s_v2" placeholder="예) 6.5" oninput="calcSecondary()" style="width:100%"><span class="hint">무부하 출력</span></div>
+              <div class="form-group w-lg"><label>턴당 전압 (V/턴)</label><input type="number" class="auto-calc" id="s_vpt" placeholder="자동계산" readonly style="width:100%"><span class="hint" id="s_vpt_hint">자동계산</span></div>
+              <div class="form-group w-md"><label>여유율 (%)</label><input type="number" id="s_margin" placeholder="20" value="20" oninput="calcSecondary()" style="width:100%"><span class="hint">인출 여유</span></div>
             </div>
             <div class="g3" style="margin-top:10px">
-              <div class="form-group"><label>2차권선 길이 (m)</label><input type="number" class="auto-calc" id="s_wlen" placeholder="자동계산 (직접 입력 가능)" oninput="calcSecondary()"><span class="hint" id="s_wlen_hint">예시: π×(130+50)/2/1000×10×(1+20%) = 약 3.40m</span></div>
-              <div class="form-group"><label>권선 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_wire_r" placeholder="자동계산" readonly><span class="hint" id="s_wire_r_hint">예시: 3.40÷(56×50) = 약 1.21mΩ</span></div>
-              <div></div>
+              <div class="form-group w-xl"><label>2차권선 길이 (m)</label><input type="number" class="auto-calc" id="s_wlen" placeholder="자동계산" oninput="calcSecondary()" style="width:100%"><span class="hint" id="s_wlen_hint">π×(OD+ID)/2/1000×턴×(1+여유%)</span></div>
+              <div class="form-group w-xl"><label>권선 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_wire_r" placeholder="자동계산" readonly style="width:100%"><span class="hint" id="s_wire_r_hint">길이÷(56×단면적)</span></div>
             </div>
 
             <div class="sec2-sub" style="margin-top:14px">링코어에서 스폿봉까지 케이블 정보</div>
             <div class="g3">
-              <div class="form-group"><label>케이블 단면적 (mm²)</label><input type="number" id="s_cab_area" placeholder="예) 50" oninput="calcSecondary()"><span class="hint">스폿봉까지 케이블</span></div>
-              <div class="form-group"><label>링코어→스폿봉 거리 (m)</label><input type="number" id="s_cab_len" placeholder="예) 0.8" oninput="calcSecondary()"><span class="hint">편도 거리 (×2 자동 계산)</span></div>
-              <div class="form-group"><label>케이블 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_cab_r" placeholder="자동계산" readonly><span class="hint" id="s_cab_r_hint">예시: (0.8×2)÷(56×50) = 약 0.57mΩ</span></div>
+              <div class="form-group w-lg"><label>케이블 단면적 (mm²)</label><input type="number" id="s_cab_area" placeholder="예) 50" oninput="calcSecondary()" style="width:100%"><span class="hint">스폿봉까지</span></div>
+              <div class="form-group w-xl"><label>링코어→스폿봉 거리 (m)</label><input type="number" id="s_cab_len" placeholder="예) 0.8" oninput="calcSecondary()" style="width:100%"><span class="hint">편도 거리 (×2 자동계산)</span></div>
+              <div class="form-group w-lg"><label>케이블 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_cab_r" placeholder="자동계산" readonly style="width:100%"><span class="hint" id="s_cab_r_hint">(거리×2)÷(56×단면적)</span></div>
             </div>
             <div class="g3" style="margin-top:10px">
-              <div class="form-group"><label>케이블 총길이 (m) — 양쪽</label><input type="number" class="auto-calc" id="s_cab_total_len" placeholder="자동계산: 거리×2" readonly><span class="hint" id="s_cab_total_hint">예시: 0.8×2 = 1.6m</span></div>
-              <div class="form-group"><label>2차권선~스폿봉 전체 길이 (m)</label><input type="number" class="auto-calc" id="s_total_len" placeholder="자동계산: 권선+케이블" readonly><span class="hint" id="s_total_hint">예시: 3.40 + 1.6 = 5.0m</span></div>
-              <div></div>
+              <div class="form-group w-lg"><label>케이블 총길이 — 양쪽 (m)</label><input type="number" class="auto-calc" id="s_cab_total_len" placeholder="자동: 거리×2" readonly style="width:100%"><span class="hint" id="s_cab_total_hint">거리×2</span></div>
+              <div class="form-group w-xl"><label>2차권선~스폿봉 전체길이 (m)</label><input type="number" class="auto-calc" id="s_total_len" placeholder="자동: 권선+케이블" readonly style="width:100%"><span class="hint" id="s_total_hint">권선길이+케이블총길이</span></div>
             </div>
 
             <div class="sec2-sub" style="margin-top:14px">대전류단자 (미사용시 0 입력)</div>
             <div class="g3">
-              <div class="form-group"><label>단자 접촉저항 (mΩ/개)</label><input type="number" id="s_term_r" placeholder="예) 0.04" oninput="calcSecondary()"><span class="hint">구리단자 ~0.03~0.05 / 크레토스 ~0.08~0.10</span></div>
-              <div class="form-group"><label>단자 개수</label><input type="number" id="s_term_n" placeholder="2" value="2" oninput="calcSecondary()"><span class="hint">양극 각 1개 = 2개</span></div>
-              <div class="form-group"><label>단자 총저항 (mΩ)</label><input type="number" class="auto-calc" id="s_term_total" placeholder="자동계산" readonly><span class="hint" id="s_term_hint">예시: 0.04×2 = 0.08mΩ</span></div>
+              <div class="form-group w-xl"><label>단자 접촉저항 (mΩ/개)</label><input type="number" id="s_term_r" placeholder="예) 0.04" oninput="calcSecondary()" style="width:100%"><span class="hint">구리 ~0.03~0.05 / 크레토스 ~0.08~0.10</span></div>
+              <div class="form-group w-md"><label>단자 개수</label><input type="number" id="s_term_n" placeholder="2" value="2" oninput="calcSecondary()" style="width:100%"><span class="hint">양극 각 1개</span></div>
+              <div class="form-group w-lg"><label>단자 총저항 (mΩ)</label><input type="number" class="auto-calc" id="s_term_total" placeholder="자동계산" readonly style="width:100%"><span class="hint" id="s_term_hint">저항×개수</span></div>
             </div>
 
             <div class="sec2-sub" style="margin-top:14px">실측값 입력</div>
@@ -489,15 +492,15 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
               <div class="meas-box">
                 <div class="meas-tag tag-d">직결</div>
                 <div class="g2">
-                  <div class="form-group"><label>실측 피크 (kA)</label><input type="number" id="s_md_peak" placeholder="예) 3.05" oninput="calcSecondary()"></div>
-                  <div class="form-group"><label>실측 실효 (kA)</label><input type="number" id="s_md_rms" placeholder="예) 2.23" oninput="calcSecondary()"></div>
+                  <div class="form-group w-lg"><label>실측 피크 (kA)</label><input type="number" id="s_md_peak" placeholder="예) 3.05" oninput="calcSecondary()" style="width:100%"></div>
+                  <div class="form-group w-lg"><label>실측 실효 (kA)</label><input type="number" id="s_md_rms" placeholder="예) 2.23" oninput="calcSecondary()" style="width:100%"></div>
                 </div>
               </div>
               <div class="meas-box">
                 <div class="meas-tag tag-t">대전류단자</div>
                 <div class="g2">
-                  <div class="form-group"><label>실측 피크 (kA)</label><input type="number" id="s_mt_peak" placeholder="예) 2.95" oninput="calcSecondary()"></div>
-                  <div class="form-group"><label>실측 실효 (kA)</label><input type="number" id="s_mt_rms" placeholder="예) 2.14" oninput="calcSecondary()"></div>
+                  <div class="form-group w-lg"><label>실측 피크 (kA)</label><input type="number" id="s_mt_peak" placeholder="예) 2.95" oninput="calcSecondary()" style="width:100%"></div>
+                  <div class="form-group w-lg"><label>실측 실효 (kA)</label><input type="number" id="s_mt_rms" placeholder="예) 2.14" oninput="calcSecondary()" style="width:100%"></div>
                 </div>
               </div>
             </div>
