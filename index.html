@@ -125,7 +125,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:18px}
 .form-group{display:flex;flex-direction:column;gap:4px}
 .form-group label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
-.form-group .hint{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.4}
+.form-group .hint{font-size:12px;color:var(--text3);margin-top:2px;line-height:1.4}
 .form-group input,.form-group select{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:inherit;font-size:13px;transition:border-color .15s;outline:none}
 .form-group input:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,156,249,.1)}
 .form-group input.auto-calc{background:rgba(56,217,169,.05);border-color:rgba(56,217,169,.25);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-weight:600}
@@ -142,7 +142,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .url-btn-open:hover{background:#3d8ae0}
 .url-btn-copy{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
 .url-btn-copy:hover{background:var(--surface3);color:var(--text)}
-.url-hint{font-size:10px;color:var(--text3);margin-top:2px}
+.url-hint{font-size:12px;color:var(--text3);margin-top:2px}
 .calc-display{background:linear-gradient(135deg,rgba(56,217,169,.08),rgba(56,217,169,.03));border:1px solid rgba(56,217,169,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:20px}
 .cd-label{font-size:11px;color:var(--text3);margin-bottom:3px}
 .cd-value{font-size:26px;font-weight:700;color:var(--accent2);font-family:'JetBrains Mono',monospace}
@@ -151,25 +151,25 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 
 /* 2차권선 섹션 */
 .sec2-box{border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:18px}
-.sec2-sub{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.sec2-sub{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.3px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .meas-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .meas-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px}
-.meas-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-bottom:8px}
+.meas-tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px;margin-bottom:8px}
 .tag-d{background:rgba(79,156,249,.15);color:var(--accent)}
 .tag-t{background:rgba(249,168,37,.15);color:var(--accent3)}
 .result-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
 .rc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
-.rc .rc-lbl{font-size:10px;color:var(--text3);margin-bottom:3px}
-.rc .rc-val{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.rc .rc-lbl{font-size:12px;color:var(--text3);margin-bottom:3px}
+.rc .rc-val{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace}
 .rc .rc-val.info{color:var(--accent)}
 .rc .rc-val.warn{color:var(--accent3)}
-.rc .rc-diff{font-size:10px;color:var(--text3);margin-top:2px}
+.rc .rc-diff{font-size:12px;color:var(--text3);margin-top:2px}
 .diff-rows{margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
-.diff-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border)}
+.diff-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)}
 .diff-row:last-child{border-bottom:none}
 .diff-lbl{color:var(--text2)}
 .c-good{color:var(--accent2)}
@@ -410,18 +410,30 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
           </div>
 
           <div class="section-title">코어 치수</div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr) auto;gap:12px;align-items:end;margin-bottom:18px">
-            <div class="form-group"><label>외경 OD (mm)</label><input type="number" id="f_od" placeholder="예) 130" oninput="calcArea();calcSecondary()"></div>
-            <div class="form-group"><label>내경 ID (mm)</label><input type="number" id="f_id" placeholder="예) 50" oninput="calcArea();calcSecondary()"></div>
-            <div class="form-group"><label>높이 H (mm)</label><input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()"></div>
-            <div class="form-group"><label>심선 (mm)</label><input type="text" id="f_wire" placeholder="예) 1.85"></div>
-            <div class="calc-display" style="margin-bottom:0;white-space:nowrap">
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:18px">
+            <div class="form-group" style="width:110px;min-width:110px">
+              <label>외경 OD (mm)</label>
+              <input type="number" id="f_od" placeholder="예) 130" oninput="calcArea();calcSecondary()" style="width:100%">
+            </div>
+            <div class="form-group" style="width:110px;min-width:110px">
+              <label>내경 ID (mm)</label>
+              <input type="number" id="f_id" placeholder="예) 50" oninput="calcArea();calcSecondary()" style="width:100%">
+            </div>
+            <div class="form-group" style="width:100px;min-width:100px">
+              <label>높이 H (mm)</label>
+              <input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()" style="width:100%">
+            </div>
+            <div class="form-group" style="width:90px;min-width:90px">
+              <label>심선 (mm)</label>
+              <input type="text" id="f_wire" placeholder="예) 1.85" style="width:100%">
+            </div>
+            <div class="calc-display" style="margin-bottom:0;flex:1;min-width:220px">
               <div>
-                <div class="cd-label">단면적 (자동)</div>
-                <div style="display:flex;align-items:baseline;gap:3px">
+                <div class="cd-label" style="font-size:12px;font-weight:600;margin-bottom:4px">단면적 (자동계산)</div>
+                <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:4px">
                   <span class="cd-value" id="calcValue">—</span><span class="cd-unit">cm²</span>
                 </div>
-                <div class="cd-formula" id="calcFormula">(외−내)÷2×H÷100</div>
+                <div class="cd-formula" id="calcFormula" style="font-size:11px">= (외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
               </div>
             </div>
           </div>
