@@ -216,6 +216,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .toast.success{border-color:rgba(56,217,169,.4)}
 .toast.error{border-color:rgba(255,107,107,.4)}
 @keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+.tab-hidden{display:none!important}
 
 @media print{
   body{background:#fff!important;color:#000!important}
@@ -328,7 +329,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
       </div>
 
       <!-- 전체목록 탭 -->
-      <div id="tabContentList" style="display:flex;flex-direction:column;flex:1;visibility:visible;height:auto;overflow:auto">
+      <div id="tabContentList" style="flex:1;overflow-y:auto">
         <div class="table-view">
           <div class="table-toolbar">
             <div style="font-size:13px;color:var(--text2)">
@@ -352,7 +353,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
       </div>
 
       <!-- 규격입력 탭 -->
-      <div id="tabContentDetail" style="display:flex;flex-direction:column;flex:1;visibility:hidden;height:0;overflow:hidden">
+      <div id="tabContentDetail" class="tab-hidden" style="flex-direction:column;flex:1">
         <div class="detail-panel">
           <div class="panel-header">
             <h2 id="panelTitle">새 제품 등록</h2>
@@ -862,11 +863,15 @@ window.switchTab=function(tab){
   const listEl=document.getElementById('tabContentList');
   const detailEl=document.getElementById('tabContentDetail');
   if(tab==='list'){
-    listEl.style.visibility='visible';listEl.style.height='auto';listEl.style.overflow='auto';
-    detailEl.style.visibility='hidden';detailEl.style.height='0';detailEl.style.overflow='hidden';
+    listEl.classList.remove('tab-hidden');
+    listEl.style.display='flex';
+    listEl.style.flexDirection='column';
+    detailEl.classList.add('tab-hidden');
   } else {
-    listEl.style.visibility='hidden';listEl.style.height='0';listEl.style.overflow='hidden';
-    detailEl.style.visibility='visible';detailEl.style.height='auto';detailEl.style.overflow='auto';
+    listEl.classList.add('tab-hidden');
+    detailEl.classList.remove('tab-hidden');
+    detailEl.style.display='flex';
+    detailEl.style.flexDirection='column';
   }
 };
 
