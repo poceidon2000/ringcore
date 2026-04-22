@@ -328,7 +328,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
       </div>
 
       <!-- 전체목록 탭 -->
-      <div id="tabContentList" style="display:flex;flex-direction:column;flex:1">
+      <div id="tabContentList" style="display:flex;flex-direction:column;flex:1;visibility:visible;height:auto;overflow:auto">
         <div class="table-view">
           <div class="table-toolbar">
             <div style="font-size:13px;color:var(--text2)">
@@ -352,7 +352,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
       </div>
 
       <!-- 규격입력 탭 -->
-      <div id="tabContentDetail" style="display:none;flex-direction:column;flex:1">
+      <div id="tabContentDetail" style="display:flex;flex-direction:column;flex:1;visibility:hidden;height:0;overflow:hidden">
         <div class="detail-panel">
           <div class="panel-header">
             <h2 id="panelTitle">새 제품 등록</h2>
@@ -434,8 +434,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
             </div>
             <div class="calc-display" style="margin-bottom:0;flex:1;min-width:230px">
               <div>
-                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:2px">단면적 (자동계산)</div>
-                <div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-family:'JetBrains Mono',monospace">= (외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px">단면적 (자동계산) = (외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
                 <div style="display:flex;align-items:baseline;gap:4px">
                   <span class="cd-value" id="calcValue">—</span><span class="cd-unit">cm²</span>
                 </div>
@@ -860,14 +859,14 @@ function updateTable(){
 window.switchTab=function(tab){
   document.getElementById('tabList').classList.toggle('active',tab==='list');
   document.getElementById('tabDetail').classList.toggle('active',tab==='detail');
-  document.getElementById('tabContentList').style.display=tab==='list'?'flex':'none';
+  const listEl=document.getElementById('tabContentList');
   const detailEl=document.getElementById('tabContentDetail');
-  if(tab==='detail'){
-    detailEl.style.display='flex';
-    detailEl.style.flexDirection='column';
-    detailEl.style.flex='1';
+  if(tab==='list'){
+    listEl.style.visibility='visible';listEl.style.height='auto';listEl.style.overflow='auto';
+    detailEl.style.visibility='hidden';detailEl.style.height='0';detailEl.style.overflow='hidden';
   } else {
-    detailEl.style.display='none';
+    listEl.style.visibility='hidden';listEl.style.height='0';listEl.style.overflow='hidden';
+    detailEl.style.visibility='visible';detailEl.style.height='auto';detailEl.style.overflow='auto';
   }
 };
 
