@@ -1017,10 +1017,10 @@ window.calcSecondary=function(){
 // ── 새 폼 ──
 window.openNewForm=function(){
   currentId=null;currentImages=[];
+  switchTab('detail');
   document.getElementById('panelTitle').textContent='새 제품 등록';
   document.getElementById('deleteBtn').style.display='none';
   clearForm();renderImages();
-  switchTab('detail');
 };
 function clearForm(){
   ['f_cap','f_maker','f_model','f_type','f_url1','f_url2',
@@ -1028,8 +1028,10 @@ function clearForm(){
    's_area','s_turns','s_v2','s_margin','s_wlen','s_wire_r','s_cab_area','s_cab_len','s_cab_r',
    's_cab_total_len','s_total_len','s_term_r','s_term_n','s_term_total','s_md_peak','s_md_rms','s_mt_peak','s_mt_rms']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='s_margin'?'20':id==='s_term_n'?'2':''});
-  document.getElementById('calcValue').textContent='—';
-  document.getElementById('calcFormula').textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
+  const cvEl=document.getElementById('calcValue');
+  const cfEl=document.getElementById('calcFormula');
+  if(cvEl)cvEl.textContent='—';
+  if(cfEl)cfEl.textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
   setNoteValue('다운');
   document.getElementById('f_type').value='링코어';
 }
