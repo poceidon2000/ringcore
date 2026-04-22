@@ -770,7 +770,7 @@ async function startSupabase(){
       setSyncStatus('syncing','기본 데이터 입력 중...');
       const capOrder=['1kva','1.5kva','2kva','3kva','5kva','기타'];
       const rows=DEFAULT_DATA.map(r=>{const {images,...rest}=r; return {
-        ...r,
+        ...rest,
         images_meta:JSON.stringify([]),
         secondary:JSON.stringify({}),
         type_:'링코어',
