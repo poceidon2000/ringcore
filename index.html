@@ -124,12 +124,12 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .ph-actions{display:flex;gap:8px}
 .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:18px}
 .form-group{display:flex;flex-direction:column;gap:4px}
-.form-group label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.form-group label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
 .form-group .hint{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.4}
 .form-group input,.form-group select{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:inherit;font-size:13px;transition:border-color .15s;outline:none}
 .form-group input:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,156,249,.1)}
 .form-group input.auto-calc{background:rgba(56,217,169,.05);border-color:rgba(56,217,169,.25);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-weight:600}
-.section-title{font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.section-title{font-size:14px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
 /* URL 링크 */
 .url-group{display:flex;flex-direction:column;gap:4px}
@@ -410,20 +410,18 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
           </div>
 
           <div class="section-title">코어 치수</div>
-          <div style="display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start;margin-bottom:18px">
-            <div class="form-grid" style="margin-bottom:0">
-              <div class="form-group"><label>외경 OD (mm)</label><input type="number" id="f_od" placeholder="예) 130" oninput="calcArea();calcSecondary()"></div>
-              <div class="form-group"><label>내경 ID (mm)</label><input type="number" id="f_id" placeholder="예) 50" oninput="calcArea();calcSecondary()"></div>
-              <div class="form-group"><label>높이 H (mm)</label><input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()"></div>
-              <div class="form-group"><label>심선 (mm)</label><input type="text" id="f_wire" placeholder="예) 1.85"></div>
-            </div>
-            <div class="calc-display" style="margin-bottom:0;min-width:180px">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr) auto;gap:12px;align-items:end;margin-bottom:18px">
+            <div class="form-group"><label>외경 OD (mm)</label><input type="number" id="f_od" placeholder="예) 130" oninput="calcArea();calcSecondary()"></div>
+            <div class="form-group"><label>내경 ID (mm)</label><input type="number" id="f_id" placeholder="예) 50" oninput="calcArea();calcSecondary()"></div>
+            <div class="form-group"><label>높이 H (mm)</label><input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()"></div>
+            <div class="form-group"><label>심선 (mm)</label><input type="text" id="f_wire" placeholder="예) 1.85"></div>
+            <div class="calc-display" style="margin-bottom:0;white-space:nowrap">
               <div>
-                <div class="cd-label">단면적 (자동 계산)</div>
-                <div style="display:flex;align-items:baseline;gap:4px">
+                <div class="cd-label">단면적 (자동)</div>
+                <div style="display:flex;align-items:baseline;gap:3px">
                   <span class="cd-value" id="calcValue">—</span><span class="cd-unit">cm²</span>
                 </div>
-                <div class="cd-formula" id="calcFormula">(외경−내경)÷2×높이÷100</div>
+                <div class="cd-formula" id="calcFormula">(외−내)÷2×H÷100</div>
               </div>
             </div>
           </div>
