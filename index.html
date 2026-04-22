@@ -861,7 +861,14 @@ window.switchTab=function(tab){
   document.getElementById('tabList').classList.toggle('active',tab==='list');
   document.getElementById('tabDetail').classList.toggle('active',tab==='detail');
   document.getElementById('tabContentList').style.display=tab==='list'?'flex':'none';
-  document.getElementById('tabContentDetail').style.display=tab==='detail'?'flex':'none';
+  const detailEl=document.getElementById('tabContentDetail');
+  if(tab==='detail'){
+    detailEl.style.display='flex';
+    detailEl.style.flexDirection='column';
+    detailEl.style.flex='1';
+  } else {
+    detailEl.style.display='none';
+  }
 };
 
 // ── 단면적 ──
