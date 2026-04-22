@@ -150,7 +150,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .cd-formula{font-size:10px;color:var(--text3);margin-top:3px;font-family:'JetBrains Mono',monospace}
 
 /* 2차권선 섹션 */
-.sec2-box{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;margin-bottom:18px}
+.sec2-box{border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:18px}
 .sec2-sub{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
 .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -360,12 +360,33 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 
           <div class="section-title">기본 정보</div>
           <div class="form-grid">
+            <div class="form-group"><label>종류</label>
+              <select id="f_type">
+                <option value="링코어" selected>링코어</option>
+                <option value="EI">EI</option>
+                <option value="AVR">AVR</option>
+                <option value="슬라이닥스">슬라이닥스</option>
+              </select>
+            </div>
             <div class="form-group"><label>용량</label>
               <select id="f_cap"><option value="">선택...</option><option>1kva</option><option>1.5kva</option><option>2kva</option><option>3kva</option><option>5kva</option><option>기타</option></select>
             </div>
             <div class="form-group"><label>제조사</label><input type="text" id="f_maker" placeholder="예) 한서전기"></div>
             <div class="form-group"><label>모델명</label><input type="text" id="f_model" placeholder="예) HY-1000U"></div>
-            <div class="form-group"><label>비고</label><input type="text" id="f_note" placeholder="예) 수지형, 승압"></div>
+            <div class="form-group"><label>비고</label>
+              <select id="f_note" onchange="toggleNoteCustom()">
+                <option value="다운" selected>다운</option>
+                <option value="승압">승압</option>
+                <option value="수지형">수지형</option>
+                <option value="수지형(승압)">수지형(승압)</option>
+                <option value="수지형(다운)">수지형(다운)</option>
+                <option value="">기타/직접입력</option>
+              </select>
+            </div>
+            <div class="form-group" id="note_custom_wrap" style="display:none">
+              <label>비고 직접입력</label>
+              <input type="text" id="f_note_custom" placeholder="직접 입력">
+            </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
             <div class="url-group">
@@ -389,18 +410,21 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
           </div>
 
           <div class="section-title">코어 치수</div>
-          <div class="form-grid">
-            <div class="form-group"><label>외경 OD (mm)</label><input type="number" id="f_od" placeholder="예) 130" oninput="calcArea();calcSecondary()"></div>
-            <div class="form-group"><label>내경 ID (mm)</label><input type="number" id="f_id" placeholder="예) 50" oninput="calcArea();calcSecondary()"></div>
-            <div class="form-group"><label>높이 H (mm)</label><input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()"></div>
-            <div class="form-group"><label>심선 (mm)</label><input type="text" id="f_wire" placeholder="예) 1.85"></div>
-          </div>
-
-          <div class="calc-display">
-            <div>
-              <div class="cd-label">단면적 (자동 계산)</div>
-              <div><span class="cd-value" id="calcValue">—</span><span class="cd-unit">cm²</span></div>
-              <div class="cd-formula" id="calcFormula">(외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start;margin-bottom:18px">
+            <div class="form-grid" style="margin-bottom:0">
+              <div class="form-group"><label>외경 OD (mm)</label><input type="number" id="f_od" placeholder="예) 130" oninput="calcArea();calcSecondary()"></div>
+              <div class="form-group"><label>내경 ID (mm)</label><input type="number" id="f_id" placeholder="예) 50" oninput="calcArea();calcSecondary()"></div>
+              <div class="form-group"><label>높이 H (mm)</label><input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()"></div>
+              <div class="form-group"><label>심선 (mm)</label><input type="text" id="f_wire" placeholder="예) 1.85"></div>
+            </div>
+            <div class="calc-display" style="margin-bottom:0;min-width:180px">
+              <div>
+                <div class="cd-label">단면적 (자동 계산)</div>
+                <div style="display:flex;align-items:baseline;gap:4px">
+                  <span class="cd-value" id="calcValue">—</span><span class="cd-unit">cm²</span>
+                </div>
+                <div class="cd-formula" id="calcFormula">(외경−내경)÷2×높이÷100</div>
+              </div>
             </div>
           </div>
 
@@ -745,14 +769,16 @@ async function startSupabase(){
     if(!data.length){
       setSyncStatus('syncing','기본 데이터 입력 중...');
       const capOrder=['1kva','1.5kva','2kva','3kva','5kva','기타'];
-      const rows=DEFAULT_DATA.map(r=>({
+      const rows=DEFAULT_DATA.map(r=>{const {images,...rest}=r; return {
         ...r,
         images_meta:JSON.stringify([]),
         secondary:JSON.stringify({}),
-        sort_key: (capOrder.indexOf(r.cap)+'').padStart(2,'0')+'_'+r.id
-      }));
+        type_:'링코어',
+        sort_key: (capOrder.indexOf(rest.cap)+'').padStart(2,'0')+'_'+rest.id
+      };});
       for(let i=0;i<rows.length;i+=50){
-        await sb.from(TABLE).upsert(rows.slice(i,i+50),{onConflict:'id'});
+        const {error:ue}=await sb.from(TABLE).upsert(rows.slice(i,i+50),{onConflict:'id'});
+        if(ue){console.error('upsert error:',ue);throw new Error('기본데이터 입력 실패: '+ue.message);}
       }
       data=await sbGetAll();
       toast('기본 데이터 66개가 등록되었습니다 ✓','success');
@@ -770,7 +796,7 @@ async function startSupabase(){
         setSyncStatus('ok','동기화됨');
       }catch(e){setSyncStatus('error','연결 오류');}
     },30000);
-  }catch(e){setSyncStatus('error','오류');toast('오류: '+e.message,'error');}
+  }catch(e){setSyncStatus('error','오류');toast('연결 오류: '+e.message+' / Supabase 테이블·정책을 확인해주세요','error');console.error(e);}
 }
 
 function parseRow(r){
@@ -846,9 +872,10 @@ function renderList(){
     const imgBadge=r.images&&r.images.length?`<div class="ri-img-badge">📷 ${r.images.length}</div>`:'';
     const maker=hlText(r.maker||'(미입력)',searchQ);
     const model=hlText(r.model||'—',searchQ);
+    const typeBadge=r.type_&&r.type_!=='링코어'?`<span style="font-size:9px;padding:1px 5px;border-radius:8px;background:rgba(249,168,37,.15);color:var(--accent3);margin-left:2px">${r.type_}</span>`:'';
     return `<div class="record-item ${currentId===r.id?'active':''}" onclick="selectRecord('${r.id}')">
       ${imgBadge}
-      <div class="ri-top"><span class="ri-cap">${r.cap||'?'}</span><span class="ri-maker">${maker}</span></div>
+      <div class="ri-top"><span class="ri-cap">${r.cap||'?'}</span><span class="ri-maker">${maker}</span>${typeBadge}</div>
       <div class="ri-model">${model}</div>
       <div class="ri-dims">${r.od||'?'}×${r.id_||'?'}×${r.h||'?'} mm${areaStr?' · '+areaStr:''}</div>
     </div>`;
@@ -1050,13 +1077,15 @@ window.openNewForm=function(){
   switchTab('detail');
 };
 function clearForm(){
-  ['f_cap','f_maker','f_model','f_note','f_url1','f_url2',
+  ['f_cap','f_maker','f_model','f_type','f_url1','f_url2',
    'f_od','f_id','f_h','f_wire','f_weight_total','f_weight','f_breaker','f_eff','f_vppt','f_vppt2',
    's_area','s_turns','s_v2','s_margin','s_wlen','s_wire_r','s_cab_area','s_cab_len','s_cab_r',
    's_cab_total_len','s_total_len','s_term_r','s_term_n','s_term_total','s_md_peak','s_md_rms','s_mt_peak','s_mt_rms']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='s_margin'?'20':id==='s_term_n'?'2':''});
   document.getElementById('calcValue').textContent='—';
   document.getElementById('calcFormula').textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
+  setNoteValue('다운');
+  document.getElementById('f_type').value='링코어';
 }
 
 // ── 제품 선택 ──
@@ -1069,14 +1098,15 @@ window.selectRecord=function(id){
   currentImages = imgMeta.map(i=>({...i}));
   document.getElementById('panelTitle').textContent=`${r.maker||''} ${r.model||''}`.trim()||'제품 상세';
   document.getElementById('deleteBtn').style.display='inline-flex';
-  const fields={f_cap:'cap',f_maker:'maker',f_model:'model',f_note:'note',
+  const fields={f_cap:'cap',f_maker:'maker',f_model:'model',f_type:'type_',
     f_url1:'url1',f_url2:'url2',
     f_od:'od',f_id:'id_',f_h:'h',f_wire:'wire',
     f_weight_total:'weight_total',f_weight:'weight',f_breaker:'breaker',
     f_eff:'eff',f_vppt:'vppt',f_vppt2:'vppt2'};
   Object.entries(fields).forEach(([elId,key])=>{document.getElementById(elId).value=r[key]||'';});
   // 2차권선 데이터
-  const s2={s_area:'s_area',s_turns:'s_turns',s_v2:'s_v2',s_margin:'s_margin',s_wlen:'s_wlen',
+  setNoteValue(r.note||'다운');
+    const s2={s_area:'s_area',s_turns:'s_turns',s_v2:'s_v2',s_margin:'s_margin',s_wlen:'s_wlen',
             s_cab_area:'s_cab_area',s_cab_len:'s_cab_len',s_term_r:'s_term_r',s_term_n:'s_term_n',
             s_md_peak:'s_md_peak',s_md_rms:'s_md_rms',s_mt_peak:'s_mt_peak',s_mt_rms:'s_mt_rms'};
   const sd=r.secondary||{};
@@ -1136,7 +1166,8 @@ window.saveRecord=async function(){
     cap,
     maker:document.getElementById('f_maker').value.trim(),
     model:document.getElementById('f_model').value.trim(),
-    note:document.getElementById('f_note').value.trim(),
+    note:getNoteValue(),
+    type_:document.getElementById('f_type').value,
     url1:document.getElementById('f_url1').value.trim(),
     url2:document.getElementById('f_url2').value.trim(),
     od:parseFloat(document.getElementById('f_od').value)||0,
@@ -1261,6 +1292,30 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'){lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;showLb();}
   if(e.key==='ArrowRight'){lbIdx=(lbIdx+1)%lbImages.length;showLb();}
 });
+
+// ── 비고 직접입력 토글 ──
+window.toggleNoteCustom=function(){
+  const sel=document.getElementById('f_note').value;
+  const wrap=document.getElementById('note_custom_wrap');
+  wrap.style.display=sel===''?'block':'none';
+};
+function getNoteValue(){
+  const sel=document.getElementById('f_note').value;
+  if(sel===''){return document.getElementById('f_note_custom').value.trim();}
+  return sel;
+}
+function setNoteValue(val){
+  const sel=document.getElementById('f_note');
+  const opts=Array.from(sel.options).map(o=>o.value);
+  if(opts.includes(val)){
+    sel.value=val;
+    document.getElementById('note_custom_wrap').style.display='none';
+  } else {
+    sel.value='';
+    document.getElementById('f_note_custom').value=val||'';
+    document.getElementById('note_custom_wrap').style.display=val?'block':'none';
+  }
+}
 
 // ── URL 링크 ──
 window.openUrl=function(id){
