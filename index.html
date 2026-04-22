@@ -587,74 +587,7 @@ async function deleteStorageImages(paths){
 const PASSWORD = "1234";
 const ADMIN_PASSWORD = "poceidon2000";
 
-const DEFAULT_DATA = [
-  {id:"d001",cap:"1kva",maker:"광표전기공업",model:"",od:120,id_:50,h:65,wire:"1.50",weight:3.7,eff:"95",vppt:0.61,note:"",images:[]},
-  {id:"d002",cap:"1kva",maker:"미확인",model:"",od:120,id_:50,h:70,wire:"1.50",weight:3.8,eff:"미확인",vppt:0.59,note:"수지형",images:[]},
-  {id:"d003",cap:"1kva",maker:"한영전기",model:"HY-1000U",od:120,id_:50,h:70,wire:"1.50",weight:3.7,eff:"미표기",vppt:0.59,note:"승압",images:[]},
-  {id:"d004",cap:"1kva",maker:"한창트랜스",model:"",od:120,id_:45,h:65,wire:"1.50",weight:3.4,eff:"95",vppt:0.56,note:"",images:[]},
-  {id:"d005",cap:"1kva",maker:"한주물산주식회사",model:"",od:120,id_:50,h:70,wire:"1.45",weight:3.8,eff:"미표기",vppt:0.59,note:"수지형",images:[]},
-  {id:"d006",cap:"1kva",maker:"대표트랜스",model:"",od:120,id_:50,h:70,wire:"1.45",weight:3.7,eff:"96.8",vppt:0.59,note:"수지형",images:[]},
-  {id:"d007",cap:"1kva",maker:"미확인",model:"",od:120,id_:45,h:70,wire:"1.45",weight:3.6,eff:"미확인",vppt:0.59,note:"수지형",images:[]},
-  {id:"d008",cap:"1kva",maker:"미확인",model:"",od:120,id_:45,h:70,wire:"1.45",weight:3.2,eff:"미확인",vppt:0.59,note:"수지형",images:[]},
-  {id:"d009",cap:"1kva",maker:"신영전기",model:"SY-1KVAD",od:120,id_:50,h:60,wire:"1.45",weight:3.3,eff:"96",vppt:0.59,note:"",images:[]},
-  {id:"d010",cap:"1kva",maker:"대금전기",model:"",od:120,id_:45,h:65,wire:"1.40",weight:3.6,eff:"미표기",vppt:0.57,note:"수지형",images:[]},
-  {id:"d011",cap:"1kva",maker:"한진종합전기",model:"JKD-1000",od:120,id_:45,h:65,wire:"1.40",weight:3.4,eff:"95",vppt:0,note:"X",images:[]},
-  {id:"d012",cap:"1kva",maker:"한창트랜스",model:"",od:120,id_:45,h:70,wire:"1.40",weight:3.6,eff:"96.8",vppt:0.58,note:"수지형",images:[]},
-  {id:"d013",cap:"1kva",maker:"효선전기",model:"HSS-1000P",od:120,id_:50,h:70,wire:"1.35",weight:3.6,eff:"96.8",vppt:0.58,note:"수지형",images:[]},
-  {id:"d014",cap:"1kva",maker:"대원전기기산업",model:"",od:120,id_:50,h:65,wire:"1.30",weight:3.3,eff:"96.8",vppt:0.57,note:"",images:[]},
-  {id:"d015",cap:"1.5kva",maker:"한서전기",model:"",od:130,id_:50,h:75,wire:"1.95",weight:5.0,eff:"97.1",vppt:0.72,note:"수지형(02년제조)",images:[]},
-  {id:"d016",cap:"1.5kva",maker:"효선전기",model:"HSS-1500P",od:130,id_:50,h:75,wire:"1.85",weight:5.0,eff:"97.1",vppt:0.72,note:"수지형",images:[]},
-  {id:"d017",cap:"1.5kva",maker:"한서전기",model:"",od:130,id_:50,h:75,wire:"1.85",weight:5.0,eff:"97.1",vppt:0.72,note:"수지형(97년제조)",images:[]},
-  {id:"d018",cap:"1.5kva",maker:"대한트랜스",model:"",od:130,id_:50,h:75,wire:"1.85",weight:5.0,eff:"97.1",vppt:0.72,note:"수지형",images:[]},
-  {id:"d019",cap:"1.5kva",maker:"광표전기공업",model:"",od:130,id_:45,h:75,wire:"1.85",weight:5.0,eff:"미표기",vppt:0.72,note:"수지형",images:[]},
-  {id:"d020",cap:"1.5kva",maker:"삼립전기",model:"",od:130,id_:50,h:75,wire:"1.80",weight:5.0,eff:"97.1",vppt:0.72,note:"수지형",images:[]},
-  {id:"d021",cap:"1.5kva",maker:"대금중전기",model:"",od:130,id_:50,h:75,wire:"1.80",weight:5.1,eff:"97.1",vppt:0.71,note:"수지형",images:[]},
-  {id:"d022",cap:"1.5kva",maker:"유림기업",model:"",od:130,id_:50,h:75,wire:"1.85",weight:5.0,eff:"97.1",vppt:0.72,note:"수지형",images:[]},
-  {id:"d023",cap:"1.5kva",maker:"일신전기",model:"",od:130,id_:45,h:70,wire:"1.85",weight:5.0,eff:"97.1",vppt:0.71,note:"수지형",images:[]},
-  {id:"d024",cap:"1.5kva",maker:"한영전기",model:"",od:130,id_:50,h:70,wire:"1.85",weight:5.0,eff:"97.1",vppt:0.70,note:"수지형",images:[]},
-  {id:"d025",cap:"1.5kva",maker:"뉴텍씨스템즈",model:"",od:130,id_:50,h:75,wire:"1.85",weight:5.0,eff:"97.1",vppt:0.68,note:"수지형",images:[]},
-  {id:"d026",cap:"1.5kva",maker:"한창트랜스",model:"",od:130,id_:50,h:70,wire:"1.70",weight:4.8,eff:"97.1",vppt:0.71,note:"수지형",images:[]},
-  {id:"d027",cap:"1.5kva",maker:"동우산업주식회사",model:"",od:130,id_:50,h:70,wire:"1.70",weight:4.7,eff:"97.1",vppt:0.71,note:"수지형",images:[]},
-  {id:"d028",cap:"1.5kva",maker:"한영전기",model:"",od:130,id_:50,h:70,wire:"1.65",weight:4.4,eff:"90",vppt:0.61,note:"수지형(승압)",images:[]},
-  {id:"d029",cap:"1.5kva",maker:"대원전기기산업",model:"",od:130,id_:50,h:70,wire:"1.50",weight:4.5,eff:"97.1",vppt:0.66,note:"수지형",images:[]},
-  {id:"d030",cap:"1.5kva",maker:"대원전기기산업",model:"",od:130,id_:50,h:70,wire:"1.50",weight:4.3,eff:"97.1",vppt:0.61,note:"수지형",images:[]},
-  {id:"d031",cap:"2kva",maker:"대광",model:"DKT-2000A",od:150,id_:60,h:70,wire:"2.35",weight:6.2,eff:"91.2",vppt:0.68,note:"",images:[]},
-  {id:"d032",cap:"2kva",maker:"광표전기공업",model:"",od:150,id_:60,h:70,wire:"2.10",weight:5.7,eff:"95",vppt:0.71,note:"",images:[]},
-  {id:"d033",cap:"2kva",maker:"한일공업",model:"HI-2000D",od:150,id_:60,h:80,wire:"2.00",weight:6.9,eff:"미표기",vppt:0.74,note:"",images:[]},
-  {id:"d034",cap:"2kva",maker:"한일공업",model:"HI-2000D",od:150,id_:65,h:75,wire:"2.00",weight:6.0,eff:"미표기",vppt:0.75,note:"",images:[]},
-  {id:"d035",cap:"2kva",maker:"한영전기",model:"HY-2000D",od:150,id_:60,h:75,wire:"2.00",weight:6.4,eff:"미표기",vppt:0.69,note:"",images:[]},
-  {id:"d036",cap:"2kva",maker:"한주물산주식회사",model:"HJD-2000",od:150,id_:65,h:70,wire:"2.00",weight:6.2,eff:"미표기",vppt:0.67,note:"",images:[]},
-  {id:"d037",cap:"2kva",maker:"신영전기",model:"SY-2KVAD",od:150,id_:60,h:75,wire:"2.00",weight:6.0,eff:"96",vppt:0.65,note:"",images:[]},
-  {id:"d038",cap:"2kva",maker:"신우트랜스",model:"SW-2021",od:150,id_:60,h:70,wire:"2.00",weight:5.9,eff:"95",vppt:0.64,note:"",images:[]},
-  {id:"d039",cap:"2kva",maker:"신영전기",model:"",od:150,id_:60,h:70,wire:"2.00",weight:5.9,eff:"미표기",vppt:0.55,note:"수지형",images:[]},
-  {id:"d040",cap:"2kva",maker:"신영중전기",model:"",od:150,id_:60,h:70,wire:"2.00",weight:5.5,eff:"96",vppt:0.61,note:"",images:[]},
-  {id:"d041",cap:"2kva",maker:"대우전선",model:"DW-2000D",od:150,id_:65,h:65,wire:"2.00",weight:5.3,eff:"96",vppt:0.65,note:"",images:[]},
-  {id:"d042",cap:"2kva",maker:"미확인",model:"",od:130,id_:50,h:75,wire:"1.90",weight:5.0,eff:"미확인",vppt:0.72,note:"",images:[]},
-  {id:"d043",cap:"2kva",maker:"한일제작소",model:"HL-2000VA",od:150,id_:65,h:65,wire:"1.85",weight:5.2,eff:"95",vppt:0.66,note:"",images:[]},
-  {id:"d044",cap:"2kva",maker:"국일전기",model:"",od:145,id_:65,h:60,wire:"1.80",weight:4.8,eff:"92",vppt:0.62,note:"",images:[]},
-  {id:"d045",cap:"2kva",maker:"한창트랜스",model:"",od:150,id_:65,h:70,wire:"1.70",weight:5.4,eff:"미표기",vppt:0.66,note:"승압",images:[]},
-  {id:"d046",cap:"2kva",maker:"한진종합전기",model:"U-2000",od:145,id_:65,h:65,wire:"1.70",weight:4.9,eff:"95",vppt:0.51,note:"승압",images:[]},
-  {id:"d047",cap:"2kva",maker:"한서전기",model:"",od:130,id_:50,h:80,wire:"1.70",weight:5.3,eff:"95",vppt:0.61,note:"승압",images:[]},
-  {id:"d048",cap:"2kva",maker:"동아전기",model:"DA-2000U",od:120,id_:50,h:60,wire:"1.30",weight:3.4,eff:"95",vppt:0.51,note:"승압",images:[]},
-  {id:"d049",cap:"3kva",maker:"금성물산주식회사",model:"GSU-3000",od:170,id_:65,h:70,wire:"2.70",weight:7.5,eff:"96",vppt:0.79,note:"승압",images:[]},
-  {id:"d050",cap:"3kva",maker:"삼립전기",model:"SL-3000D",od:175,id_:65,h:75,wire:"2.60",weight:8.6,eff:"미표기",vppt:0.78,note:"",images:[]},
-  {id:"d051",cap:"3kva",maker:"한일공업",model:"",od:170,id_:65,h:80,wire:"2.60",weight:9.1,eff:"미표기",vppt:0.74,note:"",images:[]},
-  {id:"d052",cap:"3kva",maker:"광표전기공업",model:"",od:170,id_:65,h:75,wire:"2.45",weight:8.0,eff:"미표기",vppt:0.79,note:"",images:[]},
-  {id:"d053",cap:"3kva",maker:"보원전기",model:"",od:170,id_:70,h:80,wire:"2.40",weight:8.4,eff:"미표기",vppt:0.75,note:"",images:[]},
-  {id:"d054",cap:"3kva",maker:"신우트랜스",model:"",od:170,id_:65,h:70,wire:"2.40",weight:7.9,eff:"미표기",vppt:0.71,note:"",images:[]},
-  {id:"d055",cap:"3kva",maker:"한일제작소",model:"HL-3000VA",od:170,id_:65,h:70,wire:"2.40",weight:7.8,eff:"96",vppt:0.74,note:"",images:[]},
-  {id:"d056",cap:"3kva",maker:"금성전기",model:"KST-3000VA",od:170,id_:70,h:70,wire:"2.30",weight:7.7,eff:"96.2",vppt:0.75,note:"",images:[]},
-  {id:"d057",cap:"3kva",maker:"한일공업",model:"HIA-3000D",od:170,id_:65,h:70,wire:"2.30",weight:7.0,eff:"미표기",vppt:0.61,note:"",images:[]},
-  {id:"d058",cap:"3kva",maker:"신영전기",model:"SYT-3KVAD",od:150,id_:65,h:80,wire:"2.10",weight:5.7,eff:"미확인",vppt:0.68,note:"",images:[]},
-  {id:"d059",cap:"3kva",maker:"대원엔지니어링산업",model:"DWA-3KVAD",od:170,id_:70,h:70,wire:"1.90",weight:6.9,eff:"96",vppt:0.67,note:"",images:[]},
-  {id:"d060",cap:"3kva",maker:"금성물산주식회사",model:"GSD-3000",od:170,id_:75,h:60,wire:"1.80",weight:6.5,eff:"96",vppt:0.73,note:"",images:[]},
-  {id:"d061",cap:"3kva",maker:"한일파워",model:"HI 3KVA-D",od:130,id_:55,h:70,wire:"1.50",weight:4.6,eff:"96",vppt:0.61,note:"",images:[]},
-  {id:"d062",cap:"5kva",maker:"삼립전기",model:"SL-5000D",od:200,id_:80,h:85,wire:"3.20",weight:12.2,eff:"미표기",vppt:0.85,note:"",images:[]},
-  {id:"d063",cap:"5kva",maker:"삼립전기",model:"SL-5000D",od:200,id_:80,h:85,wire:"3.20",weight:11.9,eff:"미표기",vppt:0.85,note:"",images:[]},
-  {id:"d064",cap:"5kva",maker:"부산기업",model:"",od:195,id_:85,h:95,wire:"3.00",weight:12.8,eff:"미표기",vppt:0.96,note:"",images:[]},
-  {id:"d065",cap:"5kva",maker:"한창트랜스",model:"",od:210,id_:100,h:70,wire:"3.00",weight:12.0,eff:"미표기",vppt:0.86,note:"",images:[]},
-  {id:"d066",cap:"5kva",maker:"한진종합전기",model:"JRH-5000",od:170,id_:70,h:70,wire:"1.8/2.8",weight:0,eff:"미표기",vppt:0.67,note:"전압조정기",images:[]}
-];
+
 
 // ── 상태 ──
 let records=[], currentId=null, currentImages=[], lbImages=[], lbIdx=0;
@@ -767,21 +700,7 @@ async function startSupabase(){
   try{
     let data=await sbGetAll();
     if(!data.length){
-      setSyncStatus('syncing','기본 데이터 입력 중...');
-      const capOrder=['1kva','1.5kva','2kva','3kva','5kva','기타'];
-      const rows=DEFAULT_DATA.map(r=>{const {images,...rest}=r; return {
-        ...rest,
-        images_meta:JSON.stringify([]),
-        secondary:JSON.stringify({}),
-        type_:'링코어',
-        sort_key: (capOrder.indexOf(rest.cap)+'').padStart(2,'0')+'_'+rest.id
-      };});
-      for(let i=0;i<rows.length;i+=50){
-        const {error:ue}=await sb.from(TABLE).upsert(rows.slice(i,i+50),{onConflict:'id'});
-        if(ue){console.error('upsert error:',ue);throw new Error('기본데이터 입력 실패: '+ue.message);}
-      }
-      data=await sbGetAll();
-      toast('기본 데이터 66개가 등록되었습니다 ✓','success');
+      toast('데이터가 없습니다. 관리자 모드에서 데이터를 복구해주세요.','error');
     }
     records=sortRecords(data.map(parseRow));
     renderAll();
