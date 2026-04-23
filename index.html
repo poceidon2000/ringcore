@@ -3,143 +3,1295 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>링코어 및 EI코어 변압기 규격 관리</title>
+<title>링코어 변압기 규격 관리</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0f1117;--surface:#1a1d27;--surface2:#222536;--surface3:#2a2e42;--border:#2e3350;--border2:#3d4268;--accent:#4f9cf9;--accent2:#38d9a9;--accent3:#f9a825;--danger:#ff6b6b;--text:#e8eaf0;--text2:#9ba3bf;--text3:#6b7494;--radius:10px;--shadow:0 4px 24px rgba(0,0,0,.4)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
-.container{max-width:1400px;margin:0 auto;padding:20px;display:grid;grid-template-columns:350px 1fr;gap:20px}
-.panel{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow)}
-.section-title{padding:15px 20px;background:var(--surface2);border-bottom:1px solid var(--border);font-weight:700;display:flex;justify-content:space-between;align-items:center;color:var(--accent)}
-.form-body{padding:20px;overflow-y:auto;flex:1}
-.input-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:25px}
-.input-group{display:flex;flex-direction:column;gap:6px}
-.input-group label{font-size:12px;color:var(--text2);font-weight:500}
-input,select,textarea{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:6px;transition:0.2s;font-family:inherit}
-input:focus,select:focus{border-color:var(--accent);outline:none;background:var(--surface3)}
-input[readonly]{background:rgba(0,0,0,0.1);color:var(--accent2);font-weight:700;border-color:transparent}
-.calc-row{display:flex;align-items:center;gap:10px}
-.res-val{color:var(--accent2);font-family:'JetBrains Mono';font-weight:700;min-width:65px;text-align:right;font-size:13px}
-.btn-group{display:flex;gap:10px;padding:20px;background:var(--surface2);border-top:1px solid var(--border)}
-.btn{padding:10px 20px;border-radius:6px;border:none;cursor:pointer;font-weight:600;transition:0.2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-primary{background:var(--accent);color:white}
-#record-list{flex:1;overflow-y:auto;padding:10px}
-.record-item{padding:12px;border-radius:8px;margin-bottom:8px;cursor:pointer;border:1px solid var(--border);transition:0.2s}
-.record-item:hover{background:var(--surface2);border-color:var(--accent)}
-.record-item.active{background:rgba(79,156,249,0.1);border-color:var(--accent)}
+
+/* 로그인 */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#1a2240,#0f1117 70%)}
+.login-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:40px 36px;width:340px;box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
+.login-box .lb-icon{font-size:48px;margin-bottom:16px}
+.login-box h2{font-size:20px;font-weight:700;margin-bottom:4px}
+.login-box p{font-size:12px;color:var(--text3);margin-bottom:28px}
+.login-box input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:12px;text-align:center;letter-spacing:4px;font-size:20px;transition:border-color .15s}
+.login-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,156,249,.1)}
+.login-box .err{color:var(--danger);font-size:12px;margin-bottom:10px;min-height:18px}
+.login-box .login-btns{display:flex;flex-direction:column;gap:8px}
+.login-box .btn-login{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.login-box .btn-login:hover{background:#3d8ae0;transform:translateY(-1px)}
+.login-box .btn-admin{width:100%;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:8px;padding:9px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.login-box .btn-admin:hover{color:var(--text2);border-color:var(--border2)}
+
+/* 관리자 모달 */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.75);align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:32px;width:480px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal-box h3{font-size:18px;font-weight:700;margin-bottom:6px}
+.modal-box p{font-size:12px;color:var(--text3);margin-bottom:20px}
+.admin-actions{display:flex;flex-direction:column;gap:10px}
+.admin-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s}
+.admin-card:hover{border-color:var(--accent);background:rgba(79,156,249,.05)}
+.admin-card .ac-icon{font-size:28px;width:44px;text-align:center;flex-shrink:0}
+.admin-card .ac-info h4{font-size:14px;font-weight:600;margin-bottom:2px}
+.admin-card .ac-info p{font-size:11px;color:var(--text3);margin:0}
+.modal-close{float:right;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1;margin-top:-4px}
+
+/* 헤더 */
+header{background:linear-gradient(135deg,#1a1d27,#161928);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.5)}
+header .logo{display:flex;align-items:center;gap:12px}
+header .logo .icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#2d7dd2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+header h1{font-size:16px;font-weight:700;letter-spacing:-.3px}
+header h1 span{color:var(--accent)}
+.header-actions{display:flex;gap:8px;align-items:center}
+.sync-status{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--accent2)}
+.sync-dot.syncing{background:var(--accent3);animation:pulse 1s infinite}
+.sync-dot.error{background:var(--danger)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* 버튼 */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:none;border-radius:7px;font-size:13px;font-family:inherit;font-weight:500;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#3d8ae0;transform:translateY(-1px);box-shadow:0 4px 12px rgba(79,156,249,.3)}
+.btn-success{background:var(--accent2);color:#0f1117}
+.btn-success:hover{background:#2bc498;transform:translateY(-1px)}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface3);color:var(--text)}
+.btn-danger{background:rgba(255,107,107,.15);color:var(--danger);border:1px solid rgba(255,107,107,.3)}
+.btn-danger:hover{background:rgba(255,107,107,.25)}
+.btn-sm{padding:5px 10px;font-size:12px}
+
+/* 레이아웃 */
+.app{display:flex;height:calc(100vh - 60px)}
+
+/* 사이드바 */
+.sidebar{width:270px;min-width:270px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-head{padding:14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.search-box{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:0 10px;gap:6px}
+.search-box input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:13px;padding:8px 0}
+.search-box input::placeholder{color:var(--text3)}
+.search-clear{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0 2px;flex-shrink:0}
+.filter-row{display:flex;gap:4px;flex-wrap:wrap}
+.filter-chip{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);transition:all .15s}
+.filter-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.record-list{flex:1;overflow-y:auto;padding:6px}
+.record-list::-webkit-scrollbar{width:4px}
+.record-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.record-item{padding:10px 12px;border-radius:var(--radius);cursor:pointer;transition:all .15s;border:1px solid transparent;margin-bottom:3px;position:relative}
+.record-item:hover{background:var(--surface2);border-color:var(--border)}
+.record-item.active{background:rgba(79,156,249,.1);border-color:rgba(79,156,249,.4)}
+.ri-top{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.ri-cap{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:rgba(79,156,249,.15);color:var(--accent)}
+.ri-maker{font-size:12px;font-weight:600}
+.ri-model{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.ri-dims{font-size:10px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:1px}
+.ri-img-badge{position:absolute;top:8px;right:8px;font-size:10px;color:var(--accent2);background:rgba(56,217,169,.1);padding:1px 5px;border-radius:8px}
+.empty-state{text-align:center;padding:30px 16px;color:var(--text3)}
+.empty-state .es-icon{font-size:32px;margin-bottom:8px}
+.sidebar-footer{padding:10px 12px;border-top:1px solid var(--border)}
+
+/* 메인 */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.main::-webkit-scrollbar{width:6px}
+.main::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* 탭 */
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);padding:0 20px;flex-shrink:0}
+.tab{padding:11px 16px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* 전체목록 */
+.table-view{padding:20px;flex:1}
+.table-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:var(--surface2);padding:9px 10px;text-align:center;font-weight:600;color:var(--text2);border:1px solid var(--border);font-size:11px;white-space:nowrap}
+.data-table td{padding:8px 10px;border:1px solid var(--border);text-align:center;vertical-align:middle}
+.data-table tr:hover td{background:var(--surface2);cursor:pointer}
+.data-table tr.row-active td{background:rgba(79,156,249,.08)}
+.td-mono{font-family:'JetBrains Mono',monospace}
+.td-calc{color:var(--accent2);font-weight:600;font-family:'JetBrains Mono',monospace}
+.td-cap{font-weight:700;color:var(--accent);font-size:11px}
+mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;padding:0 1px}
+
+/* 규격입력 */
+.detail-panel{padding:20px;flex:1}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.panel-header h2{font-size:17px;font-weight:700}
+.ph-actions{display:flex;gap:8px}
+.form-grid{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px}
+.form-group.w-sm{width:90px;min-width:90px}
+.form-group.w-md{width:120px;min-width:120px}
+.form-group.w-lg{width:160px;min-width:160px}
+.form-group.w-xl{width:200px;min-width:200px}
+.form-group.w-full{flex:1;min-width:160px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.form-group .hint{font-size:12px;color:var(--text3);margin-top:2px;line-height:1.4}
+.form-group input,.form-group select{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:inherit;font-size:13px;transition:border-color .15s;outline:none}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,156,249,.1)}
+.form-group input.auto-calc{background:rgba(56,217,169,.05);border-color:rgba(56,217,169,.25);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-weight:600}
+.section-title{font-size:14px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+/* URL 링크 */
+.url-group{display:flex;flex-direction:column;gap:4px}
+.url-group label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.url-input-row{display:flex;gap:6px;align-items:center}
+.url-input-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-family:inherit;font-size:12px;outline:none;transition:border-color .15s;min-width:0}
+.url-input-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,156,249,.1)}
+.url-btn{flex-shrink:0;height:34px;padding:0 10px;border:none;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.url-btn-open{background:var(--accent);color:#fff}
+.url-btn-open:hover{background:#3d8ae0}
+.url-btn-copy{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.url-btn-copy:hover{background:var(--surface3);color:var(--text)}
+.url-hint{font-size:12px;color:var(--text3);margin-top:2px}
+.calc-display{background:linear-gradient(135deg,rgba(56,217,169,.08),rgba(56,217,169,.03));border:1px solid rgba(56,217,169,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:20px}
+.cd-label{font-size:11px;color:var(--text3);margin-bottom:3px}
+.cd-value{font-size:26px;font-weight:700;color:var(--accent2);font-family:'JetBrains Mono',monospace}
+.cd-unit{font-size:13px;color:var(--text2);margin-left:3px}
+.cd-formula{font-size:10px;color:var(--text3);margin-top:3px;font-family:'JetBrains Mono',monospace}
+
+/* 2차권선 섹션 */
+.sec2-box{border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:18px}
+.sec2-sub{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.3px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.g5{display:flex;flex-wrap:wrap;gap:10px}
+.g4{display:flex;flex-wrap:wrap;gap:10px}
+.g3{display:flex;flex-wrap:wrap;gap:10px}
+.g2{display:flex;flex-wrap:wrap;gap:10px}
+.meas-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.meas-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px}
+.meas-tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px;margin-bottom:8px}
+.tag-d{background:rgba(79,156,249,.15);color:var(--accent)}
+.tag-t{background:rgba(249,168,37,.15);color:var(--accent3)}
+.result-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.rc .rc-lbl{font-size:12px;color:var(--text3);margin-bottom:3px}
+.rc .rc-val{font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.rc .rc-val.info{color:var(--accent)}
+.rc .rc-val.warn{color:var(--accent3)}
+.rc .rc-diff{font-size:12px;color:var(--text3);margin-top:2px}
+.diff-rows{margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+.diff-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)}
+.diff-row:last-child{border-bottom:none}
+.diff-lbl{color:var(--text2)}
+.c-good{color:var(--accent2)}
+.c-warn{color:var(--accent3)}
+
+/* 이미지 */
+.img-dropzone{border:2px dashed var(--border2);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);position:relative}
+.img-dropzone:hover,.img-dropzone.drag-over{border-color:var(--accent);background:rgba(79,156,249,.05)}
+.img-dropzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.img-dropzone .dz-icon{font-size:24px;margin-bottom:6px;opacity:.5}
+.img-dropzone .dz-text{font-size:12px;color:var(--text2)}
+.img-dropzone .dz-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.img-dropzone kbd{background:var(--surface3);padding:1px 4px;border-radius:3px;border:1px solid var(--border2);font-family:'JetBrains Mono',monospace;font-size:10px}
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:10px}
+.img-thumb{position:relative;aspect-ratio:1;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:all .15s;background:var(--surface2)}
+.img-thumb:hover{border-color:var(--accent);transform:scale(1.02)}
+.img-thumb img{width:100%;height:100%;object-fit:cover}
+.it-del{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(255,107,107,.85);border:none;border-radius:50%;color:#fff;font-size:11px;display:none;align-items:center;justify-content:center;cursor:pointer}
+.img-thumb:hover .it-del{display:flex}
+.it-num{position:absolute;bottom:3px;left:3px;font-size:9px;background:rgba(0,0,0,.6);color:#fff;padding:1px 4px;border-radius:3px;font-family:'JetBrains Mono',monospace}
+
+/* 라이트박스 */
+.lightbox{display:none;position:fixed;inset:0;z-index:998;background:rgba(0,0,0,.9);align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:80vh;border-radius:8px;box-shadow:0 8px 60px rgba(0,0,0,.6)}
+.lb-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lb-close:hover{background:rgba(255,255,255,.2)}
+.lb-nav{display:flex;align-items:center;gap:14px}
+.lb-arrow{background:rgba(255,255,255,.1);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lb-arrow:hover{background:rgba(255,255,255,.2)}
+.lb-counter{font-size:12px;color:rgba(255,255,255,.6)}
+
+/* 액션바 */
+.action-bar{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--border);background:var(--surface);justify-content:flex-end;flex-shrink:0}
+
+/* 토스트 */
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:6px}
+.toast{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-size:13px;box-shadow:var(--shadow);animation:slideIn .2s ease;display:flex;align-items:center;gap:8px}
+.toast.success{border-color:rgba(56,217,169,.4)}
+.toast.error{border-color:rgba(255,107,107,.4)}
+@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+.tab-hidden{display:none!important;visibility:hidden!important}
+
+@media print{
+  body{background:#fff!important;color:#000!important}
+  header,.sidebar,.tabs,.action-bar,.img-dropzone,.it-del,.btn,.ph-actions,.login-screen,.modal-overlay{display:none!important}
+  .app{height:auto;display:block}
+  .main{overflow:visible}
+  .detail-panel{padding:16px}
+  .form-group input,.form-group select{background:#fff!important;color:#000!important;border-color:#ccc!important}
+  .calc-display{background:#f0fff8!important;border-color:#38d9a9!important}
+  .sec2-box{background:#f8f8f8!important;border-color:#ccc!important}
+  .img-grid{grid-template-columns:repeat(4,1fr)}
+  @page{margin:12mm}
+}
 </style>
 </head>
 <body>
-<div class="container">
-    <aside class="panel">
-        <div class="section-title">제품 목록 <span id="count-tag" style="font-size:12px;color:var(--text3)">0</span></div>
-        <div id="record-list"></div>
-    </aside>
-    <main class="panel">
-        <div class="section-title">규격 상세 정보 및 계산</div>
-        <form id="main-form" class="form-body">
-            <h3 style="margin-bottom:15px;font-size:14px;color:var(--text2)">1. 기본 정보 및 코어 규격</h3>
-            <div class="input-grid">
-                <div class="input-group">
-                    <label>종류</label>
-                    <select id="f_type" onchange="toggleEILayout()">
-                        <option value="링코어">링코어</option>
-                        <option value="EI코어">EI코어</option>
-                    </select>
-                </div>
-                <div class="input-group" id="tongue_wrap" style="display:none">
-                    <label>중앙다리폭 (EI 혀 폭) mm</label>
-                    <input type="number" id="f_tongue" step="0.1" oninput="calculateCore()">
-                </div>
-                <div class="input-group">
-                    <label id="lbl_od">외경 OD (mm)</label>
-                    <input type="number" id="f_od" step="0.1" oninput="calculateCore()">
-                </div>
-                <div class="input-group">
-                    <label id="lbl_id">내경 ID (mm)</label>
-                    <input type="number" id="f_id" step="0.1" oninput="calculateCore()">
-                </div>
-                <div class="input-group">
-                    <label id="lbl_h">높이 H (mm)</label>
-                    <input type="number" id="f_h" step="0.1" oninput="calculateCore()">
-                </div>
-                <div class="input-group">
-                    <label>단면적 (cm²)</label>
-                    <input type="number" id="f_area" readonly>
-                </div>
-            </div>
-            <h3 style="margin-bottom:15px;font-size:14px;color:var(--text2)">2. 2차 권선 및 케이블 정보</h3>
-            <div class="input-grid">
-                <div class="input-group">
-                    <label>이론 2차권선길이(M)</label>
-                    <input type="number" id="f_s_wlen" readonly>
-                </div>
-                <div class="input-group">
-                    <label>이론적 케이블 전체길이(M)</label>
-                    <div class="calc-row">
-                        <span id="res_eff_1" class="res-val">0.0%</span>
-                        <input type="number" id="f_s_cab_len_theory" step="0.01" oninput="calculateCore()">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label>실제 케이블 전체길이(M)</label>
-                    <input type="number" id="f_s_cab_len_real" step="0.01" oninput="calculateCore()">
-                </div>
-            </div>
-            <h3 style="margin-bottom:15px;font-size:14px;color:var(--text2)">3. 전기 특성 및 방식</h3>
-            <div class="input-grid">
-                <div class="input-group">
-                    <label>무부하전류(A) - 기준</label>
-                    <input type="number" id="f_noload_base" step="0.001">
-                </div>
-                <div class="input-group">
-                    <label>무부하전류(A) - 1차권선후</label>
-                    <input type="number" id="f_noload_after" step="0.001">
-                </div>
-                <div class="input-group">
-                    <label>승강압 방식</label>
-                    <select id="f_note">
-                        <option value="다운 (기본값)">다운 (기본값)</option>
-                        <option value="승압">승압</option>
-                        <option value="수지형 다운">수지형 다운</option>
-                        <option value="수지형 승압">수지형 승압</option>
-                        <option value="기타">기타</option>
-                    </select>
-                </div>
-            </div>
-        </form>
-        <div class="btn-group">
-            <button class="btn btn-primary" onclick="alert('데이터가 저장되었습니다.')">데이터 저장</button>
-            <button class="btn" style="background:var(--surface3)">신규 작성</button>
-        </div>
-    </main>
+
+<!-- 로그인 -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="lb-icon">🔄</div>
+    <h2>링코어 변압기 관리</h2>
+    <p>접속 비밀번호를 입력해 주세요</p>
+    <input type="password" id="pwInput" placeholder="••••" maxlength="30">
+    <div class="err" id="pwErr"></div>
+    <div class="login-btns">
+      <button class="btn-login" onclick="doLogin()">접속</button>
+      <button class="btn-admin" onclick="openAdminModal()">⚙ 관리자 모드</button>
+    </div>
+  </div>
 </div>
-<script>
-function toggleEILayout() {
-    const type = document.getElementById('f_type').value;
-    const isEI = (type === "EI코어");
-    document.getElementById('lbl_od').innerText = isEI ? "외경 OD (EI 가로) mm" : "외경 OD (mm)";
-    document.getElementById('lbl_id').innerText = isEI ? "내경 ID (EI 세로) mm" : "내경 ID (mm)";
-    document.getElementById('lbl_h').innerText = isEI ? "높이 H (EI 높이) mm" : "높이 H (mm)";
-    document.getElementById('tongue_wrap').style.display = isEI ? "block" : "none";
-    if(isEI) {
-        const od = parseFloat(document.getElementById('f_od').value) || 0;
-        document.getElementById('f_tongue').value = (od / 3).toFixed(1);
-    }
-    calculateCore();
+
+<!-- 관리자 모달 -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAdminModal()">✕</button>
+    <h3>⚙ 관리자 모드</h3>
+    <p>데이터 백업 및 복구를 관리합니다</p>
+    <div style="margin-bottom:16px">
+      <input type="password" id="adminPwInput" placeholder="관리자 비밀번호" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:14px;outline:none;margin-bottom:6px">
+      <div class="err" id="adminPwErr"></div>
+    </div>
+    <div class="admin-actions" id="adminActions" style="display:none">
+      <div class="admin-card" onclick="doBackup()">
+        <div class="ac-icon">💾</div>
+        <div class="ac-info">
+          <h4>전체 데이터 백업</h4>
+          <p>모든 제품 규격 + 첨부 사진 포함하여 JSON 파일로 저장</p>
+        </div>
+      </div>
+      <div class="admin-card" onclick="document.getElementById('restoreInput').click()">
+        <div class="ac-icon">📂</div>
+        <div class="ac-info">
+          <h4>데이터 복구</h4>
+          <p>백업 JSON 파일을 불러와 데이터를 복구합니다 (기존 데이터 덮어쓰기)</p>
+        </div>
+        <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="doRestore(event)">
+      </div>
+      <div id="adminStatus" style="font-size:12px;color:var(--text3);text-align:center;padding:4px 0;display:none"></div>
+    </div>
+    <button style="width:100%;margin-top:14px;background:none;border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text3);cursor:pointer;font-family:inherit;font-size:13px" id="adminVerifyBtn" onclick="verifyAdmin()">확인</button>
+  </div>
+</div>
+
+<!-- 앱 -->
+<div id="appRoot" style="display:none">
+  <header>
+    <div class="logo">
+      <div class="icon">🔄</div>
+      <h1>링코어 <span>변압기</span> 규격 관리</h1>
+    </div>
+    <div class="header-actions">
+      <div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncText">연결 중...</span></div>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">🔒 잠금</button>
+    </div>
+  </header>
+
+  <div class="app">
+    <!-- 사이드바 -->
+    <div class="sidebar">
+      <div class="sidebar-head">
+        <div class="search-box">
+          <span style="font-size:14px;color:var(--text3)">🔍</span>
+          <input type="text" id="searchInput" placeholder="제조사, 모델명 검색..." oninput="onSearch(this.value)">
+          <button class="search-clear" id="searchClear" onclick="clearSearch()" title="검색 초기화">✕</button>
+        </div>
+        <div class="filter-row">
+          <div class="filter-chip active" data-cap="all" onclick="setFilter(this)">전체</div>
+          <div class="filter-chip" data-cap="1kva" onclick="setFilter(this)">1kVA</div>
+          <div class="filter-chip" data-cap="1.5kva" onclick="setFilter(this)">1.5kVA</div>
+          <div class="filter-chip" data-cap="2kva" onclick="setFilter(this)">2kVA</div>
+          <div class="filter-chip" data-cap="3kva" onclick="setFilter(this)">3kVA</div>
+          <div class="filter-chip" data-cap="5kva" onclick="setFilter(this)">5kVA</div>
+          <div class="filter-chip" data-cap="기타" onclick="setFilter(this)">기타</div>
+        </div>
+      </div>
+      <div class="record-list" id="recordList">
+        <div class="empty-state"><div class="es-icon">⏳</div><p>불러오는 중...</p></div>
+      </div>
+      <div class="sidebar-footer">
+        <button class="btn btn-primary btn-sm" onclick="openNewForm()" style="width:100%;justify-content:center">➕ 새 제품 등록</button>
+      </div>
+    </div>
+
+    <!-- 메인 -->
+    <div class="main" id="mainPanel">
+      <div class="tabs">
+        <div class="tab active" id="tabList" onclick="switchTab('list')">📊 전체목록</div>
+        <div class="tab" id="tabDetail" onclick="switchTab('detail')">📋 규격 입력</div>
+      </div>
+
+      <!-- 전체목록 탭 -->
+      <div id="tabContentList" style="flex:1;overflow-y:auto">
+        <div class="table-view">
+          <div class="table-toolbar">
+            <div style="font-size:13px;color:var(--text2)">
+              <span id="listLabel" style="color:var(--text3)">전체</span>&nbsp;<strong id="totalCount" style="color:var(--accent)">0</strong>개
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-ghost btn-sm" onclick="printTable()">🖨 인쇄</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table">
+              <thead><tr>
+                <th>#</th><th>용량</th><th>제조사</th><th>모델명</th>
+                <th>외경</th><th>내경</th><th>높이</th><th>심선</th>
+                <th>단면적(cm²)</th><th>무게(kg)</th><th>효율(%)</th><th>턴당전압(V)</th><th>비고</th><th>사진</th>
+              </tr></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 규격입력 탭 -->
+      <div id="tabContentDetail" style="display:none;flex:1;overflow-y:auto">
+        <div class="detail-panel">
+          <div class="panel-header">
+            <h2 id="panelTitle">새 제품 등록</h2>
+            <div class="ph-actions">
+              <button class="btn btn-danger btn-sm" id="deleteBtn" onclick="deleteRecord()" style="display:none">🗑 삭제</button>
+              <button class="btn btn-ghost btn-sm" onclick="cancelEdit()">취소</button>
+              <button class="btn btn-success btn-sm" onclick="saveRecord()">💾 저장</button>
+            </div>
+          </div>
+
+          <div class="section-title">기본 정보</div>
+          <div class="form-grid">
+            <div class="form-group w-md"><label>종류</label>
+              <select id="f_type" style="width:100%">
+                <option value="링코어" selected>링코어</option>
+                <option value="EI">EI</option>
+                <option value="AVR">AVR</option>
+                <option value="슬라이닥스">슬라이닥스</option>
+              </select>
+            </div>
+            <div class="form-group w-md"><label>용량</label>
+              <select id="f_cap" style="width:100%"><option value="">선택...</option><option>1kva</option><option>1.5kva</option><option>2kva</option><option>3kva</option><option>5kva</option><option>기타</option></select>
+            </div>
+            <div class="form-group w-xl"><label>제조사</label><input type="text" id="f_maker" placeholder="예) 한서전기" style="width:100%"></div>
+            <div class="form-group w-lg"><label>모델명</label><input type="text" id="f_model" placeholder="예) HY-1000U" style="width:100%"></div>
+            <div class="form-group w-lg"><label>비고</label>
+              <select id="f_note" onchange="toggleNoteCustom()" style="width:100%">
+                <option value="다운" selected>다운</option>
+                <option value="승압">승압</option>
+                <option value="수지형">수지형</option>
+                <option value="수지형(승압)">수지형(승압)</option>
+                <option value="수지형(다운)">수지형(다운)</option>
+                <option value="">기타/직접입력</option>
+              </select>
+            </div>
+            <div class="form-group w-lg" id="note_custom_wrap" style="display:none">
+              <label>비고 직접입력</label>
+              <input type="text" id="f_note_custom" placeholder="직접 입력" style="width:100%">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+            <div class="url-group">
+              <label>정보 링크 1</label>
+              <div class="url-input-row">
+                <input type="url" id="f_url1" placeholder="https://...">
+                <button class="url-btn url-btn-open" onclick="openUrl('f_url1')" title="열기">↗</button>
+                <button class="url-btn url-btn-copy" onclick="copyUrl('f_url1')" title="복사">📋</button>
+              </div>
+              <div class="url-hint">URL을 붙여넣고 ↗ 버튼으로 열기, 📋 버튼으로 복사</div>
+            </div>
+            <div class="url-group">
+              <label>정보 링크 2</label>
+              <div class="url-input-row">
+                <input type="url" id="f_url2" placeholder="https://...">
+                <button class="url-btn url-btn-open" onclick="openUrl('f_url2')" title="열기">↗</button>
+                <button class="url-btn url-btn-copy" onclick="copyUrl('f_url2')" title="복사">📋</button>
+              </div>
+              <div class="url-hint">URL을 붙여넣고 ↗ 버튼으로 열기, 📋 버튼으로 복사</div>
+            </div>
+          </div>
+
+          <div class="section-title">코어 치수</div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:18px">
+            <div class="form-group" style="width:110px;min-width:110px">
+              <label>외경 OD (mm)</label>
+              <input type="number" id="f_od" placeholder="예) 130" oninput="calcArea();calcSecondary()" style="width:100%">
+            </div>
+            <div class="form-group" style="width:110px;min-width:110px">
+              <label>내경 ID (mm)</label>
+              <input type="number" id="f_id" placeholder="예) 50" oninput="calcArea();calcSecondary()" style="width:100%">
+            </div>
+            <div class="form-group" style="width:100px;min-width:100px">
+              <label>높이 H (mm)</label>
+              <input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()" style="width:100%">
+            </div>
+            <div class="form-group" style="width:90px;min-width:90px">
+              <label>심선 (mm)</label>
+              <input type="text" id="f_wire" placeholder="예) 1.85" style="width:100%">
+            </div>
+            <div class="calc-display" style="margin-bottom:0;flex:1;min-width:230px">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px">단면적 (자동계산) = (외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
+                <div style="display:flex;align-items:baseline;gap:4px">
+                  <span class="cd-value" id="calcValue">—</span><span class="cd-unit">cm²</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title">전기 특성</div>
+          <div class="form-grid">
+            <div class="form-group w-lg"><label>완제품 무게 (kg)</label><input type="number" id="f_weight_total" placeholder="예) 8.5" step="0.01" style="width:100%"></div>
+            <div class="form-group w-lg"><label>링코어 무게 (kg)</label><input type="number" id="f_weight" placeholder="예) 5.0" step="0.01" style="width:100%"></div>
+            <div class="form-group w-lg"><label>차단기 용량 (A)</label><input type="text" id="f_breaker" placeholder="예) 30A" style="width:100%"></div>
+            <div class="form-group w-md"><label>효율 (%)</label><input type="text" id="f_eff" placeholder="예) 97.1" style="width:100%"></div>
+            <div class="form-group w-xl"><label>턴당전압 (V) — 기준</label><input type="number" id="f_vppt" placeholder="예) 0.72" step="0.01" style="width:100%"></div>
+            <div class="form-group w-xl"><label>턴당전압 (V) — 1차권선후</label><input type="number" id="f_vppt2" placeholder="예) 0.70" step="0.01" style="width:100%"></div>
+          </div>
+
+          <!-- 2차권선 계산 -->
+          <div class="section-title">2차 권선 계산</div>
+          <div class="sec2-box">
+            <div class="sec2-sub">2차 권선 정보</div>
+            <div class="g5">
+              <div class="form-group w-lg"><label>권선 단면적 (mm²)</label><input type="number" id="s_area" placeholder="예) 50" oninput="calcSecondary()" style="width:100%"><span class="hint">케이블 굵기</span></div>
+              <div class="form-group w-md"><label>턴수 (턴)</label><input type="number" id="s_turns" placeholder="예) 10" oninput="calcSecondary()" style="width:100%"><span class="hint">감은 횟수</span></div>
+              <div class="form-group w-md"><label>2차 전압 (V)</label><input type="number" id="s_v2" placeholder="예) 6.5" oninput="calcSecondary()" style="width:100%"><span class="hint">무부하 출력</span></div>
+              <div class="form-group w-lg"><label>턴당 전압 (V/턴)</label><input type="number" class="auto-calc" id="s_vpt" placeholder="자동계산" readonly style="width:100%"><span class="hint" id="s_vpt_hint">자동계산</span></div>
+              <div class="form-group w-md"><label>여유율 (%)</label><input type="number" id="s_margin" placeholder="20" value="20" oninput="calcSecondary()" style="width:100%"><span class="hint">인출 여유</span></div>
+            </div>
+            <div class="g3" style="margin-top:10px">
+              <div class="form-group w-xl"><label>2차권선 길이 (m)</label><input type="number" class="auto-calc" id="s_wlen" placeholder="자동계산" oninput="calcSecondary()" style="width:100%"><span class="hint" id="s_wlen_hint">π×(OD+ID)/2/1000×턴×(1+여유%)</span></div>
+              <div class="form-group w-xl"><label>권선 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_wire_r" placeholder="자동계산" readonly style="width:100%"><span class="hint" id="s_wire_r_hint">길이÷(56×단면적)</span></div>
+            </div>
+
+            <div class="sec2-sub" style="margin-top:14px">링코어에서 스폿봉까지 케이블 정보</div>
+            <div class="g3">
+              <div class="form-group w-lg"><label>케이블 단면적 (mm²)</label><input type="number" id="s_cab_area" placeholder="예) 50" oninput="calcSecondary()" style="width:100%"><span class="hint">스폿봉까지</span></div>
+              <div class="form-group w-xl"><label>링코어→스폿봉 거리 (m)</label><input type="number" id="s_cab_len" placeholder="예) 0.8" oninput="calcSecondary()" style="width:100%"><span class="hint">편도 거리 (×2 자동계산)</span></div>
+              <div class="form-group w-lg"><label>케이블 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_cab_r" placeholder="자동계산" readonly style="width:100%"><span class="hint" id="s_cab_r_hint">(거리×2)÷(56×단면적)</span></div>
+            </div>
+            <div class="g3" style="margin-top:10px">
+              <div class="form-group w-lg"><label>케이블 총길이 — 양쪽 (m)</label><input type="number" class="auto-calc" id="s_cab_total_len" placeholder="자동: 거리×2" readonly style="width:100%"><span class="hint" id="s_cab_total_hint">거리×2</span></div>
+              <div class="form-group w-xl"><label>2차권선~스폿봉 전체길이 (m)</label><input type="number" class="auto-calc" id="s_total_len" placeholder="자동: 권선+케이블" readonly style="width:100%"><span class="hint" id="s_total_hint">권선길이+케이블총길이</span></div>
+            </div>
+
+            <div class="sec2-sub" style="margin-top:14px">대전류단자 (미사용시 0 입력)</div>
+            <div class="g3">
+              <div class="form-group w-xl"><label>단자 접촉저항 (mΩ/개)</label><input type="number" id="s_term_r" placeholder="예) 0.04" oninput="calcSecondary()" style="width:100%"><span class="hint">구리 ~0.03~0.05 / 크레토스 ~0.08~0.10</span></div>
+              <div class="form-group w-md"><label>단자 개수</label><input type="number" id="s_term_n" placeholder="2" value="2" oninput="calcSecondary()" style="width:100%"><span class="hint">양극 각 1개</span></div>
+              <div class="form-group w-lg"><label>단자 총저항 (mΩ)</label><input type="number" class="auto-calc" id="s_term_total" placeholder="자동계산" readonly style="width:100%"><span class="hint" id="s_term_hint">저항×개수</span></div>
+            </div>
+
+            <div class="sec2-sub" style="margin-top:14px">실측값 입력</div>
+            <div class="meas-wrap">
+              <div class="meas-box">
+                <div class="meas-tag tag-d">직결</div>
+                <div class="g2">
+                  <div class="form-group w-lg"><label>실측 피크 (kA)</label><input type="number" id="s_md_peak" placeholder="예) 3.05" oninput="calcSecondary()" style="width:100%"></div>
+                  <div class="form-group w-lg"><label>실측 실효 (kA)</label><input type="number" id="s_md_rms" placeholder="예) 2.23" oninput="calcSecondary()" style="width:100%"></div>
+                </div>
+              </div>
+              <div class="meas-box">
+                <div class="meas-tag tag-t">대전류단자</div>
+                <div class="g2">
+                  <div class="form-group w-lg"><label>실측 피크 (kA)</label><input type="number" id="s_mt_peak" placeholder="예) 2.95" oninput="calcSecondary()" style="width:100%"></div>
+                  <div class="form-group w-lg"><label>실측 실효 (kA)</label><input type="number" id="s_mt_rms" placeholder="예) 2.14" oninput="calcSecondary()" style="width:100%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 결과 -->
+            <div class="result-cards">
+              <div class="rc"><div class="rc-lbl">직결 이론 피크</div><div class="rc-val info" id="r_d_peak">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span></div><div class="rc-diff" id="r_d_peak_d">실측 대비 —</div></div>
+              <div class="rc"><div class="rc-lbl">직결 이론 실효</div><div class="rc-val info" id="r_d_rms">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span></div><div class="rc-diff" id="r_d_rms_d">실측 대비 —</div></div>
+              <div class="rc"><div class="rc-lbl">저항합계 (직결)</div><div class="rc-val info" id="r_d_ohm">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">mΩ</span></div><div class="rc-diff">권선+케이블</div></div>
+              <div class="rc"><div class="rc-lbl">단자 이론 피크</div><div class="rc-val warn" id="r_t_peak">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span></div><div class="rc-diff" id="r_t_peak_d">실측 대비 —</div></div>
+              <div class="rc"><div class="rc-lbl">단자 이론 실효</div><div class="rc-val warn" id="r_t_rms">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span></div><div class="rc-diff" id="r_t_rms_d">실측 대비 —</div></div>
+              <div class="rc"><div class="rc-lbl">저항합계 (단자)</div><div class="rc-val warn" id="r_t_ohm">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">mΩ</span></div><div class="rc-diff">+단자저항</div></div>
+            </div>
+            <div class="diff-rows">
+              <div class="diff-row"><span class="diff-lbl">직결 전류손실 (이론→실측)</span><span class="c-good" id="loss_d">—</span></div>
+              <div class="diff-row"><span class="diff-lbl">단자에 의한 이론 전류손실</span><span class="c-warn" id="loss_t">—</span></div>
+              <div class="diff-row"><span class="diff-lbl">실측 직결 대비 단자 전류감소</span><span class="c-warn" id="loss_vs">—</span></div>
+            </div>
+          </div>
+
+          <!-- 이미지 -->
+          <div class="section-title">제품 사진</div>
+          <div class="img-dropzone" id="dropzone" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)" onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" accept="image/*" multiple onchange="onFileSelect(event)">
+            <div class="dz-icon">📷</div>
+            <div class="dz-text">클릭 또는 드래그&드롭으로 사진 추가</div>
+            <div class="dz-sub"><kbd>Ctrl+V</kbd> 붙여넣기도 가능</div>
+          </div>
+          <div class="img-grid" id="imgGrid"></div>
+        </div>
+        <div class="action-bar">
+          <button class="btn btn-ghost" onclick="printRecord()">🖨 인쇄</button>
+          <button class="btn btn-success" onclick="saveRecord()">💾 저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 라이트박스 -->
+<div class="lightbox" id="lightbox" onclick="closeLightboxBg(event)">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-nav">
+    <button class="lb-arrow" onclick="lbPrev(event)">‹</button>
+    <span class="lb-counter" id="lbCounter"></span>
+    <button class="lb-arrow" onclick="lbNext(event)">›</button>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const SUPA_URL = "https://uhfcqiuzajiqgcbrstal.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVoZmNxaXV6YWppcWdjYnJzdGFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NDQ3NjcsImV4cCI6MjA5MjMyMDc2N30.UWDBcWK4eUbPRarmYIQ2fZnPU2TtWTJOQVjJQ4SCxQI";
+const BUCKET = "images";
+const TABLE  = "records";
+
+const sb = createClient(SUPA_URL, SUPA_KEY);
+
+// ── Supabase DB 헬퍼 ──
+async function sbGetAll(){
+  const {data,error}=await sb.from(TABLE).select('*').order('sort_key',{ascending:true,nullsFirst:true});
+  if(error)throw error;
+  return data||[];
 }
-function calculateCore() {
-    const type = document.getElementById('f_type').value;
-    const od = parseFloat(document.getElementById('f_od').value) || 0;
-    const id = parseFloat(document.getElementById('f_id').value) || 0;
-    const h = parseFloat(document.getElementById('f_h').value) || 0;
-    const tongue = parseFloat(document.getElementById('f_tongue').value) || 0;
-    let area = (type === "EI코어") ? (tongue * h) / 100 : ((od - id) / 2 * h) / 100;
-    document.getElementById('f_area').value = area.toFixed(2);
-    const theory = parseFloat(document.getElementById('f_s_cab_len_theory').value) || 0;
-    const real = parseFloat(document.getElementById('f_s_cab_len_real').value) || 0;
-    document.getElementById('res_eff_1').innerText = theory > 0 ? (real / theory * 100).toFixed(1) + "%" : "0.0%";
+async function sbUpsert(row){
+  const {error}=await sb.from(TABLE).upsert(row,{onConflict:'id'});
+  if(error)throw error;
+}
+async function sbDelete(id){
+  const {error}=await sb.from(TABLE).delete().eq('id',id);
+  if(error)throw error;
+}
+async function sbGetAll2(){
+  // 백업용: 전체 row 가져오기
+  const {data,error}=await sb.from(TABLE).select('*');
+  if(error)throw error;
+  return data||[];
+}
+
+// ── Storage 헬퍼 ──
+async function uploadImage(recordId, fileObj, idx){
+  const path=`${recordId}/${idx}_${Date.now()}.jpg`;
+  const blob=await (await fetch(fileObj.dataUrl)).blob();
+  const {error}=await sb.storage.from(BUCKET).upload(path, blob, {contentType:'image/jpeg',upsert:true});
+  if(error)throw error;
+  const {data}=sb.storage.from(BUCKET).getPublicUrl(path);
+  return {url:data.publicUrl, path, name:fileObj.name};
+}
+async function deleteStorageImages(paths){
+  if(!paths||!paths.length)return;
+  await sb.storage.from(BUCKET).remove(paths);
+}
+
+const PASSWORD = "1234";
+const ADMIN_PASSWORD = "poceidon2000";
+
+
+
+// ── 상태 ──
+let records=[], currentId=null, currentImages=[], lbImages=[], lbIdx=0;
+let filterCap='all', searchQ='', unsubscribe=null;
+
+// ── 로그인 ──
+window.doLogin=function(){
+  const pw=document.getElementById('pwInput').value;
+  if(pw===PASSWORD){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appRoot').style.display='block';
+    startSupabase();
+  } else {
+    document.getElementById('pwErr').textContent='비밀번호가 틀렸습니다.';
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwInput').focus();
+  }
+};
+window.doLogout=function(){
+  document.getElementById('appRoot').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('pwInput').value='';
+  records=[];currentId=null;currentImages=[];
+};
+document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
+
+// ── 관리자 모달 ──
+window.openAdminModal=function(){
+  document.getElementById('adminModal').classList.add('open');
+  document.getElementById('adminActions').style.display='none';
+  document.getElementById('adminVerifyBtn').style.display='block';
+  document.getElementById('adminPwInput').value='';
+  document.getElementById('adminPwErr').textContent='';
+  document.getElementById('adminPwInput').focus();
+};
+window.closeAdminModal=function(){document.getElementById('adminModal').classList.remove('open');};
+window.verifyAdmin=function(){
+  const pw=document.getElementById('adminPwInput').value;
+  if(pw===ADMIN_PASSWORD){
+    document.getElementById('adminActions').style.display='flex';
+    document.getElementById('adminVerifyBtn').style.display='none';
+    document.getElementById('adminPwErr').textContent='';
+  } else {
+    document.getElementById('adminPwErr').textContent='관리자 비밀번호가 틀렸습니다.';
+  }
+};
+document.getElementById('adminPwInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.verifyAdmin();});
+document.getElementById('adminModal').addEventListener('click',e=>{if(e.target===document.getElementById('adminModal'))window.closeAdminModal();});
+
+// ── 백업 ──
+window.doBackup=async function(){
+  const st=document.getElementById('adminStatus');
+  st.style.display='block';st.textContent='백업 준비 중...';
+  try{
+    const data=await sbGetAll2();
+    const json=JSON.stringify({version:2,backupAt:new Date().toISOString(),count:data.length,records:data},null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='ringcore_backup_'+new Date().toISOString().slice(0,10)+'.json';
+    a.click();
+    st.textContent='✓ 백업 완료 ('+data.length+'개 항목)';
+    toast('백업 파일이 저장되었습니다 ✓','success');
+  }catch(e){st.textContent='오류: '+e.message;toast('백업 실패: '+e.message,'error');}
+};
+
+// ── 복구 ──
+window.doRestore=async function(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const st=document.getElementById('adminStatus');
+  st.style.display='block';st.textContent='파일 읽는 중...';
+  try{
+    const text=await file.text();
+    const parsed=JSON.parse(text);
+    const data=parsed.records||parsed;
+    if(!Array.isArray(data))throw new Error('올바른 백업 파일이 아닙니다');
+    if(!confirm(data.length+'개 항목을 복구합니다.\n기존 데이터는 모두 삭제됩니다. 계속하시겠습니까?'))return;
+    st.textContent='기존 데이터 삭제 중...';
+    await sb.from(TABLE).delete().neq('id','__none__');
+    st.textContent='데이터 복구 중...';
+    const CHUNK=50;
+    for(let i=0;i<data.length;i+=CHUNK){
+      await sb.from(TABLE).upsert(data.slice(i,i+CHUNK),{onConflict:'id'});
+      st.textContent='데이터 복구 중 ('+(Math.min(i+CHUNK,data.length))+'/'+data.length+')...';
+    }
+    st.textContent='✓ 복구 완료 ('+data.length+'개 항목)';
+    toast('데이터 복구 완료 ✓','success');
+    // 새로 로드
+    const newData=await sbGetAll();
+    records=sortRecords(newData.map(parseRow));
+    renderAll();
+    e.target.value='';
+  }catch(e2){st.textContent='오류: '+e2.message;toast('복구 실패: '+e2.message,'error');}
+};
+
+// ── Supabase 시작 ──
+function sortRecords(arr){
+  const o=['1kva','1.5kva','2kva','3kva','5kva','기타'];
+  arr.sort((a,b)=>{
+    const ai=o.indexOf(a.cap),bi=o.indexOf(b.cap);
+    if(ai!==bi)return(ai<0?99:ai)-(bi<0?99:bi);
+    return(a.id||'').localeCompare(b.id||'');
+  });
+  return arr;
+}
+
+async function startSupabase(){
+  setSyncStatus('syncing','연결 중...');
+  try{
+    let data=await sbGetAll();
+    if(!data.length){
+      toast('데이터가 없습니다. 관리자 모드에서 데이터를 복구해주세요.','error');
+    }
+    records=sortRecords(data.map(parseRow));
+    renderAll();
+    setSyncStatus('ok','연결됨');
+    switchTab('list');
+    // 30초마다 폴링 (Supabase 무료 플랜은 Realtime 제한 있음)
+    setInterval(async()=>{
+      try{
+        const d=await sbGetAll();
+        records=sortRecords(d.map(parseRow));
+        renderAll();
+        setSyncStatus('ok','동기화됨');
+      }catch(e){setSyncStatus('error','연결 오류');}
+    },30000);
+  }catch(e){setSyncStatus('error','오류');toast('연결 오류: '+e.message+' / Supabase 테이블·정책을 확인해주세요','error');console.error(e);}
+}
+
+function parseRow(r){
+  // images_meta는 [{url,path,name}], images는 하위호환용
+  let imgs=[];
+  if(r.images_meta){
+    try{imgs=typeof r.images_meta==='string'?JSON.parse(r.images_meta):r.images_meta;}catch(e){}
+  } else if(r.images){
+    imgs=r.images;
+  }
+  let sec={};
+  if(r.secondary){
+    try{sec=typeof r.secondary==='string'?JSON.parse(r.secondary):r.secondary;}catch(e){}
+  }
+  return {...r, images_meta:imgs, secondary:sec};
+}
+function setSyncStatus(state,text){
+  const dot=document.getElementById('syncDot');
+  dot.className='sync-dot'+(state==='syncing'?' syncing':state==='error'?' error':'');
+  document.getElementById('syncText').textContent=text;
+}
+
+// ── 검색 (실시간, 즉시 반영) ──
+window.onSearch=function(val){
+  searchQ=val.trim();
+  document.getElementById('searchClear').style.display=searchQ?'block':'none';
+  renderAll();
+  // 검색어 있으면 전체목록 탭으로 이동
+  if(searchQ) switchTab('list');
+};
+window.clearSearch=function(){
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchClear').style.display='none';
+  searchQ='';
+  renderAll();
+};
+
+// ── 필터 ──
+window.setFilter=function(el){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  filterCap=el.dataset.cap;
+  renderAll();
+};
+
+// ── 필터링 ──
+function getFiltered(){
+  return records.filter(r=>{
+    const capOk=filterCap==='all'||r.cap===filterCap;
+    const q=searchQ.toLowerCase();
+    const textOk=!q||(r.maker||'').toLowerCase().includes(q)||(r.model||'').toLowerCase().includes(q)||(r.note||'').toLowerCase().includes(q);
+    return capOk&&textOk;
+  });
+}
+
+// ── 렌더 전체 ──
+function renderAll(){
+  renderList();
+  updateTable();
+}
+
+// ── 사이드바 목록 ──
+function renderList(){
+  const filtered=getFiltered();
+  const list=document.getElementById('recordList');
+  if(!filtered.length){
+    list.innerHTML=`<div class="empty-state"><div class="es-icon">📭</div><p>${searchQ?'검색 결과 없음':'등록된 제품 없음'}</p></div>`;
+    return;
+  }
+  list.innerHTML=filtered.map(r=>{
+    const area=calcAreaVal(r.od,r.id_,r.h);
+    const areaStr=area!==null?area.toFixed(2)+' cm²':'';
+    const imgBadge=r.images&&r.images.length?`<div class="ri-img-badge">📷 ${r.images.length}</div>`:'';
+    const maker=hlText(r.maker||'(미입력)',searchQ);
+    const model=hlText(r.model||'—',searchQ);
+    const typeBadge=r.type_&&r.type_!=='링코어'?`<span style="font-size:9px;padding:1px 5px;border-radius:8px;background:rgba(249,168,37,.15);color:var(--accent3);margin-left:2px">${r.type_}</span>`:'';
+    return `<div class="record-item ${currentId===r.id?'active':''}" onclick="selectRecord('${r.id}')">
+      ${imgBadge}
+      <div class="ri-top"><span class="ri-cap">${r.cap||'?'}</span><span class="ri-maker">${maker}</span>${typeBadge}</div>
+      <div class="ri-model">${model}</div>
+      <div class="ri-dims">${r.od||'?'}×${r.id_||'?'}×${r.h||'?'} mm${areaStr?' · '+areaStr:''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── 검색어 하이라이트 ──
+function hlText(text,q){
+  if(!q)return text;
+  const idx=text.toLowerCase().indexOf(q.toLowerCase());
+  if(idx<0)return text;
+  return text.slice(0,idx)+'<mark>'+text.slice(idx,idx+q.length)+'</mark>'+text.slice(idx+q.length);
+}
+
+// ── 전체목록 테이블 ──
+function updateTable(){
+  const filtered=getFiltered();
+  const lbl=searchQ?`"${searchQ}" 검색결과`:(filterCap==='all'?'전체':`${filterCap.toUpperCase()}`);
+  document.getElementById('listLabel').textContent=lbl;
+  document.getElementById('totalCount').textContent=filtered.length;
+  const tbody=document.getElementById('tableBody');
+  if(!filtered.length){
+    tbody.innerHTML=`<tr><td colspan="14" style="color:var(--text3);padding:20px;text-align:center">${searchQ?'"'+searchQ+'" 검색결과 없음':'데이터 없음'}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=filtered.map((r,i)=>{
+    const area=calcAreaVal(r.od,r.id_,r.h);
+    const maker=hlText(r.maker||'—',searchQ);
+    const model=hlText(r.model||'—',searchQ);
+    return `<tr onclick="selectRecord('${r.id}')" class="${currentId===r.id?'row-active':''}">
+      <td class="td-mono">${i+1}</td>
+      <td class="td-cap">${r.cap||'—'}</td>
+      <td style="text-align:left">${maker}</td>
+      <td class="td-mono">${model}</td>
+      <td class="td-mono">${r.od||'—'}</td>
+      <td class="td-mono">${r.id_||'—'}</td>
+      <td class="td-mono">${r.h||'—'}</td>
+      <td class="td-mono">${r.wire||'—'}</td>
+      <td class="td-calc">${area!==null?area.toFixed(2):'—'}</td>
+      <td class="td-mono">${r.weight||'—'}</td>
+      <td>${r.eff||'—'}</td>
+      <td class="td-mono">${r.vppt||'—'}</td>
+      <td style="text-align:left;font-size:11px">${r.note||'—'}</td>
+      <td>${r.images&&r.images.length?`<span style="color:var(--accent2)">📷 ${r.images.length}</span>`:'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── 탭 ──
+window.switchTab=function(tab){
+  document.getElementById('tabList').classList.toggle('active',tab==='list');
+  document.getElementById('tabDetail').classList.toggle('active',tab==='detail');
+  const listEl=document.getElementById('tabContentList');
+  const detailEl=document.getElementById('tabContentDetail');
+  if(tab==='list'){
+    listEl.style.display='block';
+    listEl.style.flex='1';
+    listEl.style.overflowY='auto';
+    detailEl.style.display='none';
+  } else {
+    listEl.style.display='none';
+    detailEl.style.display='block';
+    detailEl.style.flex='1';
+    detailEl.style.overflowY='auto';
+  }
+};
+
+// ── 단면적 ──
+function calcAreaVal(od,id_,h){
+  od=parseFloat(od);id_=parseFloat(id_);h=parseFloat(h);
+  if(isNaN(od)||isNaN(id_)||isNaN(h))return null;
+  return(od-id_)/2*h/100;
+}
+window.calcArea=function(){
+  const cvEl=document.getElementById('calcValue');
+  const cfEl=document.getElementById('calcFormula');
+  if(!cvEl||!cfEl)return;
+  const od=document.getElementById('f_od').value;
+  const id_=document.getElementById('f_id').value;
+  const h=document.getElementById('f_h').value;
+  const val=calcAreaVal(od,id_,h);
+  if(val!==null){
+    cvEl.textContent=val.toFixed(2);
+    cfEl.textContent=`(${od} - ${id_}) ÷ 2 × ${h} ÷ 100 = ${val.toFixed(2)} cm²`;
+  } else {
+    cvEl.textContent='—';
+    cfEl.textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
+  }
+};
+
+// ── 2차권선 계산 ──
+window.calcSecondary=function(){
+  const area=parseFloat(document.getElementById('s_area').value)||0;
+  const turns=parseFloat(document.getElementById('s_turns').value)||0;
+  const v2=parseFloat(document.getElementById('s_v2').value)||0;
+  const margin=parseFloat(document.getElementById('s_margin').value)||20;
+  const od=parseFloat(document.getElementById('f_od').value)||0;
+  const id_=parseFloat(document.getElementById('f_id').value)||0;
+  const cab_area=parseFloat(document.getElementById('s_cab_area').value)||0;
+  const cab_len=parseFloat(document.getElementById('s_cab_len').value)||0;
+  const term_r=parseFloat(document.getElementById('s_term_r').value)||0;
+  const term_n=parseFloat(document.getElementById('s_term_n').value)||2;
+
+  // 턴당전압
+  if(turns>0&&v2>0){
+    const vpt=(v2/turns).toFixed(3);
+    document.getElementById('s_vpt').value=vpt;
+    document.getElementById('s_vpt_hint').textContent=`${v2} ÷ ${turns} = ${vpt} V/턴`;
+  } else { document.getElementById('s_vpt').value=''; }
+
+  // 총길이
+  let wlen=parseFloat(document.getElementById('s_wlen').value)||0;
+  let wlenAuto=0;
+  if(od>0&&id_>0&&turns>0){
+    const base=Math.PI*(od+id_)/2/1000*turns;
+    wlenAuto=base*(1+margin/100);
+    document.getElementById('s_wlen_hint').textContent=
+      `π×(${od}+${id_})/2/1000×${turns}턴 = ${base.toFixed(2)}m × (1+${margin}%) = 약 ${wlenAuto.toFixed(2)}m`;
+    if(!document.getElementById('s_wlen').matches(':focus')&&wlen===0){
+      document.getElementById('s_wlen').value=wlenAuto.toFixed(2);
+      wlen=wlenAuto;
+    }
+  }
+
+  // 권선 DC저항
+  let wire_r=0;
+  const wlenFinal=wlen||wlenAuto;
+  if(wlenFinal>0&&area>0){
+    wire_r=wlenFinal/(56*area)*1000;
+    document.getElementById('s_wire_r').value=wire_r.toFixed(3);
+    document.getElementById('s_wire_r_hint').textContent=`${wlenFinal.toFixed(2)}÷(56×${area}) = 약 ${wire_r.toFixed(3)}mΩ`;
+  } else { document.getElementById('s_wire_r').value=''; }
+
+  // 케이블 DC저항 (양쪽 ×2)
+  let cab_r=0;
+  const cab_total_len=cab_len*2;
+  if(cab_len>0&&cab_area>0){
+    cab_r=cab_total_len/(56*cab_area)*1000;
+    document.getElementById('s_cab_r').value=cab_r.toFixed(3);
+    document.getElementById('s_cab_r_hint').textContent=`(${cab_len}×2)÷(56×${cab_area}) = 약 ${cab_r.toFixed(3)}mΩ`;
+    document.getElementById('s_cab_total_len').value=cab_total_len.toFixed(2);
+    document.getElementById('s_cab_total_hint').textContent=`${cab_len} × 2 = ${cab_total_len.toFixed(2)}m (양쪽)`;
+  } else {
+    document.getElementById('s_cab_r').value='';
+    document.getElementById('s_cab_total_len').value='';
+    document.getElementById('s_cab_total_hint').textContent='예시: 0.8×2 = 1.6m';
+  }
+  // 전체 길이 (권선 + 케이블 양쪽)
+  const wlenVal=parseFloat(document.getElementById('s_wlen').value)||0;
+  if(wlenVal>0||cab_total_len>0){
+    const total=wlenVal+cab_total_len;
+    document.getElementById('s_total_len').value=total.toFixed(2);
+    document.getElementById('s_total_hint').textContent=`${wlenVal.toFixed(2)} + ${cab_total_len.toFixed(2)} = ${total.toFixed(2)}m`;
+  } else {
+    document.getElementById('s_total_len').value='';
+  }
+
+  // 단자 총저항
+  let term_total=0;
+  if(term_r>0){
+    term_total=term_r*term_n;
+    document.getElementById('s_term_total').value=term_total.toFixed(3);
+    document.getElementById('s_term_hint').textContent=`${term_r}×${term_n} = ${term_total.toFixed(3)}mΩ`;
+  } else { document.getElementById('s_term_total').value=''; }
+
+  // 이론 전류
+  const r_d=(wire_r+cab_r)/1000;
+  const r_t=(wire_r+cab_r+term_total)/1000;
+  function setRC(id,val){document.getElementById(id).innerHTML=val!==null?val+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">'+(/ohm/i.test(id)?'mΩ':'kA')+'</span>':'—';}
+
+  if(v2>0&&r_d>0){
+    const i_d_rms=v2/r_d/1000;
+    const i_d_peak=i_d_rms*Math.SQRT2;
+    const i_t_rms=r_t>0?v2/r_t/1000:0;
+    const i_t_peak=i_t_rms*Math.SQRT2;
+
+    document.getElementById('r_d_peak').innerHTML=i_d_peak.toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span>';
+    document.getElementById('r_d_rms').innerHTML=i_d_rms.toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span>';
+    document.getElementById('r_d_ohm').innerHTML=(r_d*1000).toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">mΩ</span>';
+    document.getElementById('r_t_peak').innerHTML=i_t_peak.toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span>';
+    document.getElementById('r_t_rms').innerHTML=i_t_rms.toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">kA</span>';
+    document.getElementById('r_t_ohm').innerHTML=(r_t*1000).toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">mΩ</span>';
+
+    const md_peak=parseFloat(document.getElementById('s_md_peak').value)||0;
+    const md_rms=parseFloat(document.getElementById('s_md_rms').value)||0;
+    const mt_peak=parseFloat(document.getElementById('s_mt_peak').value)||0;
+    const mt_rms=parseFloat(document.getElementById('s_mt_rms').value)||0;
+
+    document.getElementById('r_d_peak_d').textContent=md_peak>0?'실측 대비 '+((i_d_peak-md_peak)/md_peak*100).toFixed(1)+'%':'실측값 입력시 표시';
+    document.getElementById('r_d_rms_d').textContent=md_rms>0?'실측 대비 '+((i_d_rms-md_rms)/md_rms*100).toFixed(1)+'%':'실측값 입력시 표시';
+    document.getElementById('r_t_peak_d').textContent=mt_peak>0?'실측 대비 '+((i_t_peak-mt_peak)/mt_peak*100).toFixed(1)+'%':'실측값 입력시 표시';
+    document.getElementById('r_t_rms_d').textContent=mt_rms>0?'실측 대비 '+((i_t_rms-mt_rms)/mt_rms*100).toFixed(1)+'%':'실측값 입력시 표시';
+    document.getElementById('loss_d').textContent=md_rms>0?((i_d_rms-md_rms)/i_d_rms*100).toFixed(1)+'%':'—';
+    document.getElementById('loss_t').textContent=term_total>0?((i_d_rms-i_t_rms)/i_d_rms*100).toFixed(1)+'%':'—';
+    document.getElementById('loss_vs').textContent=(md_rms>0&&mt_rms>0)?((md_rms-mt_rms)/md_rms*100).toFixed(1)+'%':'—';
+  } else {
+    ['r_d_peak','r_d_rms','r_d_ohm','r_t_peak','r_t_rms','r_t_ohm'].forEach(id=>{
+      document.getElementById(id).innerHTML='—';
+    });
+    ['r_d_peak_d','r_d_rms_d','r_t_peak_d','r_t_rms_d'].forEach(id=>{
+      document.getElementById(id).textContent='실측값 입력시 표시';
+    });
+    ['loss_d','loss_t','loss_vs'].forEach(id=>document.getElementById(id).textContent='—');
+  }
+};
+
+// ── 새 폼 ──
+window.openNewForm=function(){
+  currentId=null;currentImages=[];
+  switchTab('detail');
+  document.getElementById('panelTitle').textContent='새 제품 등록';
+  document.getElementById('deleteBtn').style.display='none';
+  clearForm();renderImages();
+};
+function clearForm(){
+  ['f_cap','f_maker','f_model','f_type','f_url1','f_url2',
+   'f_od','f_id','f_h','f_wire','f_weight_total','f_weight','f_breaker','f_eff','f_vppt','f_vppt2',
+   's_area','s_turns','s_v2','s_margin','s_wlen','s_wire_r','s_cab_area','s_cab_len','s_cab_r',
+   's_cab_total_len','s_total_len','s_term_r','s_term_n','s_term_total','s_md_peak','s_md_rms','s_mt_peak','s_mt_rms']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='s_margin'?'20':id==='s_term_n'?'2':''});
+  const cvEl=document.getElementById('calcValue');
+  const cfEl=document.getElementById('calcFormula');
+  if(cvEl)cvEl.textContent='—';
+  if(cfEl)cfEl.textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
+  setNoteValue('다운');
+  document.getElementById('f_type').value='링코어';
+}
+
+// ── 제품 선택 ──
+window.selectRecord=function(id){
+  currentId=id;
+  const r=records.find(x=>x.id===id);
+  if(!r)return;
+  // images_meta(url기반) 또는 images(dataUrl기반, 하위호환) 사용
+  const imgMeta = r.images_meta||r.images||[];
+  currentImages = imgMeta.map(i=>({...i}));
+  document.getElementById('panelTitle').textContent=`${r.maker||''} ${r.model||''}`.trim()||'제품 상세';
+  document.getElementById('deleteBtn').style.display='inline-flex';
+  const fields={f_cap:'cap',f_maker:'maker',f_model:'model',f_type:'type_',
+    f_url1:'url1',f_url2:'url2',
+    f_od:'od',f_id:'id_',f_h:'h',f_wire:'wire',
+    f_weight_total:'weight_total',f_weight:'weight',f_breaker:'breaker',
+    f_eff:'eff',f_vppt:'vppt',f_vppt2:'vppt2'};
+  Object.entries(fields).forEach(([elId,key])=>{document.getElementById(elId).value=r[key]||'';});
+  // 2차권선 데이터
+  setNoteValue(r.note||'다운');
+    const s2={s_area:'s_area',s_turns:'s_turns',s_v2:'s_v2',s_margin:'s_margin',s_wlen:'s_wlen',
+            s_cab_area:'s_cab_area',s_cab_len:'s_cab_len',s_term_r:'s_term_r',s_term_n:'s_term_n',
+            s_md_peak:'s_md_peak',s_md_rms:'s_md_rms',s_mt_peak:'s_mt_peak',s_mt_rms:'s_mt_rms'};
+  const sd=r.secondary||{};
+  Object.keys(s2).forEach(k=>{document.getElementById(k).value=sd[k]||'';});
+  if(!sd.s_margin)document.getElementById('s_margin').value='20';
+  if(!sd.s_term_n)document.getElementById('s_term_n').value='2';
+  switchTab('detail');
+  window.calcArea();window.calcSecondary();
+  renderImages();
+  renderList();
+};
+window.cancelEdit=function(){
+  currentId=null;
+  switchTab('list');
+  renderAll();
+};
+
+// ── 이미지 압축 ──
+function compressImage(dataUrl, maxW=1200, maxH=1200, quality=0.82){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload=()=>{
+      let w=img.width, h=img.height;
+      if(w>maxW||h>maxH){const r=Math.min(maxW/w,maxH/h);w=Math.round(w*r);h=Math.round(h*r);}
+      const c=document.createElement('canvas');
+      c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      res(c.toDataURL('image/jpeg',quality));
+    };
+    img.src=dataUrl;
+  });
+}
+
+// ── 저장 ──
+window.saveRecord=async function(){
+  setSyncStatus('syncing','저장 중...');
+  const recId=currentId||('r_'+Date.now());
+  const secondary={
+    s_area:document.getElementById('s_area').value,
+    s_turns:document.getElementById('s_turns').value,
+    s_v2:document.getElementById('s_v2').value,
+    s_margin:document.getElementById('s_margin').value,
+    s_wlen:document.getElementById('s_wlen').value,
+    s_cab_area:document.getElementById('s_cab_area').value,
+    s_cab_len:document.getElementById('s_cab_len').value,
+    s_term_r:document.getElementById('s_term_r').value,
+    s_term_n:document.getElementById('s_term_n').value,
+    s_md_peak:document.getElementById('s_md_peak').value,
+    s_md_rms:document.getElementById('s_md_rms').value,
+    s_mt_peak:document.getElementById('s_mt_peak').value,
+    s_mt_rms:document.getElementById('s_mt_rms').value
+  };
+  const capOrder=['1kva','1.5kva','2kva','3kva','5kva','기타'];
+  const cap=document.getElementById('f_cap').value;
+  const data={
+    id:recId,
+    sort_key:(capOrder.indexOf(cap)+'').padStart(2,'0')+'_'+recId,
+    cap,
+    maker:document.getElementById('f_maker').value.trim(),
+    model:document.getElementById('f_model').value.trim(),
+    note:getNoteValue(),
+    type_:document.getElementById('f_type').value,
+    url1:document.getElementById('f_url1').value.trim(),
+    url2:document.getElementById('f_url2').value.trim(),
+    od:parseFloat(document.getElementById('f_od').value)||0,
+    id_:parseFloat(document.getElementById('f_id').value)||0,
+    h:parseFloat(document.getElementById('f_h').value)||0,
+    wire:document.getElementById('f_wire').value,
+    weight_total:parseFloat(document.getElementById('f_weight_total').value)||0,
+    weight:parseFloat(document.getElementById('f_weight').value)||0,
+    breaker:document.getElementById('f_breaker').value,
+    eff:document.getElementById('f_eff').value,
+    vppt:parseFloat(document.getElementById('f_vppt').value)||0,
+    vppt2:parseFloat(document.getElementById('f_vppt2').value)||0,
+    secondary:JSON.stringify(secondary),
+    updated_at:new Date().toISOString()
+  };
+  try{
+    // 새 이미지 (dataUrl 있는 것) Storage에 업로드
+    const existingMeta = currentImages.filter(i=>i.url&&!i.dataUrl);
+    const newImages    = currentImages.filter(i=>i.dataUrl);
+    const uploadedMeta = [];
+    for(let i=0;i<newImages.length;i++){
+      setSyncStatus('syncing',`이미지 업로드 중 (${i+1}/${newImages.length})...`);
+      const compressed=await compressImage(newImages[i].dataUrl);
+      const meta=await uploadImage(recId,{dataUrl:compressed,name:newImages[i].name},existingMeta.length+i);
+      uploadedMeta.push(meta);
+    }
+    const allMeta=[...existingMeta,...uploadedMeta];
+    data.images_meta=JSON.stringify(allMeta);
+    await sbUpsert(data);
+    currentId=recId;
+    // currentImages를 url 기반으로 업데이트
+    currentImages=allMeta.map(m=>({url:m.url,path:m.path,name:m.name}));
+    renderImages();
+    document.getElementById('deleteBtn').style.display='inline-flex';
+    document.getElementById('panelTitle').textContent=`${data.maker||''} ${data.model||''}`.trim()||'제품 상세';
+    // records 갱신
+    const idx=records.findIndex(r=>r.id===recId);
+    const parsed=parseRow({...data,images_meta:allMeta});
+    if(idx>=0)records[idx]=parsed; else records.push(parsed);
+    records=sortRecords(records);
+    renderAll();
+    setSyncStatus('ok','저장됨');
+    toast('저장되었습니다 ✓','success');
+  }catch(e){toast('저장 실패: '+e.message,'error');setSyncStatus('error','저장 실패');}
+};
+
+// ── 삭제 ──
+window.deleteRecord=async function(){
+  if(!currentId)return;
+  if(!confirm('이 제품을 삭제하시겠습니까?'))return;
+  try{
+    // Storage 이미지 삭제
+    const paths=currentImages.filter(i=>i.path).map(i=>i.path);
+    await deleteStorageImages(paths);
+    await sbDelete(currentId);
+    records=records.filter(r=>r.id!==currentId);
+    currentId=null;currentImages=[];
+    window.cancelEdit();
+    renderAll();
+    toast('삭제되었습니다','');
+  }catch(e){toast('삭제 실패: '+e.message,'error');}
+};
+
+// ── 이미지 ──
+function addImages(files){
+  const promises=Array.from(files).map(f=>new Promise(res=>{
+    if(!f.type.startsWith('image/'))return res();
+    const reader=new FileReader();
+    reader.onload=e=>{currentImages.push({dataUrl:e.target.result,name:f.name});res();};
+    reader.readAsDataURL(f);
+  }));
+  Promise.all(promises).then(()=>renderImages());
+}
+window.onFileSelect=e=>{addImages(e.target.files);e.target.value='';};
+window.onDragOver=e=>{e.preventDefault();document.getElementById('dropzone').classList.add('drag-over');};
+window.onDragLeave=e=>{document.getElementById('dropzone').classList.remove('drag-over');};
+window.onDrop=e=>{e.preventDefault();document.getElementById('dropzone').classList.remove('drag-over');addImages(e.dataTransfer.files);};
+document.addEventListener('paste',e=>{
+  if(document.getElementById('tabContentDetail').style.display==='none')return;
+  const items=e.clipboardData&&e.clipboardData.items;
+  if(!items)return;
+  let found=false;
+  for(const item of items){
+    if(item.type.startsWith('image/')){
+      found=true;
+      const reader=new FileReader();
+      reader.onload=ev=>{currentImages.push({dataUrl:ev.target.result,name:'clipboard_'+Date.now()+'.png'});renderImages();};
+      reader.readAsDataURL(item.getAsFile());
+    }
+  }
+  if(found)toast('클립보드 이미지 추가됨 📷','success');
+});
+function renderImages(){
+  const grid=document.getElementById('imgGrid');
+  if(!currentImages.length){grid.innerHTML='';return;}
+  grid.innerHTML=currentImages.map((img,i)=>{
+    const src=img.dataUrl||img.url||'';
+    return `<div class="img-thumb" onclick="openLightbox(${i})">
+      <img src="${src}" alt="${img.name||''}">
+      <button class="it-del" onclick="delImg(event,${i})">✕</button>
+      <div class="it-num">${i+1}</div>
+    </div>`;
+  }).join('');
+}
+window.delImg=(e,idx)=>{e.stopPropagation();currentImages.splice(idx,1);renderImages();};
+
+// ── 라이트박스 ──
+window.openLightbox=idx=>{lbImages=currentImages;lbIdx=idx;showLb();};
+function showLb(){
+  document.getElementById('lightbox').classList.add('open');
+  document.getElementById('lbImg').src=lbImages[lbIdx].dataUrl||lbImages[lbIdx].url||'';
+  document.getElementById('lbCounter').textContent=`${lbIdx+1} / ${lbImages.length}`;
+}
+window.closeLightbox=()=>document.getElementById('lightbox').classList.remove('open');
+window.closeLightboxBg=e=>{if(e.target===document.getElementById('lightbox'))window.closeLightbox();};
+window.lbPrev=e=>{e.stopPropagation();lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;showLb();};
+window.lbNext=e=>{e.stopPropagation();lbIdx=(lbIdx+1)%lbImages.length;showLb();};
+document.addEventListener('keydown',e=>{
+  const lb=document.getElementById('lightbox');
+  if(!lb.classList.contains('open'))return;
+  if(e.key==='Escape')window.closeLightbox();
+  if(e.key==='ArrowLeft'){lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;showLb();}
+  if(e.key==='ArrowRight'){lbIdx=(lbIdx+1)%lbImages.length;showLb();}
+});
+
+// ── 비고 직접입력 토글 ──
+window.toggleNoteCustom=function(){
+  const sel=document.getElementById('f_note').value;
+  const wrap=document.getElementById('note_custom_wrap');
+  wrap.style.display=sel===''?'block':'none';
+};
+function getNoteValue(){
+  const sel=document.getElementById('f_note').value;
+  if(sel===''){return document.getElementById('f_note_custom').value.trim();}
+  return sel;
+}
+function setNoteValue(val){
+  const sel=document.getElementById('f_note');
+  const opts=Array.from(sel.options).map(o=>o.value);
+  if(opts.includes(val)){
+    sel.value=val;
+    document.getElementById('note_custom_wrap').style.display='none';
+  } else {
+    sel.value='';
+    document.getElementById('f_note_custom').value=val||'';
+    document.getElementById('note_custom_wrap').style.display=val?'block':'none';
+  }
+}
+
+// ── URL 링크 ──
+window.openUrl=function(id){
+  const url=document.getElementById(id).value.trim();
+  if(!url){toast('URL을 먼저 입력해 주세요','error');return;}
+  window.open(url,'_blank');
+};
+window.copyUrl=function(id){
+  const url=document.getElementById(id).value.trim();
+  if(!url){toast('URL을 먼저 입력해 주세요','error');return;}
+  navigator.clipboard.writeText(url).then(()=>toast('URL이 복사되었습니다 📋','success')).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    toast('URL이 복사되었습니다 📋','success');
+  });
+};
+
+// ── 인쇄 ──
+window.printRecord=()=>{window.saveRecord().then(()=>setTimeout(()=>window.print(),300));};
+window.printTable=()=>{switchTab('list');setTimeout(()=>window.print(),200);};
+
+// ── 토스트 ──
+function toast(msg,type){
+  const c=document.getElementById('toastContainer');
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;el.textContent=msg;
+  c.appendChild(el);setTimeout(()=>el.remove(),3000);
 }
 </script>
 </body>
