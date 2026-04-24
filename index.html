@@ -105,7 +105,7 @@ header h1 span{color:var(--accent)}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 
 /* 전체목록 */
-.table-view{padding:20px;flex:1}
+.table-view{padding:20px;flex:1;max-width:1400px}
 .table-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px}
 .data-table{width:100%;border-collapse:collapse;font-size:12px}
 .data-table th{background:var(--surface2);padding:9px 10px;text-align:center;font-weight:600;color:var(--text2);border:1px solid var(--border);font-size:11px;white-space:nowrap}
@@ -118,7 +118,7 @@ header h1 span{color:var(--accent)}
 mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;padding:0 1px}
 
 /* 규격입력 */
-.detail-panel{padding:20px;flex:1}
+.detail-panel{padding:20px;flex:1;max-width:1200px}
 .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .panel-header h2{font-size:17px;font-weight:700}
 .ph-actions{display:flex;gap:8px}
@@ -155,7 +155,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .cd-formula{font-size:10px;color:var(--text3);margin-top:3px;font-family:'JetBrains Mono',monospace}
 
 /* 2차권선 섹션 */
-.sec2-box{border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:18px}
+.sec2-box{border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:18px;max-width:1160px}
 .sec2-sub{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.3px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 .g5{display:flex;flex-wrap:wrap;gap:10px}
 .g4{display:flex;flex-wrap:wrap;gap:10px}
@@ -563,6 +563,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
               <div class="form-group w-lg"><label>집 인입전압 (V)</label><input type="number" id="p_vin" placeholder="예) 228.7" oninput="calcPrimary()" style="width:100%"><span class="hint">실측 입력전압</span></div>
               <div class="form-group w-lg"><label>임시 2차 턴수 (턴)</label><input type="number" id="p_t2" placeholder="예) 5" oninput="calcPrimary()" style="width:100%"><span class="hint">임시로 감은 횟수</span></div>
               <div class="form-group w-lg"><label>측정된 2차 전압 (V)</label><input type="number" id="p_v2" placeholder="예) 2.93" step="0.01" oninput="calcPrimary()" style="width:100%"><span class="hint">2차에서 측정값</span></div>
+              <div class="form-group w-lg"><label>턴당 전압 (V/턴)</label><input type="number" class="auto-calc" id="p_r_vpt_input" placeholder="자동계산" readonly style="width:100%"><span class="hint" id="p_vpt_hint">측정전압 ÷ 임시턴수</span></div>
               <div class="form-group w-md"><label>트랜스 용량</label>
                 <select id="p_cap" onchange="calcPrimary()" style="width:100%">
                   <option value="0.10">1kVA (10%)</option>
@@ -582,10 +583,9 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
                 <span class="hint">단선/병렬</span>
               </div>
             </div>
-            <div class="result-cards" style="margin-top:14px">
-              <div class="rc"><div class="rc-lbl">턴당 전압 (V/턴)</div><div class="rc-val info" id="p_r_vpt">—</div><div class="rc-diff">측정전압 ÷ 임시턴수</div></div>
-              <div class="rc"><div class="rc-lbl">1차 권선 총 턴수</div><div class="rc-val info" id="p_r_t1">—</div><div class="rc-diff">인입전압 ÷ 턴당전압</div></div>
-              <div class="rc"><div class="rc-lbl">풀어야 할 턴수</div><div class="rc-val warn" id="p_r_unwind">—</div><div class="rc-diff" id="p_r_unwind_d">총턴수 × 비율</div></div>
+            <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+              <div class="rc" style="width:200px;min-width:200px;flex-shrink:0"><div class="rc-lbl">1차 권선 총 턴수</div><div class="rc-val info" id="p_r_t1">—</div><div class="rc-diff">인입전압 ÷ 턴당전압</div></div>
+              <div class="rc" style="width:200px;min-width:200px;flex-shrink:0"><div class="rc-lbl">풀어야 할 턴수</div><div class="rc-val warn" id="p_r_unwind">—</div><div class="rc-diff" id="p_r_unwind_d">총턴수 × 비율</div></div>
             </div>
             <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
               <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px">푼턴수별 측정 기록 (5회)</div>
@@ -1239,7 +1239,7 @@ window.selectRecord=function(id){
     f_od:'od',f_id:'id_',f_h:'h',f_wire:'wire',
     f_weight_total:'weight_total',f_weight:'weight',f_breaker:'breaker',
     f_eff:'eff',f_vppt:'vppt',f_vppt2:'vppt2',
-    f_noload:'noload',f_noload2:'noload2',f_remark:'remark'};
+    f_noload:'noload',f_noload2:'noload2',f_remark:'remark',f_ei_leg:'ei_leg'};
   Object.entries(fields).forEach(([elId,key])=>{document.getElementById(elId).value=r[key]||'';});
   // 2차권선 데이터
   setNoteValue(r.note||'다운');
@@ -1252,8 +1252,6 @@ window.selectRecord=function(id){
   Object.keys(s2).forEach(k=>{document.getElementById(k).value=sd[k]||'';});
   if(!sd.s_margin)document.getElementById('s_margin').value='20';
   if(!sd.s_term_n)document.getElementById('s_term_n').value='2';
-  // ei_leg는 secondary JSON에서 읽기
-  document.getElementById('f_ei_leg').value=sd.ei_leg||r.ei_leg||'';
   switchTab('detail');
   window.onTypeChange();window.calcSecondary();
   renderImages();
@@ -1300,7 +1298,6 @@ window.saveRecord=async function(){
     s_mt_peak:document.getElementById('s_mt_peak').value,
     s_mt_rms:document.getElementById('s_mt_rms').value,
     s_real_len:document.getElementById('s_real_len').value,
-    ei_leg:document.getElementById('f_ei_leg').value,
   };
   const capOrder=['1kva','1.5kva','2kva','3kva','5kva','기타'];
   const cap=document.getElementById('f_cap').value;
@@ -1313,6 +1310,7 @@ window.saveRecord=async function(){
     note:getNoteValue(),
     remark:document.getElementById('f_remark').value.trim(),
     type_:document.getElementById('f_type').value,
+    ei_leg:parseFloat(document.getElementById('f_ei_leg').value)||0,
     url1:document.getElementById('f_url1').value.trim(),
     url2:document.getElementById('f_url2').value.trim(),
     od:parseFloat(document.getElementById('f_od').value)||0,
@@ -1491,7 +1489,13 @@ window.calcPrimary=function(){
   const t1=vpt>0?(vin/vpt):0;
   const unwindSingle=t1*ratio;
   const unwind=isParallel?unwindSingle/2:unwindSingle;
-  document.getElementById('p_r_vpt').innerHTML=vpt>0?vpt.toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">V/턴</span>':'—';
+  // 턴당전압 입력란 업데이트
+  const vptInput=document.getElementById('p_r_vpt_input');
+  if(vptInput){
+    vptInput.value=vpt>0?vpt.toFixed(3):'';
+    const vptHint=document.getElementById('p_vpt_hint');
+    if(vptHint&&vpt>0) vptHint.textContent=`${v2} ÷ ${t2} = ${vpt.toFixed(3)} V/턴`;
+  }
   document.getElementById('p_r_t1').innerHTML=t1>0?t1.toFixed(1)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">턴</span>':'—';
   document.getElementById('p_r_unwind').innerHTML=unwind>0?unwind.toFixed(1)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">턴</span>':'—';
   document.getElementById('p_r_unwind_d').textContent=isParallel?`총턴수 × ${(ratio*100).toFixed(0)}% ÷ 2 (병렬)`:`총턴수 × ${(ratio*100).toFixed(0)}% (단선)`;
@@ -1510,51 +1514,50 @@ window.calcPrimary=function(){
   renderWorkTable(vin, t1);
 };
 
+// 작업기록 초기화
+if(!window._workRows) window._workRows=Array(5).fill(null).map(()=>({unwind:'',vmeas:'',imeas:''}));
+
+function getT1(){
+  const vin=parseFloat((document.getElementById('p_vin')||{}).value)||0;
+  const t2=parseFloat((document.getElementById('p_t2')||{}).value)||0;
+  const v2=parseFloat((document.getElementById('p_v2')||{}).value)||0;
+  const vpt=t2>0&&v2>0?(v2/t2):0;
+  return {vin, t1:vpt>0?(vin/vpt):0};
+}
+
 function renderWorkTable(vin, t1){
   const tbody=document.getElementById('p_work_body');
   if(!tbody)return;
-  // 현재 저장된 작업기록 가져오기
-  const rows=window._workRows||[{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''}];
+  if(!window._workRows||window._workRows.length<5)
+    window._workRows=Array(5).fill(null).map(()=>({unwind:'',vmeas:'',imeas:''}));
+  const rows=window._workRows;
+  const inputStyle='width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;outline:none';
   tbody.innerHTML=rows.map((row,i)=>{
     const u=parseFloat(row.unwind)||0;
     const vTheory=(vin>0&&t1>0&&u>0)?(vin*(1-u/t1)).toFixed(2):'—';
     return `<tr>
-      <td style="color:var(--text3);font-size:12px">${i+1}</td>
-      <td><input type="number" class="pw-input" data-idx="${i}" data-field="unwind" value="${row.unwind}" placeholder="예) 27" oninput="onWorkInput(this)" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;outline:none"></td>
-      <td style="font-family:'JetBrains Mono',monospace;color:var(--accent2);font-weight:600">${vTheory}</td>
-      <td><input type="number" class="pw-input" data-idx="${i}" data-field="vmeas" value="${row.vmeas}" placeholder="실측입력" oninput="onWorkInput(this)" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;outline:none"></td>
-      <td><input type="number" class="pw-input" data-idx="${i}" data-field="imeas" value="${row.imeas}" placeholder="실측입력" oninput="onWorkInput(this)" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;outline:none"></td>
+      <td style="color:var(--text3);font-size:12px;text-align:center">${i+1}</td>
+      <td><input type="number" data-idx="${i}" data-field="unwind" value="${row.unwind}" placeholder="예) 27" oninput="onWorkInput(this)" style="${inputStyle}"></td>
+      <td id="vtheory_${i}" style="font-family:'JetBrains Mono',monospace;color:var(--accent2);font-weight:600;text-align:center">${vTheory}</td>
+      <td><input type="number" data-idx="${i}" data-field="vmeas" value="${row.vmeas}" placeholder="실측입력" oninput="onWorkInput(this)" style="${inputStyle}"></td>
+      <td><input type="number" data-idx="${i}" data-field="imeas" value="${row.imeas}" placeholder="실측입력" oninput="onWorkInput(this)" style="${inputStyle}"></td>
     </tr>`;
   }).join('');
 }
 
-// ── 푼턴수별 측정기록표 이론전압 계산 (HTML oninput에서 호출) ──
-window.calcPrimaryRows=function(){
-  const vin=parseFloat(document.getElementById('p_vin').value)||0;
-  const t2=parseFloat(document.getElementById('p_t2').value)||0;
-  const v2=parseFloat(document.getElementById('p_v2').value)||0;
-  const vpt=t2>0&&v2>0?(v2/t2):0;
-  const t1=vpt>0?(vin/vpt):0;
-  document.querySelectorAll('.p_unwind_turns').forEach(inp=>{
-    const row=parseInt(inp.dataset.row);
-    const u=parseFloat(inp.value)||0;
-    const tvEl=document.getElementById('p_tv_'+row);
-    if(tvEl) tvEl.value=(vin>0&&t1>0&&u>0)?(vin*(1-u/t1)).toFixed(2):'';
-  });
-};
-
 window.onWorkInput=function(el){
   const idx=parseInt(el.dataset.idx);
   const field=el.dataset.field;
-  if(!window._workRows) window._workRows=[{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''}];
+  if(!window._workRows) window._workRows=Array(5).fill(null).map(()=>({unwind:'',vmeas:'',imeas:''}));
   window._workRows[idx][field]=el.value;
-  // 이론값만 재계산
-  const vin=parseFloat(document.getElementById('p_vin').value)||0;
-  const t2=parseFloat(document.getElementById('p_t2').value)||0;
-  const v2=parseFloat(document.getElementById('p_v2').value)||0;
-  const vpt=t2>0&&v2>0?(v2/t2):0;
-  const t1=vpt>0?(vin/vpt):0;
-  if(field==='unwind') renderWorkTable(vin,t1);
+  if(field==='unwind'){
+    // 해당 행 이론전압만 즉시 업데이트 (전체 리렌더 없이)
+    const {vin,t1}=getT1();
+    const u=parseFloat(el.value)||0;
+    const vTheory=(vin>0&&t1>0&&u>0)?(vin*(1-u/t1)).toFixed(2):'—';
+    const td=document.getElementById('vtheory_'+idx);
+    if(td) td.textContent=vTheory;
+  }
 };
 
 // ── 인쇄 ──
