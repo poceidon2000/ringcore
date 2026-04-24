@@ -593,7 +593,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
                 <thead><tr>
                   <th style="width:50px">#</th>
                   <th>푼 턴수 (턴)</th>
-                  <th>이론적 출력전압 (V) <span style="font-size:10px;color:var(--text3);font-weight:400">자동계산</span></th>
+                  <th>2차 이론전압 (V) <span style="font-size:10px;color:var(--text3);font-weight:400">자동계산</span></th>
                   <th>무부하전압 실측 (V)</th>
                   <th>무부하전류 실측 (A)</th>
                   <th>비고</th>
@@ -615,7 +615,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
                   <thead><tr>
                     <th style="min-width:60px">#</th>
                     <th style="min-width:110px">푼 턴수</th>
-                    <th style="min-width:130px">이론적 출력전압 (V)</th>
+                    <th style="min-width:130px">2차 이론전압 (V)</th>
                     <th style="min-width:130px">실측 무부하전압 (V)</th>
                     <th style="min-width:130px">실측 무부하전류 (A)</th>
                   </tr></thead>
@@ -1499,6 +1499,8 @@ window.calcPrimary=function(){
   document.getElementById('p_r_t1').innerHTML=t1>0?t1.toFixed(1)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">턴</span>':'—';
   document.getElementById('p_r_unwind').innerHTML=unwind>0?unwind.toFixed(1)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">턴</span>':'—';
   document.getElementById('p_r_unwind_d').textContent=isParallel?`총턴수 × ${(ratio*100).toFixed(0)}% ÷ 2 (병렬)`:`총턴수 × ${(ratio*100).toFixed(0)}% (단선)`;
+  // 푼턴수별 측정기록 업데이트
+  window.calcPrimaryRows();
   // 비율표
   const tbody=document.getElementById('p_ratio_body');
   if(tbody){
@@ -1522,7 +1524,13 @@ function getT1(){
   const t2=parseFloat((document.getElementById('p_t2')||{}).value)||0;
   const v2=parseFloat((document.getElementById('p_v2')||{}).value)||0;
   const vpt=t2>0&&v2>0?(v2/t2):0;
-  return {vin, t1:vpt>0?(vin/vpt):0};
+  return {vin, t1:vpt>0?(vin/vpt):0, vpt};
+}
+
+function calcV2Theory(vpt, t1, u){
+  // 2차 이론전압 = 턴당전압 × (1차총턴수 - 푼턴수)
+  if(vpt>0&&t1>0&&u>=0) return (vpt*(t1-u)).toFixed(2);
+  return '—';
 }
 
 function renderWorkTable(vin, t1){
@@ -1532,32 +1540,52 @@ function renderWorkTable(vin, t1){
     window._workRows=Array(5).fill(null).map(()=>({unwind:'',vmeas:'',imeas:''}));
   const rows=window._workRows;
   const inputStyle='width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;outline:none';
+  const {vpt}=getT1();
   tbody.innerHTML=rows.map((row,i)=>{
     const u=parseFloat(row.unwind)||0;
-    const vTheory=(vin>0&&t1>0&&u>0)?(vin*(1-u/t1)).toFixed(2):'—';
+    const vTheory=u>0?calcV2Theory(vpt,t1,u):'—';
     return `<tr>
       <td style="color:var(--text3);font-size:12px;text-align:center">${i+1}</td>
-      <td><input type="number" data-idx="${i}" data-field="unwind" value="${row.unwind}" placeholder="예) 27" oninput="onWorkInput(this)" style="${inputStyle}"></td>
+      <td><input type="number" data-idx="${i}" data-field="unwind" value="${row.unwind}" placeholder="예) 27" style="${inputStyle}" id="pw_unwind_${i}"></td>
       <td id="vtheory_${i}" style="font-family:'JetBrains Mono',monospace;color:var(--accent2);font-weight:600;text-align:center">${vTheory}</td>
-      <td><input type="number" data-idx="${i}" data-field="vmeas" value="${row.vmeas}" placeholder="실측입력" oninput="onWorkInput(this)" style="${inputStyle}"></td>
-      <td><input type="number" data-idx="${i}" data-field="imeas" value="${row.imeas}" placeholder="실측입력" oninput="onWorkInput(this)" style="${inputStyle}"></td>
+      <td><input type="number" data-idx="${i}" data-field="vmeas" value="${row.vmeas}" placeholder="실측입력" style="${inputStyle}" id="pw_vmeas_${i}"></td>
+      <td><input type="number" data-idx="${i}" data-field="imeas" value="${row.imeas}" placeholder="실측입력" style="${inputStyle}" id="pw_imeas_${i}"></td>
     </tr>`;
   }).join('');
+  // addEventListener로 이벤트 연결 (모듈 스코프 문제 해결)
+  for(let i=0;i<rows.length;i++){
+    const unwindEl=document.getElementById('pw_unwind_'+i);
+    const vmeasEl=document.getElementById('pw_vmeas_'+i);
+    const imeasEl=document.getElementById('pw_imeas_'+i);
+    if(unwindEl) unwindEl.addEventListener('input',function(){
+      window._workRows[i].unwind=this.value;
+      const {vpt:vp,t1:t}=getT1();
+      const u=parseFloat(this.value)||0;
+      const td=document.getElementById('vtheory_'+i);
+      if(td) td.textContent=u>0?calcV2Theory(vp,t,u):'—';
+    });
+    if(vmeasEl) vmeasEl.addEventListener('input',function(){window._workRows[i].vmeas=this.value;});
+    if(imeasEl) imeasEl.addEventListener('input',function(){window._workRows[i].imeas=this.value;});
+  }
 }
 
-window.onWorkInput=function(el){
-  const idx=parseInt(el.dataset.idx);
-  const field=el.dataset.field;
-  if(!window._workRows) window._workRows=Array(5).fill(null).map(()=>({unwind:'',vmeas:'',imeas:''}));
-  window._workRows[idx][field]=el.value;
-  if(field==='unwind'){
-    // 해당 행 이론전압만 즉시 업데이트 (전체 리렌더 없이)
-    const {vin,t1}=getT1();
+
+// ── 푼턴수별 측정기록 이론전압 계산 ──
+window.calcPrimaryRows=function(){
+  const {vpt,t1}=getT1();
+  const turns=document.querySelectorAll('.p_unwind_turns');
+  turns.forEach((el,i)=>{
     const u=parseFloat(el.value)||0;
-    const vTheory=(vin>0&&t1>0&&u>0)?(vin*(1-u/t1)).toFixed(2):'—';
-    const td=document.getElementById('vtheory_'+idx);
-    if(td) td.textContent=vTheory;
-  }
+    const tvEl=document.getElementById('p_tv_'+i);
+    if(tvEl){
+      if(u>0&&vpt>0&&t1>0){
+        tvEl.value=(vpt*(t1-u)).toFixed(2);
+      } else {
+        tvEl.value='';
+        tvEl.placeholder='자동계산';
+      }
+    }
+  });
 };
 
 // ── 인쇄 ──
