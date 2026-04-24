@@ -333,6 +333,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
       <div class="tabs">
         <div class="tab active" id="tabList" onclick="switchTab('list')">📊 전체목록</div>
         <div class="tab" id="tabDetail" onclick="switchTab('detail')">📋 규격 입력</div>
+        <div class="tab" id="tabPrimary" onclick="switchTab('primary')">🔧 1차권선 계산</div>
       </div>
 
       <!-- 전체목록 탭 -->
@@ -382,7 +383,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
               </select>
             </div>
             <div class="form-group w-md"><label>용량</label>
-              <select id="f_cap" onchange="syncCapToPrimary()" style="width:100%"><option value="">선택...</option><option>1kva</option><option>1.5kva</option><option>2kva</option><option>3kva</option><option>5kva</option><option>기타</option></select>
+              <select id="f_cap" style="width:100%"><option value="">선택...</option><option>1kva</option><option>1.5kva</option><option>2kva</option><option>3kva</option><option>5kva</option><option>기타</option></select>
             </div>
             <div class="form-group w-xl"><label>제조사</label><input type="text" id="f_maker" placeholder="예) 한서전기" style="width:100%"></div>
             <div class="form-group w-lg"><label>모델명</label><input type="text" id="f_model" placeholder="예) HY-1000U" style="width:100%"></div>
@@ -533,8 +534,29 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
             </div>
           </div>
 
-          <!-- 1차 권선 계산 -->
-          <div class="section-title">1차 권선 계산</div>
+          <!-- 이미지 -->
+          <div class="section-title">제품 사진</div>
+          <div class="img-dropzone" id="dropzone" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)" onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" accept="image/*" multiple onchange="onFileSelect(event)">
+            <div class="dz-icon">📷</div>
+            <div class="dz-text">클릭 또는 드래그&드롭으로 사진 추가</div>
+            <div class="dz-sub"><kbd>Ctrl+V</kbd> 붙여넣기도 가능</div>
+          </div>
+          <div class="img-grid" id="imgGrid"></div>
+        </div>
+        <div class="action-bar">
+          <button class="btn btn-ghost" onclick="printRecord()">🖨 인쇄</button>
+          <button class="btn btn-success" onclick="saveRecord()">💾 저장</button>
+        </div>
+      </div>
+      <!-- 1차권선 계산 탭 -->
+      <div id="tabContentPrimary" style="display:none;flex:1;overflow-y:auto">
+        <div class="detail-panel">
+          <div class="panel-header">
+            <h2>🔧 1차 권선 계산</h2>
+            <div style="font-size:12px;color:var(--text3)">독립 계산기 — 저장 불필요</div>
+          </div>
+                    <div class="section-title">1차 권선 계산</div>
           <div class="sec2-box">
             <div class="sec2-sub">입력값</div>
             <div class="g5">
@@ -610,19 +632,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
             </div>
           </div>
 
-          <!-- 이미지 -->
-          <div class="section-title">제품 사진</div>
-          <div class="img-dropzone" id="dropzone" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)" onclick="document.getElementById('fileInput').click()">
-            <input type="file" id="fileInput" accept="image/*" multiple onchange="onFileSelect(event)">
-            <div class="dz-icon">📷</div>
-            <div class="dz-text">클릭 또는 드래그&드롭으로 사진 추가</div>
-            <div class="dz-sub"><kbd>Ctrl+V</kbd> 붙여넣기도 가능</div>
-          </div>
-          <div class="img-grid" id="imgGrid"></div>
-        </div>
-        <div class="action-bar">
-          <button class="btn btn-ghost" onclick="printRecord()">🖨 인쇄</button>
-          <button class="btn btn-success" onclick="saveRecord()">💾 저장</button>
+
         </div>
       </div>
     </div>
@@ -982,18 +992,18 @@ function updateTable(){
 window.switchTab=function(tab){
   document.getElementById('tabList').classList.toggle('active',tab==='list');
   document.getElementById('tabDetail').classList.toggle('active',tab==='detail');
+  const tabPrimEl=document.getElementById('tabPrimary');
+  if(tabPrimEl) tabPrimEl.classList.toggle('active',tab==='primary');
   const listEl=document.getElementById('tabContentList');
   const detailEl=document.getElementById('tabContentDetail');
-  if(tab==='list'){
-    listEl.style.display='block';
-    listEl.style.flex='1';
-    listEl.style.overflowY='auto';
-    detailEl.style.display='none';
-  } else {
-    listEl.style.display='none';
-    detailEl.style.display='block';
-    detailEl.style.flex='1';
-    detailEl.style.overflowY='auto';
+  const primEl=document.getElementById('tabContentPrimary');
+  listEl.style.display=tab==='list'?'block':'none';
+  if(tab==='list'){listEl.style.flex='1';listEl.style.overflowY='auto';}
+  detailEl.style.display=tab==='detail'?'block':'none';
+  if(tab==='detail'){detailEl.style.flex='1';detailEl.style.overflowY='auto';}
+  if(primEl){
+    primEl.style.display=tab==='primary'?'block':'none';
+    if(tab==='primary'){primEl.style.flex='1';primEl.style.overflowY='auto';}
   }
 };
 
@@ -1103,10 +1113,9 @@ window.calcSecondary=function(){
     wlenAuto=base*(1+margin/100);
     document.getElementById('s_wlen_hint').textContent=
       `π×(${od}+${id_})/2/1000×${turns}턴 = ${base.toFixed(2)}m × (1+${margin}%) = 약 ${wlenAuto.toFixed(2)}m`;
-    if(!document.getElementById('s_wlen').matches(':focus')&&wlen===0){
-      document.getElementById('s_wlen').value=wlenAuto.toFixed(2);
-      wlen=wlenAuto;
-    }
+    // 항상 자동계산값으로 업데이트
+    document.getElementById('s_wlen').value=wlenAuto.toFixed(2);
+    wlen=wlenAuto;
   }
 
   // 권선 DC저항
@@ -1209,7 +1218,6 @@ function clearForm(){
   const cfEl=document.getElementById('calcFormula');
   if(cvEl)cvEl.textContent='—';
   if(cfEl)cfEl.textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
-  window._workRows=[{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''}];
   document.getElementById('f_note').value='다운';
   document.getElementById('f_type').value='링코어';
   const eiWrap=document.getElementById('ei_leg_wrap');
@@ -1239,17 +1247,13 @@ window.selectRecord=function(id){
             s_cab_area:'s_cab_area',s_cab_len:'s_cab_len',s_term_r:'s_term_r',s_term_n:'s_term_n',
             s_md_peak:'s_md_peak',s_md_rms:'s_md_rms',s_mt_peak:'s_mt_peak',s_mt_rms:'s_mt_rms',
             s_real_len:'s_real_len',
-            p_vin:'p_vin',p_t2:'p_t2',p_v2:'p_v2',p_cap:'p_cap',p_conn:'p_conn'};
-    // 작업기록표 복원
-    try{window._workRows=JSON.parse(sd.p_work_rows||'[]');}catch(e){window._workRows=[];}
-    if(!window._workRows.length) window._workRows=[{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''}];
+};
   const sd=r.secondary||{};
   Object.keys(s2).forEach(k=>{document.getElementById(k).value=sd[k]||'';});
   if(!sd.s_margin)document.getElementById('s_margin').value='20';
   if(!sd.s_term_n)document.getElementById('s_term_n').value='2';
   switchTab('detail');
   window.onTypeChange();window.calcSecondary();
-  window.calcPrimary();
   renderImages();
   renderList();
 };
@@ -1294,12 +1298,6 @@ window.saveRecord=async function(){
     s_mt_peak:document.getElementById('s_mt_peak').value,
     s_mt_rms:document.getElementById('s_mt_rms').value,
     s_real_len:document.getElementById('s_real_len').value,
-    p_vin:document.getElementById('p_vin').value,
-    p_t2:document.getElementById('p_t2').value,
-    p_v2:document.getElementById('p_v2').value,
-    p_cap:document.getElementById('p_cap').value,
-    p_conn:document.getElementById('p_conn').value,
-    p_work_rows:JSON.stringify(window._workRows||[])
   };
   const capOrder=['1kva','1.5kva','2kva','3kva','5kva','기타'];
   const cap=document.getElementById('f_cap').value;
@@ -1472,16 +1470,6 @@ window.copyUrl=function(id){
   });
 };
 
-
-
-// ── 용량 선택 동기화 ──
-window.syncCapToPrimary=function(){
-  const cap=document.getElementById('f_cap').value;
-  const MAP={'1kva':'0.10','1.5kva':'0.12','2kva':'0.14','3kva':'0.18','5kva':'0.25'};
-  const pCap=document.getElementById('p_cap');
-  if(pCap&&MAP[cap]) pCap.value=MAP[cap];
-  window.calcPrimary();
-};
 
 // ── 1차 권선 계산 ──
 const P_RATIOS=[['1kVA',0.10],['1.5kVA',0.12],['2kVA',0.14],['3kVA',0.18],['4kVA',0.22],['5kVA',0.25]];
