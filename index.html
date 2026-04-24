@@ -1239,7 +1239,7 @@ window.selectRecord=function(id){
     f_od:'od',f_id:'id_',f_h:'h',f_wire:'wire',
     f_weight_total:'weight_total',f_weight:'weight',f_breaker:'breaker',
     f_eff:'eff',f_vppt:'vppt',f_vppt2:'vppt2',
-    f_noload:'noload',f_noload2:'noload2',f_remark:'remark',f_ei_leg:'ei_leg'};
+    f_noload:'noload',f_noload2:'noload2',f_remark:'remark'};
   Object.entries(fields).forEach(([elId,key])=>{document.getElementById(elId).value=r[key]||'';});
   // 2차권선 데이터
   setNoteValue(r.note||'다운');
@@ -1252,6 +1252,8 @@ window.selectRecord=function(id){
   Object.keys(s2).forEach(k=>{document.getElementById(k).value=sd[k]||'';});
   if(!sd.s_margin)document.getElementById('s_margin').value='20';
   if(!sd.s_term_n)document.getElementById('s_term_n').value='2';
+  // ei_leg는 secondary JSON에서 읽기
+  document.getElementById('f_ei_leg').value=sd.ei_leg||r.ei_leg||'';
   switchTab('detail');
   window.onTypeChange();window.calcSecondary();
   renderImages();
@@ -1298,6 +1300,7 @@ window.saveRecord=async function(){
     s_mt_peak:document.getElementById('s_mt_peak').value,
     s_mt_rms:document.getElementById('s_mt_rms').value,
     s_real_len:document.getElementById('s_real_len').value,
+    ei_leg:document.getElementById('f_ei_leg').value,
   };
   const capOrder=['1kva','1.5kva','2kva','3kva','5kva','기타'];
   const cap=document.getElementById('f_cap').value;
@@ -1310,7 +1313,6 @@ window.saveRecord=async function(){
     note:getNoteValue(),
     remark:document.getElementById('f_remark').value.trim(),
     type_:document.getElementById('f_type').value,
-    ei_leg:parseFloat(document.getElementById('f_ei_leg').value)||0,
     url1:document.getElementById('f_url1').value.trim(),
     url2:document.getElementById('f_url2').value.trim(),
     od:parseFloat(document.getElementById('f_od').value)||0,
@@ -1525,6 +1527,21 @@ function renderWorkTable(vin, t1){
     </tr>`;
   }).join('');
 }
+
+// ── 푼턴수별 측정기록표 이론전압 계산 (HTML oninput에서 호출) ──
+window.calcPrimaryRows=function(){
+  const vin=parseFloat(document.getElementById('p_vin').value)||0;
+  const t2=parseFloat(document.getElementById('p_t2').value)||0;
+  const v2=parseFloat(document.getElementById('p_v2').value)||0;
+  const vpt=t2>0&&v2>0?(v2/t2):0;
+  const t1=vpt>0?(vin/vpt):0;
+  document.querySelectorAll('.p_unwind_turns').forEach(inp=>{
+    const row=parseInt(inp.dataset.row);
+    const u=parseFloat(inp.value)||0;
+    const tvEl=document.getElementById('p_tv_'+row);
+    if(tvEl) tvEl.value=(vin>0&&t1>0&&u>0)?(vin*(1-u/t1)).toFixed(2):'';
+  });
+};
 
 window.onWorkInput=function(el){
   const idx=parseInt(el.dataset.idx);
