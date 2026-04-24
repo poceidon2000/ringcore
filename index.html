@@ -275,6 +275,13 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
         </div>
         <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="doRestore(event)">
       </div>
+      <div class="admin-card" onclick="doMigrate()">
+        <div class="ac-icon">🔄</div>
+        <div class="ac-info">
+          <h4>승강압 방식 데이터 변환</h4>
+          <p>기존 비고 값을 새 승강압 방식으로 일괄 변환합니다</p>
+        </div>
+      </div>
       <div id="adminStatus" style="font-size:12px;color:var(--text3);text-align:center;padding:4px 0;display:none"></div>
     </div>
     <button style="width:100%;margin-top:14px;background:none;border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text3);cursor:pointer;font-family:inherit;font-size:13px" id="adminVerifyBtn" onclick="verifyAdmin()">확인</button>
@@ -367,31 +374,28 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
           <div class="section-title">기본 정보</div>
           <div class="form-grid">
             <div class="form-group w-md"><label>종류</label>
-              <select id="f_type" style="width:100%">
+              <select id="f_type" onchange="onTypeChange()" style="width:100%">
                 <option value="링코어" selected>링코어</option>
-                <option value="EI">EI</option>
+                <option value="EI코어">EI코어</option>
                 <option value="AVR">AVR</option>
                 <option value="슬라이닥스">슬라이닥스</option>
               </select>
             </div>
             <div class="form-group w-md"><label>용량</label>
-              <select id="f_cap" style="width:100%"><option value="">선택...</option><option>1kva</option><option>1.5kva</option><option>2kva</option><option>3kva</option><option>5kva</option><option>기타</option></select>
+              <select id="f_cap" onchange="syncCapToPrimary()" style="width:100%"><option value="">선택...</option><option>1kva</option><option>1.5kva</option><option>2kva</option><option>3kva</option><option>5kva</option><option>기타</option></select>
             </div>
             <div class="form-group w-xl"><label>제조사</label><input type="text" id="f_maker" placeholder="예) 한서전기" style="width:100%"></div>
             <div class="form-group w-lg"><label>모델명</label><input type="text" id="f_model" placeholder="예) HY-1000U" style="width:100%"></div>
-            <div class="form-group w-lg"><label>비고</label>
-              <select id="f_note" onchange="toggleNoteCustom()" style="width:100%">
+            <div class="form-group w-lg"><label>승강압 방식</label>
+              <select id="f_note" style="width:100%">
                 <option value="다운" selected>다운</option>
                 <option value="승압">승압</option>
-                <option value="수지형">수지형</option>
-                <option value="수지형(승압)">수지형(승압)</option>
-                <option value="수지형(다운)">수지형(다운)</option>
-                <option value="">기타/직접입력</option>
+                <option value="수지형 다운">수지형 다운</option>
+                <option value="수지형 승압">수지형 승압</option>
               </select>
             </div>
-            <div class="form-group w-lg" id="note_custom_wrap" style="display:none">
-              <label>비고 직접입력</label>
-              <input type="text" id="f_note_custom" placeholder="직접 입력" style="width:100%">
+            <div class="form-group w-lg"><label>비고</label>
+              <input type="text" id="f_remark" placeholder="기타 메모" style="width:100%">
             </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
@@ -416,26 +420,31 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
           </div>
 
           <div class="section-title">코어 치수</div>
-          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:18px">
-            <div class="form-group" style="width:110px;min-width:110px">
-              <label>외경 OD (mm)</label>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:10px">
+            <div class="form-group" style="width:140px;min-width:140px">
+              <label id="lbl_od">외경 OD (mm)</label>
               <input type="number" id="f_od" placeholder="예) 130" oninput="calcArea();calcSecondary()" style="width:100%">
             </div>
-            <div class="form-group" style="width:110px;min-width:110px">
-              <label>내경 ID (mm)</label>
+            <div class="form-group" style="width:140px;min-width:140px">
+              <label id="lbl_id">내경 ID (mm)</label>
               <input type="number" id="f_id" placeholder="예) 50" oninput="calcArea();calcSecondary()" style="width:100%">
             </div>
-            <div class="form-group" style="width:100px;min-width:100px">
-              <label>높이 H (mm)</label>
+            <div class="form-group" style="width:130px;min-width:130px">
+              <label id="lbl_h">높이 H (mm)</label>
               <input type="number" id="f_h" placeholder="예) 75" oninput="calcArea()" style="width:100%">
             </div>
             <div class="form-group" style="width:90px;min-width:90px">
               <label>심선 (mm)</label>
               <input type="text" id="f_wire" placeholder="예) 1.85" style="width:100%">
             </div>
+            <div class="form-group" id="ei_leg_wrap" style="width:160px;min-width:160px;display:none">
+              <label>중앙다리폭 (mm)</label>
+              <input type="number" id="f_ei_leg" placeholder="자동: 가로÷3" oninput="calcArea()" style="width:100%">
+              <span class="hint" id="ei_leg_hint">기본값: 외경÷3 자동계산</span>
+            </div>
             <div class="calc-display" style="margin-bottom:0;flex:1;min-width:230px">
               <div>
-                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px">단면적 (자동계산) = (외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px" id="calc_formula_lbl">단면적 (자동계산) = (외경 - 내경) ÷ 2 × 높이 ÷ 100</div>
                 <div style="display:flex;align-items:baseline;gap:4px">
                   <span class="cd-value" id="calcValue">—</span><span class="cd-unit">cm²</span>
                 </div>
@@ -451,6 +460,8 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
             <div class="form-group w-md"><label>효율 (%)</label><input type="text" id="f_eff" placeholder="예) 97.1" style="width:100%"></div>
             <div class="form-group w-xl"><label>턴당전압 (V) — 기준</label><input type="number" id="f_vppt" placeholder="예) 0.72" step="0.01" style="width:100%"></div>
             <div class="form-group w-xl"><label>턴당전압 (V) — 1차권선후</label><input type="number" id="f_vppt2" placeholder="예) 0.70" step="0.01" style="width:100%"></div>
+            <div class="form-group w-xl"><label>무부하전류 (A) — 기준</label><input type="number" id="f_noload" placeholder="예) 0.45" step="0.01" style="width:100%"></div>
+            <div class="form-group w-xl"><label>무부하전류 (A) — 1차권선후</label><input type="number" id="f_noload2" placeholder="예) 0.40" step="0.01" style="width:100%"></div>
           </div>
 
           <!-- 2차권선 계산 -->
@@ -465,7 +476,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
               <div class="form-group w-md"><label>여유율 (%)</label><input type="number" id="s_margin" placeholder="20" value="20" oninput="calcSecondary()" style="width:100%"><span class="hint">인출 여유</span></div>
             </div>
             <div class="g3" style="margin-top:10px">
-              <div class="form-group w-xl"><label>2차권선 길이 (m)</label><input type="number" class="auto-calc" id="s_wlen" placeholder="자동계산" oninput="calcSecondary()" style="width:100%"><span class="hint" id="s_wlen_hint">π×(OD+ID)/2/1000×턴×(1+여유%)</span></div>
+              <div class="form-group w-xl"><label>이론 2차권선 길이 (m)</label><input type="number" class="auto-calc" id="s_wlen" placeholder="자동계산" oninput="calcSecondary()" style="width:100%"><span class="hint" id="s_wlen_hint">π×(OD+ID)/2/1000×턴×(1+여유%)</span></div>
               <div class="form-group w-xl"><label>권선 DC저항 (mΩ)</label><input type="number" class="auto-calc" id="s_wire_r" placeholder="자동계산" readonly style="width:100%"><span class="hint" id="s_wire_r_hint">길이÷(56×단면적)</span></div>
             </div>
 
@@ -477,7 +488,8 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
             </div>
             <div class="g3" style="margin-top:10px">
               <div class="form-group w-lg"><label>케이블 총길이 — 양쪽 (m)</label><input type="number" class="auto-calc" id="s_cab_total_len" placeholder="자동: 거리×2" readonly style="width:100%"><span class="hint" id="s_cab_total_hint">거리×2</span></div>
-              <div class="form-group w-xl"><label>2차권선~스폿봉 전체길이 (m)</label><input type="number" class="auto-calc" id="s_total_len" placeholder="자동: 권선+케이블" readonly style="width:100%"><span class="hint" id="s_total_hint">권선길이+케이블총길이</span></div>
+              <div class="form-group w-xl"><label>이론적 케이블 전체길이 (m)</label><input type="number" class="auto-calc" id="s_total_len" placeholder="자동: 권선+케이블" readonly style="width:100%"><span class="hint" id="s_total_hint">권선길이+케이블총길이</span></div>
+              <div class="form-group w-xl"><label>실제 케이블 전체길이 (m)</label><input type="number" id="s_real_len" placeholder="실측 입력" oninput="calcSecondary()" style="width:100%"><span class="hint">실제 사용 케이블 길이</span></div>
             </div>
 
             <div class="sec2-sub" style="margin-top:14px">대전류단자 (미사용시 0 입력)</div>
@@ -515,9 +527,86 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
               <div class="rc"><div class="rc-lbl">저항합계 (단자)</div><div class="rc-val warn" id="r_t_ohm">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">mΩ</span></div><div class="rc-diff">+단자저항</div></div>
             </div>
             <div class="diff-rows">
-              <div class="diff-row"><span class="diff-lbl">직결 전류손실 (이론→실측)</span><span class="c-good" id="loss_d">—</span></div>
-              <div class="diff-row"><span class="diff-lbl">단자에 의한 이론 전류손실</span><span class="c-warn" id="loss_t">—</span></div>
-              <div class="diff-row"><span class="diff-lbl">실측 직결 대비 단자 전류감소</span><span class="c-warn" id="loss_vs">—</span></div>
+              <div class="diff-row"><span class="c-good" id="loss_d" style="min-width:60px;text-align:right">—</span><span class="diff-lbl" style="margin-left:10px">직결 실측전류 / 이론전류 × 100</span></div>
+              <div class="diff-row"><span class="c-warn" id="loss_t" style="min-width:60px;text-align:right">—</span><span class="diff-lbl" style="margin-left:10px">단자 실측전류 / 이론전류 × 100</span></div>
+              <div class="diff-row"><span class="c-warn" id="loss_vs" style="min-width:60px;text-align:right">—</span><span class="diff-lbl" style="margin-left:10px">실측 단자전류 / 직결전류 × 100</span></div>
+            </div>
+          </div>
+
+          <!-- 1차 권선 계산 -->
+          <div class="section-title">1차 권선 계산</div>
+          <div class="sec2-box">
+            <div class="sec2-sub">입력값</div>
+            <div class="g5">
+              <div class="form-group w-lg"><label>집 인입전압 (V)</label><input type="number" id="p_vin" placeholder="예) 228.7" oninput="calcPrimary()" style="width:100%"><span class="hint">실측 입력전압</span></div>
+              <div class="form-group w-lg"><label>임시 2차 턴수 (턴)</label><input type="number" id="p_t2" placeholder="예) 5" oninput="calcPrimary()" style="width:100%"><span class="hint">임시로 감은 횟수</span></div>
+              <div class="form-group w-lg"><label>측정된 2차 전압 (V)</label><input type="number" id="p_v2" placeholder="예) 2.93" step="0.01" oninput="calcPrimary()" style="width:100%"><span class="hint">2차에서 측정값</span></div>
+              <div class="form-group w-md"><label>트랜스 용량</label>
+                <select id="p_cap" onchange="calcPrimary()" style="width:100%">
+                  <option value="0.10">1kVA (10%)</option>
+                  <option value="0.12">1.5kVA (12%)</option>
+                  <option value="0.14">2kVA (14%)</option>
+                  <option value="0.18">3kVA (18%)</option>
+                  <option value="0.22">4kVA (22%)</option>
+                  <option value="0.25">5kVA (25%)</option>
+                </select>
+                <span class="hint">용량별 비율 자동적용</span>
+              </div>
+              <div class="form-group w-md"><label>연결 방식</label>
+                <select id="p_conn" onchange="calcPrimary()" style="width:100%">
+                  <option value="single">단선</option>
+                  <option value="parallel">병렬</option>
+                </select>
+                <span class="hint">단선/병렬</span>
+              </div>
+            </div>
+            <div class="result-cards" style="margin-top:14px">
+              <div class="rc"><div class="rc-lbl">턴당 전압 (V/턴)</div><div class="rc-val info" id="p_r_vpt">—</div><div class="rc-diff">측정전압 ÷ 임시턴수</div></div>
+              <div class="rc"><div class="rc-lbl">1차 권선 총 턴수</div><div class="rc-val info" id="p_r_t1">—</div><div class="rc-diff">인입전압 ÷ 턴당전압</div></div>
+              <div class="rc"><div class="rc-lbl">풀어야 할 턴수</div><div class="rc-val warn" id="p_r_unwind">—</div><div class="rc-diff" id="p_r_unwind_d">총턴수 × 비율</div></div>
+            </div>
+            <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+              <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px">푼턴수별 측정 기록 (5회)</div>
+              <div style="overflow-x:auto"><table class="data-table" id="p_unwind_table">
+                <thead><tr>
+                  <th style="width:50px">#</th>
+                  <th>푼 턴수 (턴)</th>
+                  <th>이론적 출력전압 (V) <span style="font-size:10px;color:var(--text3);font-weight:400">자동계산</span></th>
+                  <th>무부하전압 실측 (V)</th>
+                  <th>무부하전류 실측 (A)</th>
+                  <th>비고</th>
+                </tr></thead>
+                <tbody>
+                  <tr><td style="text-align:center;color:var(--text3)">1</td><td><input type="number" class="p_unwind_turns" data-row="0" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_theory_v" id="p_tv_0" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td><td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="text" class="p_note" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td></tr>
+                  <tr><td style="text-align:center;color:var(--text3)">2</td><td><input type="number" class="p_unwind_turns" data-row="1" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_theory_v" id="p_tv_1" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td><td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="text" class="p_note" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td></tr>
+                  <tr><td style="text-align:center;color:var(--text3)">3</td><td><input type="number" class="p_unwind_turns" data-row="2" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_theory_v" id="p_tv_2" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td><td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="text" class="p_note" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td></tr>
+                  <tr><td style="text-align:center;color:var(--text3)">4</td><td><input type="number" class="p_unwind_turns" data-row="3" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_theory_v" id="p_tv_3" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td><td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="text" class="p_note" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td></tr>
+                  <tr><td style="text-align:center;color:var(--text3)">5</td><td><input type="number" class="p_unwind_turns" data-row="4" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_theory_v" id="p_tv_4" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td><td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="text" class="p_note" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td></tr>
+                </tbody>
+              </table></div>
+            </div>
+
+            <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+              <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px">권선 작업 기록표</div>
+              <div style="overflow-x:auto;margin-bottom:14px">
+                <table class="data-table" id="p_work_table">
+                  <thead><tr>
+                    <th style="min-width:60px">#</th>
+                    <th style="min-width:110px">푼 턴수</th>
+                    <th style="min-width:130px">이론적 출력전압 (V)</th>
+                    <th style="min-width:130px">실측 무부하전압 (V)</th>
+                    <th style="min-width:130px">실측 무부하전류 (A)</th>
+                  </tr></thead>
+                  <tbody id="p_work_body"></tbody>
+                </table>
+              </div>
+            </div>
+            <div style="margin-top:0;border-top:1px solid var(--border);padding-top:10px">
+              <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px">용량별 비율표</div>
+              <div style="overflow-x:auto"><table class="data-table" id="p_ratio_table">
+                <thead><tr><th>용량</th><th>비율</th><th>단선 풀어야 할 턴수</th><th>병렬 풀어야 할 턴수</th><th>남는 1차 턴수</th></tr></thead>
+                <tbody id="p_ratio_body"></tbody>
+              </table></div>
             </div>
           </div>
 
@@ -695,6 +784,39 @@ window.doRestore=async function(e){
     renderAll();
     e.target.value='';
   }catch(e2){st.textContent='오류: '+e2.message;toast('복구 실패: '+e2.message,'error');}
+};
+
+
+// ── 데이터 마이그레이션 (승강압 방식 변환) ──
+window.doMigrate=async function(){
+  const st=document.getElementById('adminStatus');
+  st.style.display='block';st.textContent='변환 준비 중...';
+  const MAP={
+    '수지형':'수지형 다운','수지형(다운)':'수지형 다운',
+    '수지형(승압)':'수지형 승압','수지형(02년제조)':'수지형 다운',
+    '수지형(97년제조)':'수지형 다운','X':'다운','':'다운'
+  };
+  const VALID=['다운','승압','수지형 다운','수지형 승압'];
+  try{
+    const data=await sbGetAll2();
+    let count=0;
+    const updates=[];
+    for(const r of data){
+      const orig=r.note||'';
+      const mapped=MAP[orig]||(VALID.includes(orig)?orig:'다운');
+      if(mapped!==orig){updates.push({...r,note:mapped});count++;}
+    }
+    if(!updates.length){st.textContent='변환할 데이터 없음 (이미 최신)';return;}
+    st.textContent=`${count}개 변환 중...`;
+    for(let i=0;i<updates.length;i+=50){
+      await sb.from(TABLE).upsert(updates.slice(i,i+50),{onConflict:'id'});
+    }
+    st.textContent=`✓ ${count}개 변환 완료`;
+    toast(`승강압 방식 ${count}개 변환 완료 ✓`,'success');
+    const newData=await sbGetAll();
+    records=sortRecords(newData.map(parseRow));
+    renderAll();
+  }catch(e){st.textContent='오류: '+e.message;toast('변환 실패: '+e.message,'error');}
 };
 
 // ── Supabase 시작 ──
@@ -881,21 +1003,76 @@ function calcAreaVal(od,id_,h){
   if(isNaN(od)||isNaN(id_)||isNaN(h))return null;
   return(od-id_)/2*h/100;
 }
+// ── 종류 변경시 레이블/표시 업데이트 ──
+window.onTypeChange=function(){
+  const type=document.getElementById('f_type').value;
+  const isEI=(type==='EI코어');
+  const legWrap=document.getElementById('ei_leg_wrap');
+  if(legWrap) legWrap.style.display=isEI?'block':'none';
+  const lblOd=document.getElementById('lbl_od');
+  const lblId=document.getElementById('lbl_id');
+  const lblH=document.getElementById('lbl_h');
+  const fmlLbl=document.getElementById('calc_formula_lbl');
+  if(lblOd) lblOd.textContent=isEI?'가로 (mm)':'외경 OD (mm)';
+  if(lblId) lblId.textContent=isEI?'세로 (mm)':'내경 ID (mm)';
+  if(lblH)  lblH.textContent=isEI?'적층높이 H (mm)':'높이 H (mm)';
+  if(fmlLbl) fmlLbl.textContent=isEI?
+    '단면적 (자동계산) = 중앙다리폭 × 적층높이 ÷ 100':
+    '단면적 (자동계산) = (외경 - 내경) ÷ 2 × 높이 ÷ 100';
+  // EI코어면 중앙다리폭 자동계산
+  if(isEI){
+    const od=parseFloat(document.getElementById('f_od').value)||0;
+    const legEl=document.getElementById('f_ei_leg');
+    const hintEl=document.getElementById('ei_leg_hint');
+    if(od>0&&legEl&&!legEl.value){
+      const auto=(od/3).toFixed(1);
+      legEl.placeholder='자동: '+auto;
+      if(hintEl) hintEl.textContent='기본값: '+od+' ÷ 3 = '+auto+'mm';
+    }
+  }
+  window.calcArea();
+};
+
 window.calcArea=function(){
   const cvEl=document.getElementById('calcValue');
-  const cfEl=document.getElementById('calcFormula');
-  if(!cvEl||!cfEl)return;
-  const od=document.getElementById('f_od').value;
-  const id_=document.getElementById('f_id').value;
-  const h=document.getElementById('f_h').value;
-  const val=calcAreaVal(od,id_,h);
-  if(val!==null){
-    cvEl.textContent=val.toFixed(2);
-    cfEl.textContent=`(${od} - ${id_}) ÷ 2 × ${h} ÷ 100 = ${val.toFixed(2)} cm²`;
+  const fmlLbl=document.getElementById('calc_formula_lbl');
+  if(!cvEl)return;
+  const type=(document.getElementById('f_type')||{}).value||'링코어';
+  const isEI=(type==='EI코어');
+  const od=parseFloat(document.getElementById('f_od').value)||0;
+  const id_=parseFloat(document.getElementById('f_id').value)||0;
+  const h=parseFloat(document.getElementById('f_h').value)||0;
+  let val=null;
+  if(isEI){
+    // EI: 중앙다리폭 × 적층높이
+    const legEl=document.getElementById('f_ei_leg');
+    let leg=legEl?parseFloat(legEl.value)||0:0;
+    if(od>0&&leg===0) leg=od/3; // 기본값
+    if(leg>0&&h>0){
+      val=leg*h/100;
+      if(fmlLbl) fmlLbl.textContent=
+        `단면적 = ${leg.toFixed(1)} × ${h} ÷ 100 = ${val.toFixed(2)} cm²`;
+    } else {
+      if(fmlLbl) fmlLbl.textContent='단면적 (자동계산) = 중앙다리폭 × 적층높이 ÷ 100';
+    }
+    // 중앙다리폭 힌트 업데이트
+    if(od>0){
+      const legEl2=document.getElementById('f_ei_leg');
+      const hintEl=document.getElementById('ei_leg_hint');
+      if(legEl2&&!legEl2.value&&hintEl)
+        hintEl.textContent='기본값: '+od+' ÷ 3 = '+(od/3).toFixed(1)+'mm';
+    }
   } else {
-    cvEl.textContent='—';
-    cfEl.textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
+    // 링코어: (외경-내경)/2 × 높이
+    if(od>0&&id_>0&&h>0){
+      val=(od-id_)/2*h/100;
+      if(fmlLbl) fmlLbl.textContent=
+        `단면적 = (${od} - ${id_}) ÷ 2 × ${h} ÷ 100 = ${val.toFixed(2)} cm²`;
+    } else {
+      if(fmlLbl) fmlLbl.textContent='단면적 (자동계산) = (외경 - 내경) ÷ 2 × 높이 ÷ 100';
+    }
   }
+  cvEl.textContent=val!==null?val.toFixed(2):'—';
 };
 
 // ── 2차권선 계산 ──
@@ -1000,9 +1177,9 @@ window.calcSecondary=function(){
     document.getElementById('r_d_rms_d').textContent=md_rms>0?'실측 대비 '+((i_d_rms-md_rms)/md_rms*100).toFixed(1)+'%':'실측값 입력시 표시';
     document.getElementById('r_t_peak_d').textContent=mt_peak>0?'실측 대비 '+((i_t_peak-mt_peak)/mt_peak*100).toFixed(1)+'%':'실측값 입력시 표시';
     document.getElementById('r_t_rms_d').textContent=mt_rms>0?'실측 대비 '+((i_t_rms-mt_rms)/mt_rms*100).toFixed(1)+'%':'실측값 입력시 표시';
-    document.getElementById('loss_d').textContent=md_rms>0?((i_d_rms-md_rms)/i_d_rms*100).toFixed(1)+'%':'—';
-    document.getElementById('loss_t').textContent=term_total>0?((i_d_rms-i_t_rms)/i_d_rms*100).toFixed(1)+'%':'—';
-    document.getElementById('loss_vs').textContent=(md_rms>0&&mt_rms>0)?((md_rms-mt_rms)/md_rms*100).toFixed(1)+'%':'—';
+    document.getElementById('loss_d').textContent=md_rms>0?(md_rms/i_d_rms*100).toFixed(1)+'%':'—';
+    document.getElementById('loss_t').textContent=term_total>0&&mt_rms>0?(mt_rms/i_t_rms*100).toFixed(1)+'%':'—';
+    document.getElementById('loss_vs').textContent=(md_rms>0&&mt_rms>0)?(mt_rms/md_rms*100).toFixed(1)+'%':'—';
   } else {
     ['r_d_peak','r_d_rms','r_d_ohm','r_t_peak','r_t_rms','r_t_ohm'].forEach(id=>{
       document.getElementById(id).innerHTML='—';
@@ -1023,17 +1200,20 @@ window.openNewForm=function(){
   clearForm();renderImages();
 };
 function clearForm(){
-  ['f_cap','f_maker','f_model','f_type','f_url1','f_url2',
-   'f_od','f_id','f_h','f_wire','f_weight_total','f_weight','f_breaker','f_eff','f_vppt','f_vppt2',
+  ['f_cap','f_maker','f_model','f_type','f_url1','f_url2','f_remark','f_ei_leg',
+   'f_od','f_id','f_h','f_wire','f_weight_total','f_weight','f_breaker','f_eff','f_vppt','f_vppt2','f_noload','f_noload2',
    's_area','s_turns','s_v2','s_margin','s_wlen','s_wire_r','s_cab_area','s_cab_len','s_cab_r',
-   's_cab_total_len','s_total_len','s_term_r','s_term_n','s_term_total','s_md_peak','s_md_rms','s_mt_peak','s_mt_rms']
+   's_cab_total_len','s_total_len','s_real_len','p_vin','p_t2','p_v2','s_term_r','s_term_n','s_term_total','s_md_peak','s_md_rms','s_mt_peak','s_mt_rms']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='s_margin'?'20':id==='s_term_n'?'2':''});
   const cvEl=document.getElementById('calcValue');
   const cfEl=document.getElementById('calcFormula');
   if(cvEl)cvEl.textContent='—';
   if(cfEl)cfEl.textContent='(외경 - 내경) ÷ 2 × 높이 ÷ 100';
-  setNoteValue('다운');
+  window._workRows=[{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''}];
+  document.getElementById('f_note').value='다운';
   document.getElementById('f_type').value='링코어';
+  const eiWrap=document.getElementById('ei_leg_wrap');
+  if(eiWrap)eiWrap.style.display='none';
 }
 
 // ── 제품 선택 ──
@@ -1050,19 +1230,26 @@ window.selectRecord=function(id){
     f_url1:'url1',f_url2:'url2',
     f_od:'od',f_id:'id_',f_h:'h',f_wire:'wire',
     f_weight_total:'weight_total',f_weight:'weight',f_breaker:'breaker',
-    f_eff:'eff',f_vppt:'vppt',f_vppt2:'vppt2'};
+    f_eff:'eff',f_vppt:'vppt',f_vppt2:'vppt2',
+    f_noload:'noload',f_noload2:'noload2',f_remark:'remark',f_ei_leg:'ei_leg'};
   Object.entries(fields).forEach(([elId,key])=>{document.getElementById(elId).value=r[key]||'';});
   // 2차권선 데이터
   setNoteValue(r.note||'다운');
     const s2={s_area:'s_area',s_turns:'s_turns',s_v2:'s_v2',s_margin:'s_margin',s_wlen:'s_wlen',
             s_cab_area:'s_cab_area',s_cab_len:'s_cab_len',s_term_r:'s_term_r',s_term_n:'s_term_n',
-            s_md_peak:'s_md_peak',s_md_rms:'s_md_rms',s_mt_peak:'s_mt_peak',s_mt_rms:'s_mt_rms'};
+            s_md_peak:'s_md_peak',s_md_rms:'s_md_rms',s_mt_peak:'s_mt_peak',s_mt_rms:'s_mt_rms',
+            s_real_len:'s_real_len',
+            p_vin:'p_vin',p_t2:'p_t2',p_v2:'p_v2',p_cap:'p_cap',p_conn:'p_conn'};
+    // 작업기록표 복원
+    try{window._workRows=JSON.parse(sd.p_work_rows||'[]');}catch(e){window._workRows=[];}
+    if(!window._workRows.length) window._workRows=[{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''}];
   const sd=r.secondary||{};
   Object.keys(s2).forEach(k=>{document.getElementById(k).value=sd[k]||'';});
   if(!sd.s_margin)document.getElementById('s_margin').value='20';
   if(!sd.s_term_n)document.getElementById('s_term_n').value='2';
   switchTab('detail');
-  window.calcArea();window.calcSecondary();
+  window.onTypeChange();window.calcSecondary();
+  window.calcPrimary();
   renderImages();
   renderList();
 };
@@ -1105,7 +1292,14 @@ window.saveRecord=async function(){
     s_md_peak:document.getElementById('s_md_peak').value,
     s_md_rms:document.getElementById('s_md_rms').value,
     s_mt_peak:document.getElementById('s_mt_peak').value,
-    s_mt_rms:document.getElementById('s_mt_rms').value
+    s_mt_rms:document.getElementById('s_mt_rms').value,
+    s_real_len:document.getElementById('s_real_len').value,
+    p_vin:document.getElementById('p_vin').value,
+    p_t2:document.getElementById('p_t2').value,
+    p_v2:document.getElementById('p_v2').value,
+    p_cap:document.getElementById('p_cap').value,
+    p_conn:document.getElementById('p_conn').value,
+    p_work_rows:JSON.stringify(window._workRows||[])
   };
   const capOrder=['1kva','1.5kva','2kva','3kva','5kva','기타'];
   const cap=document.getElementById('f_cap').value;
@@ -1116,7 +1310,9 @@ window.saveRecord=async function(){
     maker:document.getElementById('f_maker').value.trim(),
     model:document.getElementById('f_model').value.trim(),
     note:getNoteValue(),
+    remark:document.getElementById('f_remark').value.trim(),
     type_:document.getElementById('f_type').value,
+    ei_leg:parseFloat(document.getElementById('f_ei_leg').value)||0,
     url1:document.getElementById('f_url1').value.trim(),
     url2:document.getElementById('f_url2').value.trim(),
     od:parseFloat(document.getElementById('f_od').value)||0,
@@ -1129,6 +1325,8 @@ window.saveRecord=async function(){
     eff:document.getElementById('f_eff').value,
     vppt:parseFloat(document.getElementById('f_vppt').value)||0,
     vppt2:parseFloat(document.getElementById('f_vppt2').value)||0,
+    noload:parseFloat(document.getElementById('f_noload').value)||0,
+    noload2:parseFloat(document.getElementById('f_noload2').value)||0,
     secondary:JSON.stringify(secondary),
     updated_at:new Date().toISOString()
   };
@@ -1242,28 +1440,20 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'){lbIdx=(lbIdx+1)%lbImages.length;showLb();}
 });
 
-// ── 비고 직접입력 토글 ──
-window.toggleNoteCustom=function(){
-  const sel=document.getElementById('f_note').value;
-  const wrap=document.getElementById('note_custom_wrap');
-  wrap.style.display=sel===''?'block':'none';
-};
+// ── 승강압 방식 값 처리 ──
 function getNoteValue(){
-  const sel=document.getElementById('f_note').value;
-  if(sel===''){return document.getElementById('f_note_custom').value.trim();}
-  return sel;
+  return document.getElementById('f_note').value;
 }
 function setNoteValue(val){
+  const NOTE_MAP={
+    '수지형':'수지형 다운','수지형(다운)':'수지형 다운',
+    '수지형(승압)':'수지형 승압','수지형(02년제조)':'수지형 다운',
+    '수지형(97년제조)':'수지형 다운','X':'다운',''  :'다운'
+  };
+  const mapped=NOTE_MAP[val]||val;
   const sel=document.getElementById('f_note');
-  const opts=Array.from(sel.options).map(o=>o.value);
-  if(opts.includes(val)){
-    sel.value=val;
-    document.getElementById('note_custom_wrap').style.display='none';
-  } else {
-    sel.value='';
-    document.getElementById('f_note_custom').value=val||'';
-    document.getElementById('note_custom_wrap').style.display=val?'block':'none';
-  }
+  const valid=['다운','승압','수지형 다운','수지형 승압'];
+  sel.value=valid.includes(mapped)?mapped:'다운';
 }
 
 // ── URL 링크 ──
@@ -1280,6 +1470,86 @@ window.copyUrl=function(id){
     ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
     toast('URL이 복사되었습니다 📋','success');
   });
+};
+
+
+
+// ── 용량 선택 동기화 ──
+window.syncCapToPrimary=function(){
+  const cap=document.getElementById('f_cap').value;
+  const MAP={'1kva':'0.10','1.5kva':'0.12','2kva':'0.14','3kva':'0.18','5kva':'0.25'};
+  const pCap=document.getElementById('p_cap');
+  if(pCap&&MAP[cap]) pCap.value=MAP[cap];
+  window.calcPrimary();
+};
+
+// ── 1차 권선 계산 ──
+const P_RATIOS=[['1kVA',0.10],['1.5kVA',0.12],['2kVA',0.14],['3kVA',0.18],['4kVA',0.22],['5kVA',0.25]];
+window.calcPrimary=function(){
+  const vinEl=document.getElementById('p_vin');
+  const t2El=document.getElementById('p_t2');
+  const v2El=document.getElementById('p_v2');
+  const capEl=document.getElementById('p_cap');
+  const connEl=document.getElementById('p_conn');
+  if(!vinEl)return;
+  const vin=parseFloat(vinEl.value)||0;
+  const t2=parseFloat(t2El.value)||0;
+  const v2=parseFloat(v2El.value)||0;
+  const ratio=parseFloat(capEl.value)||0.14;
+  const isParallel=connEl.value==='parallel';
+  const vpt=t2>0&&v2>0?(v2/t2):0;
+  const t1=vpt>0?(vin/vpt):0;
+  const unwindSingle=t1*ratio;
+  const unwind=isParallel?unwindSingle/2:unwindSingle;
+  document.getElementById('p_r_vpt').innerHTML=vpt>0?vpt.toFixed(3)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">V/턴</span>':'—';
+  document.getElementById('p_r_t1').innerHTML=t1>0?t1.toFixed(1)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">턴</span>':'—';
+  document.getElementById('p_r_unwind').innerHTML=unwind>0?unwind.toFixed(1)+'<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">턴</span>':'—';
+  document.getElementById('p_r_unwind_d').textContent=isParallel?`총턴수 × ${(ratio*100).toFixed(0)}% ÷ 2 (병렬)`:`총턴수 × ${(ratio*100).toFixed(0)}% (단선)`;
+  // 비율표
+  const tbody=document.getElementById('p_ratio_body');
+  if(tbody){
+    tbody.innerHTML=P_RATIOS.map(([name,r])=>{
+      const us=(t1*r).toFixed(1);
+      const up=(t1*r/2).toFixed(1);
+      const rem=(t1-t1*r).toFixed(1);
+      const active=(r===ratio)?'class="row-active"':'';
+      return `<tr ${active} style="cursor:default"><td>${name}</td><td>${(r*100).toFixed(0)}%</td><td>${t1>0?us:'—'}</td><td>${t1>0?up:'—'}</td><td>${t1>0?rem:'—'}</td></tr>`;
+    }).join('');
+  }
+  // 작업기록표 렌더링
+  renderWorkTable(vin, t1);
+};
+
+function renderWorkTable(vin, t1){
+  const tbody=document.getElementById('p_work_body');
+  if(!tbody)return;
+  // 현재 저장된 작업기록 가져오기
+  const rows=window._workRows||[{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''}];
+  tbody.innerHTML=rows.map((row,i)=>{
+    const u=parseFloat(row.unwind)||0;
+    const vTheory=(vin>0&&t1>0&&u>0)?(vin*(1-u/t1)).toFixed(2):'—';
+    return `<tr>
+      <td style="color:var(--text3);font-size:12px">${i+1}</td>
+      <td><input type="number" class="pw-input" data-idx="${i}" data-field="unwind" value="${row.unwind}" placeholder="예) 27" oninput="onWorkInput(this)" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;outline:none"></td>
+      <td style="font-family:'JetBrains Mono',monospace;color:var(--accent2);font-weight:600">${vTheory}</td>
+      <td><input type="number" class="pw-input" data-idx="${i}" data-field="vmeas" value="${row.vmeas}" placeholder="실측입력" oninput="onWorkInput(this)" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;outline:none"></td>
+      <td><input type="number" class="pw-input" data-idx="${i}" data-field="imeas" value="${row.imeas}" placeholder="실측입력" oninput="onWorkInput(this)" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;outline:none"></td>
+    </tr>`;
+  }).join('');
+}
+
+window.onWorkInput=function(el){
+  const idx=parseInt(el.dataset.idx);
+  const field=el.dataset.field;
+  if(!window._workRows) window._workRows=[{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''},{unwind:'',vmeas:'',imeas:''}];
+  window._workRows[idx][field]=el.value;
+  // 이론값만 재계산
+  const vin=parseFloat(document.getElementById('p_vin').value)||0;
+  const t2=parseFloat(document.getElementById('p_t2').value)||0;
+  const v2=parseFloat(document.getElementById('p_v2').value)||0;
+  const vpt=t2>0&&v2>0?(v2/t2):0;
+  const t1=vpt>0?(vin/vpt):0;
+  if(field==='unwind') renderWorkTable(vin,t1);
 };
 
 // ── 인쇄 ──
