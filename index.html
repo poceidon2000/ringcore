@@ -587,39 +587,124 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
               <div class="rc" style="width:200px;min-width:200px;flex-shrink:0"><div class="rc-lbl">1차 권선 총 턴수</div><div class="rc-val info" id="p_r_t1">—</div><div class="rc-diff">인입전압 ÷ 턴당전압</div></div>
               <div class="rc" style="width:200px;min-width:200px;flex-shrink:0"><div class="rc-lbl">풀어야 할 턴수</div><div class="rc-val warn" id="p_r_unwind">—</div><div class="rc-diff" id="p_r_unwind_d">총턴수 × 비율</div></div>
             </div>
-            <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
-              <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px">푼턴수별 측정 기록 (5회)</div>
-              <div style="overflow-x:auto"><table class="data-table" id="p_unwind_table">
-                <thead><tr>
-                  <th style="width:50px">#</th>
-                  <th>푼 턴수 (턴)</th>
-                  <th>2차 이론전압 (V) <span style="font-size:10px;color:var(--text3);font-weight:400">자동계산</span></th>
-                  <th>무부하전압 실측 (V)</th>
-                  <th>무부하전류 실측 (A)</th>
-                  <th>비고</th>
-                </tr></thead>
-                <tbody>
-                  <tr><td style="text-align:center;color:var(--text3)">1</td><td><input type="number" class="p_unwind_turns" data-row="0" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_theory_v" id="p_tv_0" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td><td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="text" class="p_note" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td></tr>
-                  <tr><td style="text-align:center;color:var(--text3)">2</td><td><input type="number" class="p_unwind_turns" data-row="1" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_theory_v" id="p_tv_1" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td><td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="text" class="p_note" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td></tr>
-                  <tr><td style="text-align:center;color:var(--text3)">3</td><td><input type="number" class="p_unwind_turns" data-row="2" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_theory_v" id="p_tv_2" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td><td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="text" class="p_note" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td></tr>
-                  <tr><td style="text-align:center;color:var(--text3)">4</td><td><input type="number" class="p_unwind_turns" data-row="3" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_theory_v" id="p_tv_3" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td><td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="text" class="p_note" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td></tr>
-                  <tr><td style="text-align:center;color:var(--text3)">5</td><td><input type="number" class="p_unwind_turns" data-row="4" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_theory_v" id="p_tv_4" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td><td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td><td><input type="text" class="p_note" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td></tr>
-                </tbody>
-              </table></div>
-            </div>
-
-            <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
-              <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px">권선 작업 기록표</div>
-              <div style="overflow-x:auto;margin-bottom:14px">
-                <table class="data-table" id="p_work_table">
+            <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+              <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:10px">푼턴수별 측정 기록 (10회)</div>
+              <!-- I_old, K 입력 -->
+              <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+                <div class="form-group w-xl">
+                  <label>개조 전 무부하전류 I_old (A)</label>
+                  <input type="number" id="p_i_old" placeholder="예) 0.45" step="0.01" oninput="calcPrimaryRows()" style="width:100%">
+                  <span class="hint">개조 전 측정값 입력</span>
+                </div>
+                <div class="form-group w-lg">
+                  <label>포화 가중치 K</label>
+                  <input type="number" id="p_k_factor" placeholder="기본 2.0" value="2.0" step="0.1" oninput="calcPrimaryRows()" style="width:100%">
+                  <span class="hint">보통 2.0~2.5</span>
+                </div>
+              </div>
+              <div style="overflow-x:auto">
+                <table class="data-table" id="p_unwind_table">
                   <thead><tr>
-                    <th style="min-width:60px">#</th>
-                    <th style="min-width:110px">푼 턴수</th>
-                    <th style="min-width:130px">2차 이론전압 (V)</th>
+                    <th style="width:40px">#</th>
+                    <th style="min-width:120px">푼 턴수 (n)</th>
+                    <th style="min-width:150px">2차 이론전압 (V)<br><span style="font-size:10px;color:var(--text3);font-weight:400">Vin×N2÷(N1-n)</span></th>
+                    <th style="min-width:150px">이론 무부하전류 (A)<br><span style="font-size:10px;color:var(--text3);font-weight:400">I_old×(N1÷(N1-n))²×K</span></th>
                     <th style="min-width:130px">실측 무부하전압 (V)</th>
                     <th style="min-width:130px">실측 무부하전류 (A)</th>
+                    <th style="min-width:120px">비고</th>
                   </tr></thead>
-                  <tbody id="p_work_body"></tbody>
+                  <tbody id="p_unwind_body">
+                    <tr>
+                      <td style="text-align:center;color:var(--text3)">1</td>
+                      <td><input type="number" class="p_unwind_turns" data-row="0" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_theory_v" id="p_tv_0" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_theory_i" id="p_ti_0" placeholder="자동계산" readonly style="width:100%;background:rgba(79,156,249,.05);border:1px solid rgba(79,156,249,.25);border-radius:5px;padding:4px 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="text" class="p_remark_row" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:center;color:var(--text3)">2</td>
+                      <td><input type="number" class="p_unwind_turns" data-row="1" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_theory_v" id="p_tv_1" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_theory_i" id="p_ti_1" placeholder="자동계산" readonly style="width:100%;background:rgba(79,156,249,.05);border:1px solid rgba(79,156,249,.25);border-radius:5px;padding:4px 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="text" class="p_remark_row" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:center;color:var(--text3)">3</td>
+                      <td><input type="number" class="p_unwind_turns" data-row="2" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_theory_v" id="p_tv_2" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_theory_i" id="p_ti_2" placeholder="자동계산" readonly style="width:100%;background:rgba(79,156,249,.05);border:1px solid rgba(79,156,249,.25);border-radius:5px;padding:4px 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="text" class="p_remark_row" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:center;color:var(--text3)">4</td>
+                      <td><input type="number" class="p_unwind_turns" data-row="3" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_theory_v" id="p_tv_3" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_theory_i" id="p_ti_3" placeholder="자동계산" readonly style="width:100%;background:rgba(79,156,249,.05);border:1px solid rgba(79,156,249,.25);border-radius:5px;padding:4px 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="text" class="p_remark_row" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:center;color:var(--text3)">5</td>
+                      <td><input type="number" class="p_unwind_turns" data-row="4" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_theory_v" id="p_tv_4" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_theory_i" id="p_ti_4" placeholder="자동계산" readonly style="width:100%;background:rgba(79,156,249,.05);border:1px solid rgba(79,156,249,.25);border-radius:5px;padding:4px 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="text" class="p_remark_row" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:center;color:var(--text3)">6</td>
+                      <td><input type="number" class="p_unwind_turns" data-row="5" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_theory_v" id="p_tv_5" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_theory_i" id="p_ti_5" placeholder="자동계산" readonly style="width:100%;background:rgba(79,156,249,.05);border:1px solid rgba(79,156,249,.25);border-radius:5px;padding:4px 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="text" class="p_remark_row" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:center;color:var(--text3)">7</td>
+                      <td><input type="number" class="p_unwind_turns" data-row="6" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_theory_v" id="p_tv_6" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_theory_i" id="p_ti_6" placeholder="자동계산" readonly style="width:100%;background:rgba(79,156,249,.05);border:1px solid rgba(79,156,249,.25);border-radius:5px;padding:4px 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="text" class="p_remark_row" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:center;color:var(--text3)">8</td>
+                      <td><input type="number" class="p_unwind_turns" data-row="7" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_theory_v" id="p_tv_7" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_theory_i" id="p_ti_7" placeholder="자동계산" readonly style="width:100%;background:rgba(79,156,249,.05);border:1px solid rgba(79,156,249,.25);border-radius:5px;padding:4px 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="text" class="p_remark_row" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:center;color:var(--text3)">9</td>
+                      <td><input type="number" class="p_unwind_turns" data-row="8" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_theory_v" id="p_tv_8" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_theory_i" id="p_ti_8" placeholder="자동계산" readonly style="width:100%;background:rgba(79,156,249,.05);border:1px solid rgba(79,156,249,.25);border-radius:5px;padding:4px 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="text" class="p_remark_row" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:center;color:var(--text3)">10</td>
+                      <td><input type="number" class="p_unwind_turns" data-row="9" placeholder="0" oninput="calcPrimaryRows()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_theory_v" id="p_tv_9" placeholder="자동계산" readonly style="width:100%;background:rgba(56,217,169,.05);border:1px solid rgba(56,217,169,.25);border-radius:5px;padding:4px 8px;color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_theory_i" id="p_ti_9" placeholder="자동계산" readonly style="width:100%;background:rgba(79,156,249,.05);border:1px solid rgba(79,156,249,.25);border-radius:5px;padding:4px 8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:12px"></td>
+                      <td><input type="number" class="p_meas_v" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="number" class="p_meas_i" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                      <td><input type="text" class="p_remark_row" placeholder="" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;color:var(--text);font-size:12px"></td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -1512,8 +1597,6 @@ window.calcPrimary=function(){
       return `<tr ${active} style="cursor:default"><td>${name}</td><td>${(r*100).toFixed(0)}%</td><td>${t1>0?us:'—'}</td><td>${t1>0?up:'—'}</td><td>${t1>0?rem:'—'}</td></tr>`;
     }).join('');
   }
-  // 작업기록표 렌더링
-  renderWorkTable(vin, t1);
 };
 
 // 작업기록 초기화
@@ -1533,56 +1616,32 @@ function calcV2Theory(vpt, t1, u){
   return '—';
 }
 
-function renderWorkTable(vin, t1){
-  const tbody=document.getElementById('p_work_body');
-  if(!tbody)return;
-  if(!window._workRows||window._workRows.length<5)
-    window._workRows=Array(5).fill(null).map(()=>({unwind:'',vmeas:'',imeas:''}));
-  const rows=window._workRows;
-  const inputStyle='width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;outline:none';
-  const {vpt}=getT1();
-  tbody.innerHTML=rows.map((row,i)=>{
-    const u=parseFloat(row.unwind)||0;
-    const vTheory=u>0?calcV2Theory(vpt,t1,u):'—';
-    return `<tr>
-      <td style="color:var(--text3);font-size:12px;text-align:center">${i+1}</td>
-      <td><input type="number" data-idx="${i}" data-field="unwind" value="${row.unwind}" placeholder="예) 27" style="${inputStyle}" id="pw_unwind_${i}"></td>
-      <td id="vtheory_${i}" style="font-family:'JetBrains Mono',monospace;color:var(--accent2);font-weight:600;text-align:center">${vTheory}</td>
-      <td><input type="number" data-idx="${i}" data-field="vmeas" value="${row.vmeas}" placeholder="실측입력" style="${inputStyle}" id="pw_vmeas_${i}"></td>
-      <td><input type="number" data-idx="${i}" data-field="imeas" value="${row.imeas}" placeholder="실측입력" style="${inputStyle}" id="pw_imeas_${i}"></td>
-    </tr>`;
-  }).join('');
-  // addEventListener로 이벤트 연결 (모듈 스코프 문제 해결)
-  for(let i=0;i<rows.length;i++){
-    const unwindEl=document.getElementById('pw_unwind_'+i);
-    const vmeasEl=document.getElementById('pw_vmeas_'+i);
-    const imeasEl=document.getElementById('pw_imeas_'+i);
-    if(unwindEl) unwindEl.addEventListener('input',function(){
-      window._workRows[i].unwind=this.value;
-      const {vpt:vp,t1:t}=getT1();
-      const u=parseFloat(this.value)||0;
-      const td=document.getElementById('vtheory_'+i);
-      if(td) td.textContent=u>0?calcV2Theory(vp,t,u):'—';
-    });
-    if(vmeasEl) vmeasEl.addEventListener('input',function(){window._workRows[i].vmeas=this.value;});
-    if(imeasEl) imeasEl.addEventListener('input',function(){window._workRows[i].imeas=this.value;});
-  }
-}
 
-
-// ── 푼턴수별 측정기록 이론전압 계산 ──
 window.calcPrimaryRows=function(){
-  const {vpt,t1}=getT1();
+  const {vin,t1,vpt}=getT1();
+  const t2=parseFloat((document.getElementById('p_t2')||{}).value)||0; // N2 임시2차턴수
+  const i_old=parseFloat((document.getElementById('p_i_old')||{}).value)||0;
+  const k_factor=parseFloat((document.getElementById('p_k_factor')||{}).value)||2.0;
   const turns=document.querySelectorAll('.p_unwind_turns');
   turns.forEach((el,i)=>{
-    const u=parseFloat(el.value)||0;
+    const n=parseFloat(el.value)||0;
+    const denom=t1-n;
     const tvEl=document.getElementById('p_tv_'+i);
+    const tiEl=document.getElementById('p_ti_'+i);
+    // 2차 이론전압: Vin × N2 / (N1 - n)
     if(tvEl){
-      if(u>0&&vpt>0&&t1>0){
-        tvEl.value=(vpt*(t1-u)).toFixed(2);
+      if(n>=0&&vin>0&&t2>0&&denom>0){
+        tvEl.value=(vin*t2/denom).toFixed(3);
       } else {
-        tvEl.value='';
-        tvEl.placeholder='자동계산';
+        tvEl.value=''; tvEl.placeholder='자동계산';
+      }
+    }
+    // 이론 무부하전류: I_old × (N1/(N1-n))² × K
+    if(tiEl){
+      if(n>0&&i_old>0&&t1>0&&denom>0){
+        tiEl.value=(i_old*Math.pow(t1/denom,2)*k_factor).toFixed(3);
+      } else {
+        tiEl.value=''; tiEl.placeholder='자동계산';
       }
     }
   });
