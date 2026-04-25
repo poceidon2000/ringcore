@@ -195,6 +195,9 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .it-del{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(255,107,107,.85);border:none;border-radius:50%;color:#fff;font-size:11px;display:none;align-items:center;justify-content:center;cursor:pointer}
 .img-thumb:hover .it-del{display:flex}
 .it-num{position:absolute;bottom:3px;left:3px;font-size:9px;background:rgba(0,0,0,.6);color:#fff;padding:1px 4px;border-radius:3px;font-family:'JetBrains Mono',monospace}
+.it-drag{position:absolute;top:3px;left:3px;font-size:14px;color:rgba(255,255,255,.7);cursor:grab;background:rgba(0,0,0,.4);border-radius:3px;padding:0 3px;line-height:1.4;display:none}
+.img-thumb:hover .it-drag{display:block}
+.img-thumb-ghost{opacity:.4;border:2px dashed var(--accent)!important}
 
 /* 라이트박스 */
 .lightbox{display:none;position:fixed;inset:0;z-index:998;background:rgba(0,0,0,.9);align-items:center;justify-content:center;flex-direction:column;gap:14px}
@@ -231,6 +234,7 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
   @page{margin:12mm}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 </head>
 <body>
 
@@ -1495,12 +1499,30 @@ function renderImages(){
   if(!currentImages.length){grid.innerHTML='';return;}
   grid.innerHTML=currentImages.map((img,i)=>{
     const src=img.dataUrl||img.url||'';
-    return `<div class="img-thumb" onclick="openLightbox(${i})">
-      <img src="${src}" alt="${img.name||''}">
+    return `<div class="img-thumb" data-idx="${i}">
+      <img src="${src}" alt="${img.name||''}" onclick="openLightbox(${i})" style="cursor:pointer">
       <button class="it-del" onclick="delImg(event,${i})">✕</button>
       <div class="it-num">${i+1}</div>
+      <div class="it-drag" title="드래그해서 순서 변경">⠿</div>
     </div>`;
   }).join('');
+  // Sortable 초기화
+  if(window._sortable) window._sortable.destroy();
+  window._sortable = Sortable.create(grid, {
+    animation: 150,
+    ghostClass: 'img-thumb-ghost',
+    handle: '.it-drag',
+    onEnd: function(evt){
+      // 순서 변경 반영
+      const newImages=[];
+      grid.querySelectorAll('.img-thumb').forEach(el=>{
+        const idx=parseInt(el.dataset.idx);
+        newImages.push(currentImages[idx]);
+      });
+      currentImages=newImages;
+      renderImages(); // 번호 다시 렌더링
+    }
+  });
 }
 window.delImg=(e,idx)=>{e.stopPropagation();currentImages.splice(idx,1);renderImages();};
 
