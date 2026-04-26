@@ -174,11 +174,11 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .rc .rc-val.warn{color:var(--accent3)}
 .rc .rc-diff{font-size:12px;color:var(--text3);margin-top:2px}
 .diff-rows{margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
-.diff-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)}
+.diff-row{display:flex;align-items:center;gap:10px;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)}
 .diff-row:last-child{border-bottom:none}
 .diff-lbl{color:var(--text2)}
-.c-good{color:var(--accent2)}
-.c-warn{color:var(--accent3)}
+.c-good{color:var(--accent2);font-weight:700;font-family:'JetBrains Mono',monospace;min-width:60px;flex-shrink:0}
+.c-warn{color:var(--accent3);font-weight:700;font-family:'JetBrains Mono',monospace;min-width:60px;flex-shrink:0}
 
 /* 이미지 */
 .img-dropzone{border:2px dashed var(--border2);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);position:relative}
@@ -200,15 +200,21 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 .img-thumb-ghost{opacity:.4;border:2px dashed var(--accent)!important}
 
 /* 라이트박스 */
-.lightbox{display:none;position:fixed;inset:0;z-index:998;background:rgba(0,0,0,.9);align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.lightbox{display:none;position:fixed;inset:0;z-index:998;background:rgba(0,0,0,.92);flex-direction:column;align-items:center;justify-content:center;gap:10px;user-select:none}
 .lightbox.open{display:flex}
-.lightbox img{max-width:90vw;max-height:80vh;border-radius:8px;box-shadow:0 8px 60px rgba(0,0,0,.6)}
-.lb-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.lb-close:hover{background:rgba(255,255,255,.2)}
+.lb-img-wrap{position:relative;overflow:hidden;width:90vw;height:80vh;display:flex;align-items:center;justify-content:center;cursor:grab}
+.lb-img-wrap.grabbing{cursor:grabbing}
+.lb-img-wrap img{position:absolute;transform-origin:center center;border-radius:6px;box-shadow:0 8px 60px rgba(0,0,0,.6);max-width:none;transition:none;pointer-events:none}
+.lb-close{position:absolute;top:16px;right:20px;background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10}
+.lb-close:hover{background:rgba(255,255,255,.3)}
 .lb-nav{display:flex;align-items:center;gap:14px}
 .lb-arrow{background:rgba(255,255,255,.1);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.lb-arrow:hover{background:rgba(255,255,255,.2)}
-.lb-counter{font-size:12px;color:rgba(255,255,255,.6)}
+.lb-arrow:hover{background:rgba(255,255,255,.25)}
+.lb-counter{font-size:12px;color:rgba(255,255,255,.6);min-width:50px;text-align:center}
+.lb-zoom-bar{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border-radius:20px;padding:4px 12px}
+.lb-zoom-btn{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .15s}
+.lb-zoom-btn:hover{background:rgba(255,255,255,.2)}
+.lb-zoom-level{font-size:12px;color:rgba(255,255,255,.8);min-width:40px;text-align:center;font-family:'JetBrains Mono',monospace}
 
 /* 액션바 */
 .action-bar{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--border);background:var(--surface);justify-content:flex-end;flex-shrink:0}
@@ -532,9 +538,9 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
               <div class="rc"><div class="rc-lbl">저항합계 (단자)</div><div class="rc-val warn" id="r_t_ohm">—<span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:2px">mΩ</span></div><div class="rc-diff">+단자저항</div></div>
             </div>
             <div class="diff-rows">
-              <div class="diff-row"><span class="c-good" id="loss_d" style="min-width:60px;text-align:right">—</span><span class="diff-lbl" style="margin-left:10px">직결 실측전류 / 이론전류 × 100</span></div>
-              <div class="diff-row"><span class="c-warn" id="loss_t" style="min-width:60px;text-align:right">—</span><span class="diff-lbl" style="margin-left:10px">단자 실측전류 / 이론전류 × 100</span></div>
-              <div class="diff-row"><span class="c-warn" id="loss_vs" style="min-width:60px;text-align:right">—</span><span class="diff-lbl" style="margin-left:10px">실측 단자전류 / 직결전류 × 100</span></div>
+              <div class="diff-row"><span class="c-good" id="loss_d">—</span><span class="diff-lbl">직결 실측전류 / 이론전류 × 100</span></div>
+              <div class="diff-row"><span class="c-warn" id="loss_t">—</span><span class="diff-lbl">단자 실측전류 / 이론전류 × 100</span></div>
+              <div class="diff-row"><span class="c-warn" id="loss_vs">—</span><span class="diff-lbl">실측 단자전류 / 직결전류 × 100</span></div>
             </div>
           </div>
 
@@ -729,13 +735,21 @@ mark{background:rgba(249,168,37,.3);color:var(--accent3);border-radius:2px;paddi
 </div>
 
 <!-- 라이트박스 -->
-<div class="lightbox" id="lightbox" onclick="closeLightboxBg(event)">
+<div class="lightbox" id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">✕</button>
-  <img id="lbImg" src="" alt="">
+  <div class="lb-img-wrap" id="lbImgWrap">
+    <img id="lbImg" src="" alt="" draggable="false">
+  </div>
   <div class="lb-nav">
     <button class="lb-arrow" onclick="lbPrev(event)">‹</button>
     <span class="lb-counter" id="lbCounter"></span>
     <button class="lb-arrow" onclick="lbNext(event)">›</button>
+  </div>
+  <div class="lb-zoom-bar">
+    <button class="lb-zoom-btn" onclick="lbZoom(-0.25)" title="축소">－</button>
+    <span class="lb-zoom-level" id="lbZoomLevel">100%</span>
+    <button class="lb-zoom-btn" onclick="lbZoom(0.25)" title="확대">＋</button>
+    <button class="lb-zoom-btn" onclick="lbZoomReset()" title="원래 크기">⊙</button>
   </div>
 </div>
 <div class="toast-container" id="toastContainer"></div>
@@ -1526,23 +1540,96 @@ function renderImages(){
 }
 window.delImg=(e,idx)=>{e.stopPropagation();currentImages.splice(idx,1);renderImages();};
 
-// ── 라이트박스 ──
+// ── 라이트박스 (줌+팬) ──
+let _lbScale=1, _lbX=0, _lbY=0, _lbDragging=false, _lbDragStartX=0, _lbDragStartY=0, _lbImgX=0, _lbImgY=0;
+
+function lbApplyTransform(){
+  const img=document.getElementById('lbImg');
+  img.style.transform=`translate(${_lbX}px,${_lbY}px) scale(${_lbScale})`;
+  document.getElementById('lbZoomLevel').textContent=Math.round(_lbScale*100)+'%';
+}
+function lbResetTransform(){_lbScale=1;_lbX=0;_lbY=0;lbApplyTransform();}
+
 window.openLightbox=idx=>{lbImages=currentImages;lbIdx=idx;showLb();};
 function showLb(){
-  document.getElementById('lightbox').classList.add('open');
+  const lb=document.getElementById('lightbox');
+  lb.classList.add('open');
+  lbResetTransform();
   document.getElementById('lbImg').src=lbImages[lbIdx].dataUrl||lbImages[lbIdx].url||'';
   document.getElementById('lbCounter').textContent=`${lbIdx+1} / ${lbImages.length}`;
 }
-window.closeLightbox=()=>document.getElementById('lightbox').classList.remove('open');
-window.closeLightboxBg=e=>{if(e.target===document.getElementById('lightbox'))window.closeLightbox();};
+window.closeLightbox=()=>{
+  document.getElementById('lightbox').classList.remove('open');
+  lbResetTransform();
+};
 window.lbPrev=e=>{e.stopPropagation();lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;showLb();};
 window.lbNext=e=>{e.stopPropagation();lbIdx=(lbIdx+1)%lbImages.length;showLb();};
+window.lbZoom=function(delta){
+  _lbScale=Math.min(Math.max(_lbScale+delta,0.25),5);
+  lbApplyTransform();
+};
+window.lbZoomReset=function(){lbResetTransform();};
+
+// 마우스 휠 줌
+document.addEventListener('DOMContentLoaded',()=>{
+  const wrap=document.getElementById('lbImgWrap');
+  if(!wrap)return;
+  // 휠 줌
+  wrap.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const delta=e.deltaY<0?0.15:-0.15;
+    _lbScale=Math.min(Math.max(_lbScale+delta,0.25),5);
+    lbApplyTransform();
+  },{passive:false});
+  // 마우스 드래그 팬
+  wrap.addEventListener('mousedown',e=>{
+    if(e.button!==0)return;
+    _lbDragging=true;_lbDragStartX=e.clientX-_lbX;_lbDragStartY=e.clientY-_lbY;
+    wrap.classList.add('grabbing');
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!_lbDragging)return;
+    _lbX=e.clientX-_lbDragStartX;_lbY=e.clientY-_lbDragStartY;
+    lbApplyTransform();
+  });
+  document.addEventListener('mouseup',()=>{_lbDragging=false;document.getElementById('lbImgWrap')&&document.getElementById('lbImgWrap').classList.remove('grabbing');});
+  // 터치 팬/줌
+  let _touches={},_lastDist=0;
+  wrap.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){
+      _lbDragging=true;_lbDragStartX=e.touches[0].clientX-_lbX;_lbDragStartY=e.touches[0].clientY-_lbY;
+    } else if(e.touches.length===2){
+      _lbDragging=false;
+      _lastDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    }
+  },{passive:true});
+  wrap.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(e.touches.length===1&&_lbDragging){
+      _lbX=e.touches[0].clientX-_lbDragStartX;_lbY=e.touches[0].clientY-_lbDragStartY;lbApplyTransform();
+    } else if(e.touches.length===2){
+      const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      _lbScale=Math.min(Math.max(_lbScale*(dist/_lastDist),0.25),5);
+      _lastDist=dist;lbApplyTransform();
+    }
+  },{passive:false});
+  wrap.addEventListener('touchend',()=>{_lbDragging=false;});
+  // 더블클릭 줌
+  wrap.addEventListener('dblclick',()=>{
+    if(_lbScale===1){_lbScale=2;} else {lbResetTransform();return;}
+    lbApplyTransform();
+  });
+});
+
 document.addEventListener('keydown',e=>{
   const lb=document.getElementById('lightbox');
   if(!lb.classList.contains('open'))return;
   if(e.key==='Escape')window.closeLightbox();
-  if(e.key==='ArrowLeft'){lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;showLb();}
-  if(e.key==='ArrowRight'){lbIdx=(lbIdx+1)%lbImages.length;showLb();}
+  if(e.key==='ArrowLeft'&&_lbScale===1){lbIdx=(lbIdx-1+lbImages.length)%lbImages.length;showLb();}
+  if(e.key==='ArrowRight'&&_lbScale===1){lbIdx=(lbIdx+1)%lbImages.length;showLb();}
+  if(e.key==='+'||e.key==='=') window.lbZoom(0.25);
+  if(e.key==='-') window.lbZoom(-0.25);
+  if(e.key==='0') lbResetTransform();
 });
 
 // ── 승강압 방식 값 처리 ──
